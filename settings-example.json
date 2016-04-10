@@ -1,0 +1,13 @@
+{
+  "owner_id": "",
+  "bot_token": "",
+  "bot_app_id": "",
+  "command_prefix": "",
+  "twitter": {
+    "consumer_key": "",
+    "consumer_secret": "",
+    "access_token_key": "",
+    "access_token_secret": ""
+  },
+  "mongodb_uri": ""
+}

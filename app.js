@@ -18,12 +18,7 @@ fs.exists(process.cwd() + "/temp", (exists) => {
     if (!exists) fs.mkdir(process.cwd() + "/temp");
 });
 
-
 var mongo = require('./lib/mongo_client.js')(utils, options);
 var discord = require('./lib/discord_client.js')(utils, options, path);
-
-if (options.twitter.enabled) {
-    var twitter = require('./lib/twitter.js')(utils, options, discord, request, fs, path, mongo);
-}
-
+var twitter = require('./lib/twitter.js')(utils, options, discord, request, fs, path, mongo);
 var messages = require('./lib/messages.js')(utils, options, discord, request, mongo, twitter, fs, path, moment);

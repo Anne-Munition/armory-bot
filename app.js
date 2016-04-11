@@ -14,8 +14,8 @@ try {
     process.exit();
 }
 
-fs.exists(process.cwd() + "/temp", (exists) => {
-    if (!exists) fs.mkdir(process.cwd() + "/temp");
+fs.exists(path.join(__dirname, "temp"), (exists) => {
+    if (!exists) fs.mkdir(path.join(__dirname, "temp"));
 });
 
 var mongo = require('./lib/mongo_client.js')(utils, options);

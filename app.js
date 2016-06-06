@@ -1,11 +1,9 @@
 'use strict';
 const fs = require('fs'), //File system module
     path = require('path'), //File Path module
-    request = require('request'), //HTTP request module
-    moment = require('moment'), //Date-Time module
     jsonfile = require('jsonfile');
 
-var utils = require('./lib/utilities.js')(moment); //Our utilities module. Contains general functions
+var utils = require('./lib/utilities.js')(); //Our utilities module. Contains general functions
 var queueList;
 jsonfile.spaces = 2;
 utils.log("Starting Armory Bot...");
@@ -28,6 +26,6 @@ if (!fs.existsSync(queueList_path)) {
 queueList = require(queueList_path);
 
 var mongo = require('./lib/mongo_client.js')(utils, options); //Our Mongo DB module
-var discord = require('./lib/discord_client.js')(utils, options, path, mongo); //Our Discord module
-var twitter = require('./lib/twitter.js')(utils, options, discord, request, fs, path, mongo); //Our Twitter module
-var messages = require('./lib/messages.js')(utils, options, discord, request, mongo, twitter, fs, path, moment, jsonfile, queueList); //Our Discord Message Handler module
+var discord = require('./lib/discord_client.js')(utils, options, mongo); //Our Discord module
+var twitter = require('./lib/twitter.js')(utils, options, discord, mongo); //Our Twitter module
+var messages = require('./lib/messages.js')(utils, options, discord, mongo, twitter, queueList); //Our Discord Message Handler module

@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "dependencies": {
     "cheerio": "^0.20.0",
-    "discord.js": "github:hydrabolt/discord.js#indev",
+    "discord.js": "^8.0.0",
     "gm": "^1.22.0",
     "html-entities": "^1.2.0",
     "moment": "^2.14.1",

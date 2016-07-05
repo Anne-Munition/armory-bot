@@ -1,5 +1,4 @@
-/assets/queue.json
 .idea/
 node_modules/
-/settings.json
+/app.js
 /temp/*

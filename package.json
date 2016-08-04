@@ -24,7 +24,6 @@
     "html-entities": "^1.2.0",
     "moment": "^2.14.1",
     "mongoose": "^4.5.5",
-    "nodecraft-api": "0.0.3",
     "request": "^2.73.0",
     "static-eval": "^0.2.4",
     "twitter": "^1.3.0"

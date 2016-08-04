@@ -16,7 +16,12 @@ var options = {
         access_token_secret: ""
     },
     mongodb_uri: "", //The mongoDB URI - mLab is a popular DB as a service providers with free tiers for low traffic applications and development
-    battle_net_tag: "" //Your battle.net tag - This prevents the playoverwatch.com url from being show if it is a match (hide streamers battle.net id)
+    battle_net_tag: "", //Your battle.net tag - This prevents the playoverwatch.com url from being show if it is a match (hide streamers battle.net id)
+    nodecraft: {
+        username: "",
+        api_key: "",
+        server_id: ""
+    }
 };
 
 app = new app(options);

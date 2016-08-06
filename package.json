@@ -19,6 +19,7 @@
   "homepage": "https://github.com/dbkynd/armorybot#readme",
   "dependencies": {
     "discord.js": "^8.0.0",
+    "esprima": "^2.7.2",
     "gm": "^1.22.0",
     "html-entities": "^1.2.0",
     "moment": "^2.14.1",

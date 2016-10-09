@@ -1,7 +1,5 @@
 'use strict';
 module.exports = {
-  // Your Discord ID, NOT the bot's ID
-  owner_id: '',
   // The Bot's Discord access token
   bot_token: '',
   // The Bot's application ID

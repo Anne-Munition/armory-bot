@@ -16,7 +16,8 @@ module.exports = {
     consumer_secret: '',
     access_token_key: '',
     access_token_secret: '',
-    resolve_tco_links: true,
+    // 0 = don't change; 1 = alter to original url; 2 = append base url to tco link in brackets
+    resolve_tco_links: 2,
   },
   // The mongoDB URI for database storage
   mongodb_uri: '',

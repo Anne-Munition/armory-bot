@@ -19,6 +19,8 @@
   },
   "homepage": "https://github.com/dbkynd/armorybot#readme",
   "dependencies": {
+    "chess-ai-kong": "^0.3.3",
+    "chess.js": "^0.10.2",
     "discord.js": "github:hydrabolt/discord.js#indev",
     "gm": "^1.23.0",
     "html-entities": "^1.2.0",

@@ -24,6 +24,7 @@
     "discord.js": "github:hydrabolt/discord.js#indev",
     "gm": "^1.23.0",
     "html-entities": "^1.2.0",
+    "imdb": "^1.1.0",
     "mathjs": "^3.5.3",
     "moment": "^2.15.1",
     "mongoose": "^4.6.3",

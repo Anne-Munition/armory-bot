@@ -31,6 +31,7 @@
     "mongoose": "^4.6.3",
     "node-fetch": "^1.6.3",
     "nodecraft-api": "0.0.4",
+    "performance-now": "^0.2.0",
     "pidusage": "^1.1.0",
     "playlist-parser": "0.0.12",
     "request": "^2.75.0",

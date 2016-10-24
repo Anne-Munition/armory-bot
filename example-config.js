@@ -29,4 +29,7 @@ module.exports = {
     api_key: '',
     server_id: '',
   },
+  twitch: {
+    client_id: '',
+  },
 };

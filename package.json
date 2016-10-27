@@ -30,6 +30,7 @@
     "moment": "^2.15.2",
     "mongoose": "^4.6.5",
     "node-fetch": "^1.6.3",
+    "node-opus": "^0.2.2",
     "nodecraft-api": "0.0.4",
     "performance-now": "^0.2.0",
     "pidusage": "^1.1.0",

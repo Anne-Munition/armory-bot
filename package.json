@@ -1,12 +1,12 @@
 {
   "name": "armorybot",
   "version": "0.3.0",
-  "description": "Discord Bot for AnneMunition",
+  "description": "Discord Bot for AnneMunition's Armory",
   "main": "app.js",
   "devDependencies": {},
   "scripts": {
-    "test": "eslint ./",
-    "start": "node app"
+    "lint": "eslint ./",
+    "start": "node app.js"
   },
   "repository": {
     "type": "git",

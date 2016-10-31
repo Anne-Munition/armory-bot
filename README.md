@@ -1,2 +1,2 @@
 # Armory Bot
-Discord Bot for AnneMunition
+Discord Bot for AnneMunition's Armory

@@ -1,15 +1,15 @@
 'use strict';
 module.exports = {
   // The Bot's Discord access token
-  bot_token: '',
+  bot_token: '00000000000000000',
   // The Bot's application ID
-  bot_app_id: '',
+  bot_app_id: '00000000000000000.000000000000000000',
   // Your user ID as the owner of this bot
-  owner_id: '',
+  owner_id: '00000000000000000',
   // Prefix to be used for all commands
   prefix: '!',
   // The mongoDB URI for database storage
-  mongodb_uri: '',
+  mongodb_uri: 'mongodb://',
   // Nodecraft credentials for showing MC server statistics
   nodecraft: {
     username: '',

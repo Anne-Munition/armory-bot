@@ -4,11 +4,30 @@ module.exports = {
   bot_token: '',
   // The Bot's application ID
   bot_app_id: '',
-  commands: {
-    // Prefix to be used for all commands
-    prefix: '!',
-    // Newly created commands will have deny permissions by default
-    deny_blank_perms: false,
+  // Your user ID as the owner of this bot
+  owner_id: '',
+  // Prefix to be used for all commands
+  prefix: '!',
+  // The mongoDB URI for database storage
+  mongodb_uri: '',
+  // Nodecraft credentials for showing MC server statistics
+  nodecraft: {
+    username: '',
+    api_key: '',
+    server_id: '',
+  },
+  // ow command to lookup Overwatch statistics
+  overwatch: {
+    // The default tag to lookup if none is passed
+    default_battle_tag: '',
+    // ID's to not link the play overwatch url
+    hide_battle_tags: [],
+  },
+  // Twitch credentials
+  twitch: {
+    channel: '',
+    id: 0,
+    client_id: '',
   },
   // Your Twitter app's credentials
   twitter: {
@@ -16,20 +35,5 @@ module.exports = {
     consumer_secret: '',
     access_token_key: '',
     access_token_secret: '',
-    // 0 = don't change; 1 = alter to original url; 2 = append base url to tco link in brackets
-    resolve_tco_links: 2,
-  },
-  // The mongoDB URI for database storage
-  mongodb_uri: '',
-  // This tag is hidden from searches for privacy
-  battle_net_tag: '',
-  // Nodecraft credentials for showing MC server statistics
-  nodecraft: {
-    username: '',
-    api_key: '',
-    server_id: '',
-  },
-  twitch: {
-    client_id: '',
   },
 };

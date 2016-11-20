@@ -1,6 +1,5 @@
 .idea/
 node_modules/
 /config.js
-/temp/*
+/temp/
 /log/
-/assets/chess/games/

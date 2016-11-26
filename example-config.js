@@ -26,7 +26,7 @@ module.exports = {
   // Twitch credentials
   twitch: {
     channel: '',
-    id: 0,
+    id: '',
     client_id: '',
   },
   // Your Twitter app's credentials

@@ -41,5 +41,6 @@ module.exports = {
     clientSecret: '',
     redirectUri: '',
     playlistID: '',
+    max_count: 3,
   },
 };

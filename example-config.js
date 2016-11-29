@@ -43,4 +43,8 @@ module.exports = {
     playlistID: '',
     max_count: 3,
   },
+  lastFM: {
+    key: '',
+    secret: '',
+  },
 };

@@ -36,4 +36,10 @@ module.exports = {
     access_token_key: '',
     access_token_secret: '',
   },
+  spotify: {
+    clientId: '',
+    clientSecret: '',
+    redirectUri: '',
+    playlistID: '',
+  },
 };

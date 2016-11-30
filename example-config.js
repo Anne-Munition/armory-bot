@@ -25,18 +25,21 @@ module.exports = {
   },
   // Twitch credentials
   twitch: {
+    enabled: true,
     channel: '',
     id: '',
     client_id: '',
   },
-  // Your Twitter app's credentials
+  // Twitter credentials
   twitter: {
+    enabled: true,
     consumer_key: '',
     consumer_secret: '',
     access_token_key: '',
     access_token_secret: '',
   },
   spotify: {
+    enabled: true,
     clientId: '',
     clientSecret: '',
     redirectUri: '',
@@ -44,6 +47,7 @@ module.exports = {
     max_count: 3,
   },
   lastFM: {
+    username: '',
     key: '',
     secret: '',
   },

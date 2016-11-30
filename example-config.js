@@ -43,7 +43,6 @@ module.exports = {
     clientId: '',
     clientSecret: '',
     redirectUri: '',
-    playlistID: '',
     max_count: 3,
   },
   lastFM: {

@@ -6,3 +6,4 @@ node_modules/
 /tweet*
 /spotify
 npm-debug.log
+/playlist

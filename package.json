@@ -24,6 +24,7 @@
     "discord.js": "github:hydrabolt/discord.js#indev",
     "moment": "^2.17.1",
     "mongoose": "^4.7.1",
+    "node-vibrant": "^2.1.2",
     "performance-now": "^0.2.0",
     "request": "^2.79.0",
     "winston": "^2.3.0",

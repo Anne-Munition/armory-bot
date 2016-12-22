@@ -23,6 +23,8 @@
   "dependencies": {
     "discord.js": "github:hydrabolt/discord.js#indev",
     "getos": "^2.8.2",
+    "gm": "^1.23.0",
+    "html-entities": "^1.2.0",
     "mathjs": "^3.8.0",
     "moment": "^2.17.1",
     "mongoose": "^4.7.1",
@@ -31,6 +33,7 @@
     "performance-now": "^0.2.0",
     "pidusage": "^1.1.0",
     "request": "^2.79.0",
+    "twitter": "^1.7.0",
     "winston": "^2.3.0",
     "winston-daily-rotate-file": "^1.4.0"
   }

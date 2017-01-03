@@ -7,7 +7,6 @@
     "eslint": "^3.11.1"
   },
   "scripts": {
-    "lint": "eslint ./",
     "start": "node --harmony-async-await app.js"
   },
   "repository": {
@@ -40,6 +39,7 @@
     "refresh-token": "^0.1.1",
     "request": "^2.79.0",
     "spotify-web-api-node": "^2.3.6",
+    "superagent": "^3.3.1",
     "twitter": "^1.7.0",
     "uws": "^0.12.0",
     "winston": "^2.3.0",

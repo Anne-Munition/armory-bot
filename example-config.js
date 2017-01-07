@@ -8,9 +8,18 @@ module.exports = {
   owner_id: '00000000000000000',
   // Prefix to be used for all commands
   prefix: '!',
+  // Set to false to not receive command error messages via DM
+  receiveErrors: true,
   // The mongoDB URI for database storage
   mongodb_uri: 'mongodb://',
-  // Nodecraft credentials for showing MC server statistics
+  // Twitch credentials - https://www.twitch.tv/settings/connections
+  twitch: {
+    enabled: true,
+    channel: '',
+    id: '',
+    client_id: '',
+  },
+  // Nodecraft credentials for showing MC server statistics https://nodecraft.com/account/edit
   nodecraft: {
     username: '',
     api_key: '',
@@ -23,28 +32,21 @@ module.exports = {
     // ID's to not link the play overwatch url
     hide_battle_tags: [],
   },
-  // Twitch credentials
-  twitch: {
-    enabled: true,
-    channel: '',
-    id: '',
-    client_id: '',
-  },
-  // Twitter credentials
+  // Twitter credentials https://apps.twitter.com/
   twitter: {
-    enabled: true,
     consumer_key: '',
     consumer_secret: '',
     access_token_key: '',
     access_token_secret: '',
   },
+  // Spotify credentials https://developer.spotify.com/my-applications/#!/applications
   spotify: {
-    enabled: true,
     clientId: '',
     clientSecret: '',
     redirectUri: '',
     max_count: 3,
   },
+  // LastFM credentials http://www.last.fm/api/account/create
   lastFM: {
     username: '',
     key: '',

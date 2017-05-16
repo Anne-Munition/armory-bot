@@ -2,12 +2,12 @@
   "name": "armorybot",
   "version": "0.6.1",
   "description": "Discord Bot for AnneMunition's Armory",
-  "main": "app.js",
+  "main": "./lib",
   "devDependencies": {
     "eslint": "^3.19.0"
   },
   "scripts": {
-    "start": "node --harmony-async-await app.js"
+    "start": "node --harmony-async-await ./lib"
   },
   "repository": {
     "type": "git",

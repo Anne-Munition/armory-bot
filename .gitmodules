@@ -1,3 +1,0 @@
-[submodule "eslint-rules"]
-	path = eslint-rules
-	url = https://github.com/dbkynd/eslint-rules.git

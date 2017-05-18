@@ -14,7 +14,6 @@ module.exports = {
   mongodb_uri: 'mongodb://',
   // Twitch credentials - https://www.twitch.tv/settings/connections
   twitch: {
-    enabled: true,
     channel: '',
     id: '',
     client_id: '',

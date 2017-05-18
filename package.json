@@ -1,13 +1,13 @@
 {
   "name": "armorybot",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Discord Bot for AnneMunition's Armory",
-  "main": "app.js",
+  "main": "./lib",
   "devDependencies": {
-    "eslint": "^3.11.1"
+    "eslint": "^3.19.0"
   },
   "scripts": {
-    "start": "node --harmony-async-await app.js"
+    "start": "node --harmony-async-await ./lib"
   },
   "repository": {
     "type": "git",
@@ -20,29 +20,31 @@
   },
   "homepage": "https://github.com/dbkynd/armorybot#readme",
   "dependencies": {
-    "discord.js": "^11.0.0",
-    "erlpack": "github:hammerandchisel/erlpack#master",
+    "discord.js": "^11.1.0",
+    "erlpack": "github:hammerandchisel/erlpack",
     "ffmpeg": "0.0.4",
-    "getos": "^2.8.4",
+    "getos": "^3.0.1",
     "gm": "^1.23.0",
-    "html-entities": "^1.2.0",
+    "html-entities": "^1.2.1",
     "lame": "^1.2.4",
     "lastfm": "^0.9.2",
-    "mathjs": "^3.8.1",
-    "moment": "^2.17.1",
-    "mongoose": "^4.7.5",
-    "node-vibrant": "^2.1.2",
+    "mathjs": "^3.13.1",
+    "moment": "^2.18.1",
+    "mongoose": "^4.9.9",
+    "node-opus": "^0.2.6",
+    "node-vibrant": "^3.0.0-alpha.2",
     "nodecraft-api": "0.0.4",
-    "performance-now": "^0.2.0",
-    "pidusage": "^1.1.0",
+    "performance-now": "^2.1.0",
+    "pidusage": "^1.1.4",
     "playlist-parser": "0.0.12",
-    "refresh-token": "^0.1.1",
-    "request": "^2.79.0",
-    "spotify-web-api-node": "^2.3.6",
-    "superagent": "^3.5.0",
+    "refresh-token": "^1.0.0",
+    "request": "^2.81.0",
+    "sodium": "^2.0.1",
+    "spotify-web-api-node": "^2.4.0",
+    "superagent": "^3.5.2",
     "twitter": "^1.7.0",
-    "uws": "^0.12.0",
-    "winston": "^2.3.0",
-    "winston-daily-rotate-file": "^1.4.0"
+    "uws": "^0.14.5",
+    "winston": "^2.3.1",
+    "winston-daily-rotate-file": "^1.4.6"
   }
 }

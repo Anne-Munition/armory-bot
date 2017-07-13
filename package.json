@@ -46,6 +46,7 @@
     "superagent": "^3.5.2",
     "superagent-xml2jsparser": "^0.1.1",
     "twitter": "^1.7.0",
+    "twitter-stream-api": "^0.5.1",
     "uws": "^0.14.5",
     "winston": "^2.3.1",
     "winston-daily-rotate-file": "^1.4.6"

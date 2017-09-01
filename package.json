@@ -7,7 +7,7 @@
     "eslint": "^3.19.0"
   },
   "scripts": {
-    "start": "node --harmony-async-await ./lib"
+    "start": "node ./lib"
   },
   "repository": {
     "type": "git",

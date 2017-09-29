@@ -18,12 +18,6 @@ module.exports = {
     id: '',
     client_id: '',
   },
-  // Nodecraft credentials for showing MC server statistics https://nodecraft.com/account/edit
-  nodecraft: {
-    username: '',
-    api_key: '',
-    server_id: '',
-  },
   // ow command to lookup Overwatch statistics
   overwatch: {
     // The default tag to lookup if none is passed
@@ -50,5 +44,8 @@ module.exports = {
     username: '',
     key: '',
     secret: '',
+  },
+  movieDB: {
+    apiKey: '',
   },
 };

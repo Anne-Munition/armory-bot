@@ -1,6 +1,6 @@
 {
   "name": "armorybot",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "description": "Discord Bot for AnneMunition's Armory",
   "main": "./lib",
   "devDependencies": {
@@ -20,12 +20,11 @@
   },
   "homepage": "https://github.com/dbkynd/armorybot#readme",
   "dependencies": {
-    "discord.js": "^11.2.1",
-    "erlpack": "github:hammerandchisel/erlpack",
+    "discord.js": "github:hydrabolt/discord.js",
+    "erlpack": "github:discordapp/erlpack",
     "ffmpeg": "0.0.4",
     "getos": "^3.0.1",
     "gm": "^1.23.0",
-    "goodreads-api-node": "0.0.4",
     "html-entities": "^1.2.1",
     "lame": "^1.2.4",
     "lastfm": "^0.9.2",
@@ -36,7 +35,6 @@
     "mongoose": "^4.11.13",
     "node-opus": "^0.2.7",
     "node-vibrant": "^3.0.0-alpha.2",
-    "nodecraft-api": "0.0.4",
     "performance-now": "^2.1.0",
     "pidusage": "^1.1.6",
     "playlist-parser": "0.0.12",

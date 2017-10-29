@@ -21,7 +21,6 @@
   "homepage": "https://github.com/dbkynd/armorybot#readme",
   "dependencies": {
     "discord.js": "github:hydrabolt/discord.js",
-    "erlpack": "github:discordapp/erlpack",
     "ffmpeg": "0.0.4",
     "getos": "^3.0.1",
     "gm": "^1.23.0",

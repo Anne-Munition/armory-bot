@@ -39,7 +39,7 @@
     "accessor-pairs": "warn",
     "array-callback-return": "error",
     "complexity": "warn",
-    "consistent-return": "error",
+    "consistent-return": "off",
     "curly": [
       "error",
       "multi-line",

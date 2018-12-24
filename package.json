@@ -44,6 +44,7 @@
     "socket.io-client": "^2.1.0",
     "spotify-web-api-node": "^2.5.0",
     "striptags": "^3.1.1",
+    "title-case": "^2.1.1",
     "uws": "^0.14.5",
     "winston": "^2.4.1",
     "winston-daily-rotate-file": "^1.7.2"

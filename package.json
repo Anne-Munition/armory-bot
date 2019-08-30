@@ -22,7 +22,7 @@
   "dependencies": {
     "canvas": "^1.6.11",
     "cheerio": "^1.0.0-rc.2",
-    "discord.js": "^11.3.2",
+    "discord.js": "^11.5.1",
     "getos": "^3.1.0",
     "gm": "^1.23.1",
     "lame": "^1.2.4",

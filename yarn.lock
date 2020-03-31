@@ -808,16 +808,16 @@ delayed-stream@~1.0.0:
   resolved "https://registry.yarnpkg.com/delayed-stream/-/delayed-stream-1.0.0.tgz#df3ae199acadfb7d440aaae0b29e2272b24ec619"
   integrity sha1-3zrhmayt+31ECqrgsp4icrJOxhk=
 
-discord.js@^11.3.2:
-  version "11.4.2"
-  resolved "https://registry.yarnpkg.com/discord.js/-/discord.js-11.4.2.tgz#54586981926521572051f2a30b984aad2b49786e"
-  integrity sha512-MDwpu0lMFTjqomijDl1Ed9miMQe6kB4ifKdP28QZllmLv/HVOJXhatRgjS8urp/wBlOfx+qAYSXcdI5cKGYsfg==
+discord.js@^11.5.1:
+  version "11.6.3"
+  resolved "https://registry.yarnpkg.com/discord.js/-/discord.js-11.6.3.tgz#134dbc6b4878a1dd4e32c85a670010799bf8d33e"
+  integrity sha512-dwIzHB5GPU9O/WiNw42d0yco0JED5bOjCPiHwU9VSSCkEhnyOdx5iqt7Dl2PQZAMNzWPI/t9oyCziOuzFlwm3Q==
   dependencies:
     long "^4.0.0"
-    prism-media "^0.0.3"
+    prism-media "^0.0.4"
     snekfetch "^3.6.4"
     tweetnacl "^1.0.0"
-    ws "^4.0.0"
+    ws "^6.0.0"
 
 doctrine@^2.0.0:
   version "2.1.0"
@@ -1546,9 +1546,9 @@ js-tokens@^3.0.2:
   integrity sha1-mGbfOVECEw449/mWvOtlRDIJwls=
 
 js-yaml@^3.5.1:
-  version "3.12.0"
-  resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.12.0.tgz#eaed656ec8344f10f527c6bfa1b6e2244de167d1"
-  integrity sha512-PIt2cnwmPfL4hKNwqeiuz4bKfnzHTBv6HyVgjahA6mPLwPDzjDWrplJBMjHUFxku/N3FlmrbyPclad+I+4mJ3A==
+  version "3.13.1"
+  resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.13.1.tgz#aff151b30bfdfa8e49e05da22e7415e9dfa37847"
+  integrity sha512-YfbcO7jXDdyj0DGxYVSlSeQNHbD7XPWvrVWeVUujrQEoZzWJIRrCPoyk6kL6IAjAG2IolMK4T0hNUe0HOUs5Jw==
   dependencies:
     argparse "^1.0.7"
     esprima "^4.0.0"
@@ -2067,10 +2067,10 @@ prelude-ls@~1.1.2:
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.1.2.tgz#21932a549f5e52ffd9a827f570e04be62a97da54"
   integrity sha1-IZMqVJ9eUv/ZqCf1cOBL5iqX2lQ=
 
-prism-media@^0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/prism-media/-/prism-media-0.0.3.tgz#8842d4fae804f099d3b48a9a38e3c2bab6f4855b"
-  integrity sha512-c9KkNifSMU/iXT8FFTaBwBMr+rdVcN+H/uNv1o+CuFeTThNZNTOrQ+RgXA1yL/DeLk098duAeRPP3QNPNbhxYQ==
+prism-media@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/prism-media/-/prism-media-0.0.4.tgz#df5ddc6463670c97ff0e9cbac3c3e0db18df326f"
+  integrity sha512-dG2w7WtovUa4SiYTdWn9H8Bd4JNdei2djtkP/Bk9fXq81j5Q15ZPHYSwhUVvBRbp5zMkGtu0Yk62HuMcly0pRw==
 
 process-nextick-args@~1.0.6:
   version "1.0.7"
@@ -2764,13 +2764,12 @@ write@^0.2.1:
   dependencies:
     mkdirp "^0.5.1"
 
-ws@^4.0.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-4.1.0.tgz#a979b5d7d4da68bf54efe0408967c324869a7289"
-  integrity sha512-ZGh/8kF9rrRNffkLFV4AzhvooEclrOH0xaugmqGsIfFgOE/pIz4fMc4Ef+5HSQqTEug2S9JZIWDR47duDSLfaA==
+ws@^6.0.0:
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-6.2.1.tgz#442fdf0a47ed64f59b6a5d8ff130f4748ed524fb"
+  integrity sha512-GIyAXC2cB7LjvpgMt9EKS2ldqr0MTrORaleiOno6TweZ6r3TKtoFQWay/2PceJ3RuBasOHzXNn5Lrw1X0bEjqA==
   dependencies:
     async-limiter "~1.0.0"
-    safe-buffer "~5.1.0"
 
 ws@~6.1.0:
   version "6.1.2"

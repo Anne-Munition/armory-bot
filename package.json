@@ -31,7 +31,7 @@
     "mathjs": "^3.20.2",
     "moment": "^2.22.1",
     "moment-timezone": "^0.5.15",
-    "mongoose": "^4.13.12",
+    "mongoose": "^5.7.5",
     "node-opus": "^0.2.9",
     "node-vibrant": "^3.0.0",
     "performance-now": "^2.1.0",

@@ -1,9 +1,9 @@
 'use strict';
 module.exports = {
   // The Bot's Discord access token
-  bot_token: '00000000000000000',
+  bot_token: '00000000000000000.000000000000000000',
   // The Bot's application ID
-  bot_app_id: '00000000000000000.000000000000000000',
+  bot_app_id: '00000000000000000',
   // Your user ID as the owner of this bot
   owner_id: '00000000000000000',
   // Prefix to be used for all commands
@@ -31,13 +31,6 @@ module.exports = {
     consumer_secret: '',
     access_token_key: '',
     access_token_secret: '',
-  },
-  // Spotify credentials https://developer.spotify.com/my-applications/#!/applications
-  spotify: {
-    clientId: '',
-    clientSecret: '',
-    redirectUri: '',
-    max_count: 3,
   },
   // LastFM credentials http://www.last.fm/api/account/create
   lastFM: {

@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 module.exports = {
   // The Bot's Discord access token
   bot_token: '00000000000000000.000000000000000000',
@@ -32,13 +32,7 @@ module.exports = {
     access_token_key: '',
     access_token_secret: '',
   },
-  // LastFM credentials http://www.last.fm/api/account/create
-  lastFM: {
-    username: '',
-    key: '',
-    secret: '',
-  },
   movieDB: {
     apiKey: '',
   },
-};
+}

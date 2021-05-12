@@ -24,7 +24,7 @@
     "discord.js": "^12.2.0",
     "getos": "^3.2.1",
     "gm": "^1.23.1",
-    "mathjs": "^7.0.2",
+    "mathjs": "^7.5.1",
     "moment": "^2.27.0",
     "moment-timezone": "^0.5.31",
     "mongoose": "^5.9.20",

@@ -5,7 +5,7 @@ const schema = new Schema({
   channel_id: String,
 })
 
-interface WelcomeChannelDoc extends Document {
+export interface WelcomeChannelDoc extends Document {
   server_id: string
   channel_id: string
 }

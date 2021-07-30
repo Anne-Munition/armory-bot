@@ -3,6 +3,7 @@ import * as database from './database'
 import * as cmdPerms from './database/services/command_permission_service'
 import * as guildConfigs from './database/services/guild_config_service'
 import * as discord from './discord'
+import * as timeouts from './timeouts'
 
 export async function start(): Promise<void> {
   await commandLoader.loadAllMsgCmds().catch((err) => {
@@ -19,8 +20,8 @@ export async function start(): Promise<void> {
   })
 
   await discord.connect()
+  await timeouts.init()
   // TODO: Start Twitch
-  // TODO: Start timeouts
 }
 
 export async function stop(): Promise<void> {

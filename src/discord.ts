@@ -1,5 +1,6 @@
 import Discord, { Intents } from 'discord.js'
 import log from './logger'
+import auditor from './messages/message_auditor'
 import messageHandler from './messages/message_handler'
 import notify from './notifications'
 import threadHandler from './thread_handler'
@@ -71,14 +72,10 @@ client.on('threadDelete', threadHandler.onDelete)
 client.on('messageCreate', messageHandler)
 
 // Emitted whenever a message is deleted.
-client.on('messageDelete', (msg) => {
-  // TODO
-})
+client.on('messageDelete', auditor.messageDelete)
 
 // Emitted whenever a message is updated - e.g. embed or content change.
-client.on('messageUpdate', (msg) => {
-  // TODO
-})
+client.on('messageUpdate', auditor.messageUpdate)
 
 client.once('ready', () => {
   // Fetch all members from all guilds so we are aware of guild member parts after a bot restart

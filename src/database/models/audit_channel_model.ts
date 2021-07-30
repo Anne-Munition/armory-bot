@@ -1,3 +1,4 @@
+import { Snowflake } from 'discord.js'
 import { Document, Schema, model } from 'mongoose'
 
 const schema = new Schema({
@@ -6,8 +7,8 @@ const schema = new Schema({
 })
 
 interface AuditChannelDoc extends Document {
-  server_id: string
-  channel_id: string
+  server_id: Snowflake
+  channel_id: Snowflake
 }
 
 export default model<AuditChannelDoc>('audit_channels', schema)

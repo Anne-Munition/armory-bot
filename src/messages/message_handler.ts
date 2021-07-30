@@ -1,11 +1,11 @@
-import Discord from 'discord.js'
+import { Message } from 'discord.js'
 import counts from '../counts'
 import log from '../logger'
 import prefixedCommands from './prefixed_commands'
 import schedulePinning from './schedule_pinning'
 import spoilerTags from './spoiler_tags'
 
-export default async function (msg: Discord.Message): Promise<void> {
+export default async function (msg: Message): Promise<void> {
   counts.increment('messagesSeen')
 
   const wasSchedule = await schedulePinning(msg).catch((err) => {

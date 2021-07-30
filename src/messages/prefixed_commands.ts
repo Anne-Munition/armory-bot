@@ -1,4 +1,4 @@
-import Discord from 'discord.js'
+import { Message } from 'discord.js'
 import now from 'performance-now'
 import { guildConfigs } from '../collections'
 import { aliases, commands } from '../collections'
@@ -9,7 +9,7 @@ import log from '../logger'
 import { dmDenied, ownerError, usage } from '../utilities'
 import perms from './command_permissions'
 
-export default async function (msg: Discord.Message): Promise<void> {
+export default async function (msg: Message): Promise<void> {
   const prefix = getPrefix(msg)
   if (!prefix) return
 
@@ -65,7 +65,7 @@ export default async function (msg: Discord.Message): Promise<void> {
   }
 }
 
-function getPrefix(message: Discord.Message): string | undefined {
+function getPrefix(message: Message): string | undefined {
   let conf = defaultGuildConfig
   if (message.channel.type === 'GUILD_TEXT') {
     if (!message.guild) return
@@ -84,10 +84,7 @@ function getPrefix(message: Discord.Message): string | undefined {
   return conf.prefix
 }
 
-function getCommand(
-  message: Discord.Message,
-  cmdName: string,
-): Cmd | undefined {
+function getCommand(message: Message, cmdName: string): Cmd | undefined {
   let command: Cmd | undefined
   command = commands.get(cmdName)
   if (!command) command = aliases.get(cmdName)
@@ -112,7 +109,7 @@ function getCommand(
 }
 
 function checkPermissions(
-  message: Discord.Message,
+  message: Message,
   params: string[],
   command: Cmd,
 ): boolean {

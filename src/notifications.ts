@@ -1,4 +1,4 @@
-import Discord, { Snowflake } from 'discord.js'
+import Discord from 'discord.js'
 import { NotificationChannelDoc } from './database/models/notification_channel_model'
 import JoinedGuild from './database/services/joined_guild_service'
 import NotificationChannel from './database/services/notification_channel_service'
@@ -136,7 +136,9 @@ function sendMessages(
   guild: Discord.Guild,
 ) {
   channelDocs.forEach((channelDoc) => {
-    const channel = guild.channels.cache.get(<Snowflake>channelDoc.channel_id)
+    const channel = guild.channels.cache.get(
+      <Discord.Snowflake>channelDoc.channel_id,
+    )
     if (!channel || channel.type !== 'GUILD_TEXT') return
     const textChannel = channel as Discord.TextChannel
     const clientUser = guild.client.user
@@ -198,7 +200,7 @@ async function pinActiveThreads(guild: Discord.Guild): Promise<void> {
 
   for (const i in channelDocs) {
     const channel = guild.channels.cache.get(
-      <Snowflake>channelDocs[i].channel_id,
+      <Discord.Snowflake>channelDocs[i].channel_id,
     )
     if (!channel || channel.type !== 'GUILD_TEXT') continue
     const permissions = channel.permissionsFor(clientUser.id)

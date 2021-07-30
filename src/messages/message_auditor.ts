@@ -1,10 +1,10 @@
-import Discord from 'discord.js'
+import { Message, PartialMessage } from 'discord.js'
 
-function messageDelete(msg: Discord.Message | Discord.PartialMessage) {
+function messageDelete(msg: Message | PartialMessage) {
   // TODO
 }
 
-function messageUpdate(msg: Discord.Message | Discord.PartialMessage) {
+function messageUpdate(msg: Message | PartialMessage) {
   // TODO
 }
 

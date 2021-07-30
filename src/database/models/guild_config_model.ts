@@ -1,3 +1,4 @@
+import { Snowflake } from 'discord.js'
 import { Document, Schema, model } from 'mongoose'
 
 const schema = new Schema({
@@ -6,7 +7,7 @@ const schema = new Schema({
 })
 
 interface GuildConfigDoc extends Document {
-  server_id: string
+  server_id: Snowflake
   config: GuildConfig
 }
 

@@ -1,12 +1,8 @@
-import Discord from 'discord.js'
+import { Message } from 'discord.js'
 import { commandPerms } from '../collections'
 import log from '../logger'
 
-export default (
-  message: Discord.Message,
-  params: string[],
-  command: Cmd,
-): boolean => {
+export default (message: Message, params: string[], command: Cmd): boolean => {
   const cmdName = command.name
 
   if (message.channel.type === 'DM') {

@@ -1,3 +1,4 @@
+import { Snowflake } from 'discord.js'
 import { Document, Schema, model } from 'mongoose'
 
 const schema = new Schema({
@@ -6,7 +7,7 @@ const schema = new Schema({
 })
 
 export interface JoinedGuildDoc extends Document {
-  guild_id: string
+  guild_id: Snowflake
   owner_tag: string
 }
 

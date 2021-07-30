@@ -1,7 +1,7 @@
-import Discord from 'discord.js'
+import { Message } from 'discord.js'
 import { scheduleChannel } from '../config'
 
-export default async function (msg: Discord.Message): Promise<boolean> {
+export default async function (msg: Message): Promise<boolean> {
   if (msg.channel.id === scheduleChannel) {
     if (contentHasScheduleTerms(msg)) {
       const pinnedMessages = await msg.channel.messages.fetchPinned()
@@ -16,6 +16,6 @@ export default async function (msg: Discord.Message): Promise<boolean> {
   return false
 }
 
-function contentHasScheduleTerms(msg: Discord.Message): boolean {
+function contentHasScheduleTerms(msg: Message): boolean {
   return msg.content.includes('SCHEDULE')
 }

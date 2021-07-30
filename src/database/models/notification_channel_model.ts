@@ -1,3 +1,4 @@
+import { Snowflake } from 'discord.js'
 import { Document, Schema, model } from 'mongoose'
 
 const schema = new Schema({
@@ -6,8 +7,8 @@ const schema = new Schema({
 })
 
 export interface NotificationChannelDoc extends Document {
-  guild_id: string
-  channel_id: string
+  guild_id: Snowflake
+  channel_id: Snowflake
 }
 
 export default model<NotificationChannelDoc>('notification_channels', schema)

@@ -1,10 +1,10 @@
-import Discord from 'discord.js'
+import { Message } from 'discord.js'
 import emojiRegex from 'emoji-regex'
 import { spoilerChannel } from '../config'
 
 const reg = /^(.|\n)+\|\|(.|\n)*\|\|(.|\n)*$/
 
-export default async function (msg: Discord.Message): Promise<void> {
+export default async function (msg: Message): Promise<void> {
   if (msg.channel.id !== spoilerChannel) return
 
   const attachments = msg.attachments
@@ -49,7 +49,7 @@ export default async function (msg: Discord.Message): Promise<void> {
   }
 }
 
-async function del(msg: Discord.Message) {
+async function del(msg: Message) {
   await msg.delete()
   const author = msg.author
   try {

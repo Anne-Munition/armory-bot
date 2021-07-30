@@ -1,4 +1,4 @@
-import Discord from 'discord.js'
+import { Message, Snowflake } from 'discord.js'
 import client from './discord'
 import log from './logger'
 
@@ -6,7 +6,7 @@ export function getRandomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min)) + min
 }
 
-export async function usage(msg: Discord.Message, cmd: Cmd): Promise<void> {
+export async function usage(msg: Message, cmd: Cmd): Promise<void> {
   let str = `Usage: \`\`${cmd.prefixUsed}${cmd.nameUsed} ${cmd.info.usage}\`\``
   if (cmd.nameUsed === 'help') {
     str += `\nRun \`\`${cmd.prefixUsed}cmds\`\` to see a list of commands`
@@ -14,7 +14,7 @@ export async function usage(msg: Discord.Message, cmd: Cmd): Promise<void> {
   await msg.reply(str)
 }
 
-export async function dmDenied(msg: Discord.Message, cmd: Cmd): Promise<void> {
+export async function dmDenied(msg: Message, cmd: Cmd): Promise<void> {
   await msg.reply(
     `Unable to run command **${cmd.nameUsed}** from a DM channel.`,
   )
@@ -31,15 +31,13 @@ export function displayName(user: HelixUser): string {
 export async function ownerError(
   title: string,
   err?: Error,
-  msg?: Discord.Message,
+  msg?: Message,
   cmd?: Cmd,
   str?: string,
 ): Promise<void> {
   if (err) log.error(err.stack || err.message || err)
   if (!process.env.OWNER_ID) return
-  const owner = await client.users.fetch(
-    <Discord.Snowflake>process.env.OWNER_ID,
-  )
+  const owner = await client.users.fetch(<Snowflake>process.env.OWNER_ID)
   if (!owner) return
 
   let details = '```qml\n'

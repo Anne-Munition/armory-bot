@@ -2,6 +2,10 @@ import { Message, Snowflake } from 'discord.js'
 import client from './discord'
 import log from './logger'
 
+export function capitalize(word: string): string {
+  return word.replace(/\b\w/g, (l) => l.toUpperCase())
+}
+
 export function getRandomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min)) + min
 }

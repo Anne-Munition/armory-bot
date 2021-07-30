@@ -1,4 +1,5 @@
 import Discord, { Intents } from 'discord.js'
+import interactionHandler from './interactions/interaction_handler'
 import log from './logger'
 import auditor from './messages/message_auditor'
 import messageHandler from './messages/message_handler'
@@ -76,6 +77,10 @@ client.on('messageDelete', auditor.messageDelete)
 
 // Emitted whenever a message is updated - e.g. embed or content change.
 client.on('messageUpdate', auditor.messageUpdate)
+
+/***** INTERACTION EVENTS *****/
+
+client.on('interactionCreate', interactionHandler)
 
 client.once('ready', () => {
   // Fetch all members from all guilds so we are aware of guild member parts after a bot restart

@@ -5,7 +5,7 @@ import { msgCmdsDir } from './directories'
 import log from './logger'
 
 async function loadAllMsgCmds(): Promise<void> {
-  log.debug('Loading all commands into memory')
+  log.debug('loading all commands into memory')
   const files = fs.readdirSync(msgCmdsDir)
   log.debug(`Loading ${files.length} command(s).`)
   const promiseArray = files.map((file) => loadMsgCommand(file))
@@ -14,8 +14,8 @@ async function loadAllMsgCmds(): Promise<void> {
     .map((command) => command.name)
     .filter((command) => !files.includes(`${command}.${ext}`))
     .forEach((command) => {
-      log.debug(`Command file '${command}' not found.`)
-      removeCommand(command)
+      log.debug(`command file '${command}' not found.`)
+      removeMsgCommand(command)
     })
   await Promise.all(promiseArray)
   log.info(
@@ -28,13 +28,17 @@ async function loadAllMsgCmds(): Promise<void> {
 async function loadMsgCommand(cmdName: string): Promise<void> {
   const cmdPath = path.join(msgCmdsDir, cmdName)
   const name = path.parse(cmdPath).name
-  if (commands.has(name)) removeCommand(name)
-  log.debug(`Loading command: '${name}'`)
+  if (commands.has(name)) removeMsgCommand(name)
+  log.debug(`loading command: '${name}'`)
   let command: Cmd
   try {
     command = await import(cmdPath)
   } catch (e) {
     log.warn(`The cmd '${cmdName}' was unable to be imported`)
+    return
+  }
+  if (!command.info || typeof command.info !== 'object') {
+    log.warn(`The cmd '${cmdName}' is missing the 'info' object`)
     return
   }
   if (!command.run || typeof command.run !== 'function') {
@@ -54,8 +58,8 @@ async function loadMsgCommand(cmdName: string): Promise<void> {
   }
 }
 
-function removeCommand(cmdName: string) {
-  log.debug(`Flushing command: '${cmdName}'`)
+function removeMsgCommand(cmdName: string) {
+  log.debug(`flushing command: '${cmdName}'`)
   aliases.forEach((cmd, alias) => {
     if (cmd.name === cmdName) aliases.delete(alias)
   })

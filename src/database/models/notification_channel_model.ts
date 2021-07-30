@@ -5,9 +5,9 @@ const schema = new Schema({
   channel_id: String,
 })
 
-export interface WelcomeChannelDoc extends Document {
+export interface NotificationChannelDoc extends Document {
   guild_id: string
   channel_id: string
 }
 
-export default model<WelcomeChannelDoc>('welcome_channels', schema)
+export default model<NotificationChannelDoc>('notification_channels', schema)

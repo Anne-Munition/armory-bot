@@ -1,12 +1,12 @@
 import { Document, Schema, model } from 'mongoose'
 
 const schema = new Schema({
-  server_id: String,
+  guild_id: String,
   channel_id: String,
 })
 
 export interface WelcomeChannelDoc extends Document {
-  server_id: string
+  guild_id: string
   channel_id: string
 }
 

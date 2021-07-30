@@ -1,6 +1,7 @@
 import Discord, { Snowflake } from 'discord.js'
+import { WelcomeChannelDoc } from './database/models/welcome_channel_model'
 import JoinedGuildService from './database/services/joined_guild_service'
-import * as WelcomeService from './database/services/welcome_channel_service'
+import WelcomeService from './database/services/welcome_channel_service'
 import log from './logger'
 
 // DM the bot owner that the client has joined a guild
@@ -33,48 +34,97 @@ async function guildDelete(guild: Discord.Guild): Promise<void> {
   await botOwner.send(str)
 }
 
+// Post in all registered welcome channels that a member has joined a guild
 async function guildMemberAdd(member: Discord.GuildMember): Promise<void> {
-  log.debug(`guildMemberAdd event: ${member.user.tag}`)
-  const channelDocs = await WelcomeService.find(member.guild.id)
+  log.debug(`guildMemberAdd event: ${member.displayName}`)
+  const channelDocs = await WelcomeService.get(member.guild.id)
   if (!channelDocs) return
-  log.debug(
-    `Posting welcome messages in (${channelDocs.length}) registered channels`,
-  )
+  log.debug(`Posting in (${channelDocs.length}) registered channels`)
   const embed = new Discord.MessageEmbed()
     .setColor('#1ed21e')
     .setAuthor(
       `${member.user.tag} (${member.id})`,
-      member.user.defaultAvatarURL,
+      member.user.displayAvatarURL(),
     )
     .setFooter('User Joined')
     .setTimestamp()
 
-  channelDocs.forEach((channelDoc) => {
-    const channel = member.guild.channels.cache.get(
-      <Snowflake>channelDoc.channel_id,
-    )
-    if (!channel || channel.type !== 'GUILD_TEXT') return
-    const clientUserId = member.client.user?.id
-    if (!clientUserId) return
-    if (
-      !channel
-        .permissionsFor(<Snowflake>clientUserId)
-        .has(['SEND_MESSAGES', 'EMBED_LINKS'])
-    )
-      return
-    channel.send({ embeds: [embed] })
-  })
+  sendMessages(channelDocs, embed, member.guild)
 }
 
-function guildMemberRemove(
+// Post in all registered welcome channels that a member has left a guild
+async function guildMemberRemove(
   member: Discord.GuildMember | Discord.PartialGuildMember,
-): void {}
+): Promise<void> {
+  log.debug(`guildMemberRemove event: ${member.displayName}`)
+  const guildMember = member as Discord.GuildMember
+  const channelDocs = await WelcomeService.get(guildMember.guild.id)
+  if (!channelDocs) return
+  log.debug(`Posting in (${channelDocs.length}) registered channels`)
+  const embed = new Discord.MessageEmbed()
+    .setColor('#d7d71e')
+    .setAuthor(
+      `${guildMember.user.tag} (${guildMember.id})`,
+      guildMember.user.displayAvatarURL(),
+    )
+    .setFooter('User Left')
+    .setTimestamp()
 
-function guildBanAdd(ban: Discord.GuildBan): void {}
+  sendMessages(channelDocs, embed, guildMember.guild)
+}
 
-function guildBanRemove(ban: Discord.GuildBan): void {}
+// Post in all registered welcome channels that a member has been banned from a guild
+async function guildBanAdd(ban: Discord.GuildBan): Promise<void> {
+  log.debug(`guildBanAdd event: ${ban.user.username}`)
+  const channelDocs = await WelcomeService.get(ban.guild.id)
+  if (!channelDocs) return
+  log.debug(`Posting in (${channelDocs.length}) registered channels`)
+
+  const embed = new Discord.MessageEmbed()
+    .setColor('#b42326')
+    .setAuthor(`${ban.user.tag} (${ban.user.id})`, ban.user.displayAvatarURL())
+    .setFooter('User Banned')
+    .setTimestamp()
+  if (ban.reason) embed.setDescription(ban.reason)
+
+  sendMessages(channelDocs, embed, ban.guild)
+}
+
+// Post in all registered welcome channels that a member has been unbanned from a guild
+async function guildBanRemove(ban: Discord.GuildBan): Promise<void> {
+  log.debug(`guildBanRemove event: ${ban.user.username}`)
+  const channelDocs = await WelcomeService.get(ban.guild.id)
+  if (!channelDocs) return
+  log.debug(`Posting in (${channelDocs.length}) registered channels`)
+
+  const embed = new Discord.MessageEmbed()
+    .setColor('#236cb4')
+    .setAuthor(`${ban.user.tag} (${ban.user.id})`, ban.user.displayAvatarURL())
+    .setFooter('User Unbanned')
+    .setTimestamp()
+
+  sendMessages(channelDocs, embed, ban.guild)
+}
 
 function threadCreate(thread: Discord.ThreadChannel): void {}
+
+function sendMessages(
+  channelDocs: WelcomeChannelDoc[],
+  embed: Discord.MessageEmbed,
+  guild: Discord.Guild,
+) {
+  channelDocs.forEach((channelDoc) => {
+    const channel = guild.channels.cache.get(<Snowflake>channelDoc.channel_id)
+    if (!channel || channel.type !== 'GUILD_TEXT') return
+    const textChannel = channel as Discord.TextChannel
+    const clientUser = guild.client.user
+    if (!clientUser) return
+    const permissions = textChannel.permissionsFor(clientUser.id)
+    if (permissions && !permissions.has(['SEND_MESSAGES', 'EMBED_LINKS']))
+      return
+    textChannel.send({ embeds: [embed] }).catch()
+  })
+}
 
 export default {
   guildCreate,

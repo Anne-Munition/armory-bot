@@ -19,6 +19,7 @@
     "discord.js": "^13.0.0-dev.4f1f32f.1627517033",
     "emoji-regex": "^9.2.2",
     "erlpack": "discord/erlpack",
+    "mathjs": "^9.4.4",
     "mongoose": "^5.13.4",
     "performance-now": "^2.1.0",
     "utf-8-validate": "^5.0.5",

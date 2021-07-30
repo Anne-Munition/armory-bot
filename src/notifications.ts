@@ -1,4 +1,5 @@
 import Discord, { Snowflake } from 'discord.js'
+import JoinedGuildService from './database/services/joined_guild_service'
 import * as WelcomeService from './database/services/welcome_channel_service'
 import log from './logger'
 
@@ -10,21 +11,25 @@ async function guildCreate(guild: Discord.Guild): Promise<void> {
     <Discord.Snowflake>process.env.OWNER_ID,
   )
   if (!guildOwner || !botOwner) return
-  log.info(`Joined the guild: ${guild.name} - Owner: ${guildOwner.user.tag}`)
+  log.info(
+    `Joined the guild: '${guild.name}' - Owner: '${guildOwner.user.tag}'`,
+  )
   const str = `Joined the guild: **${guild.name}** - Owner: **${guildOwner.user.tag}**`
   await botOwner.send(str)
+  await JoinedGuildService.add(guild.id, guildOwner.user.tag)
 }
 
 // DM the bot owner that the client has left a guild
 async function guildDelete(guild: Discord.Guild): Promise<void> {
   log.debug(`guildDelete event: ${guild.name}`)
-  const guildOwner = await guild.fetchOwner() // TODO: Missing Access Error?
   const botOwner = await guild.client.users.fetch(
     <Discord.Snowflake>process.env.OWNER_ID,
   )
-  if (!guildOwner || !botOwner) return
-  log.info(`Left the guild: ${guild.name} - Owner: ${guildOwner.user.tag}`)
-  const str = `Left the guild: **${guild.name}** - Owner: **${guildOwner.user.tag}**`
+  if (!botOwner) return
+  const joinedDoc = await JoinedGuildService.get(guild.id)
+  const guildOwnerTag = joinedDoc ? joinedDoc.owner_tag : 'Unknown'
+  log.info(`Removed from guild: '${guild.name}' - Owner: '${guildOwnerTag}'`)
+  const str = `Removed from guild: **${guild.name}** - Owner: **${guildOwnerTag}**`
   await botOwner.send(str)
 }
 

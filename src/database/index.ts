@@ -1,6 +1,7 @@
 import mongoose, { ConnectionOptions } from 'mongoose'
 import { mongoUrl } from '../config'
 import log from '../logger'
+import { ownerError } from '../utilities'
 
 mongoose.Promise = global.Promise
 
@@ -11,6 +12,10 @@ const options: ConnectionOptions = {
   keepAlive: true,
   connectTimeoutMS: 30000,
 }
+
+mongoose.connection.on('error', (err) => {
+  ownerError('Mongoose', err).catch()
+})
 
 export async function connect(): Promise<void> {
   const { hostname } = new URL(mongoUrl)

@@ -8,6 +8,8 @@ const myFormat = printf((info) => {
   return `${info.timestamp} ${info.level} ${info.message}`
 })
 
+// TODO: rotate logs? Revisit formatting?
+
 const logger = createLogger({
   level: 'info',
   transports: [

@@ -35,7 +35,7 @@ export async function ownerError(
   cmd?: Cmd,
   str?: string,
 ): Promise<void> {
-  if (err) log.error('Bot Error', err)
+  if (err) log.error(err.stack || err.message || err)
   if (!process.env.OWNER_ID) return
   const owner = await client.users.fetch(
     <Discord.Snowflake>process.env.OWNER_ID,
@@ -69,7 +69,9 @@ export async function ownerError(
   let errStr = ''
   if (err) {
     errStr = '```js\n'
-    errStr += err.stack ? err.stack.split('\n').slice(0, 8).join('\n') : err
+    errStr += err.stack
+      ? err.stack.split('\n').slice(0, 8).join('\n')
+      : err.message || err
     errStr += '```'
   }
   owner

@@ -10,6 +10,7 @@
 
 import * as app from './app'
 import log from './logger'
+import { ownerError } from './utilities'
 
 log.info('Starting the application...')
 
@@ -36,5 +37,17 @@ const shutdown = (signal: NodeJS.Signals) => {
   app.stop().finally(() => {
     log.info(`Shutdown completed. Exiting.`)
     process.exit(0)
+  })
+}
+
+if (process.env.NODE_ENV === 'production') {
+  // Message the bot owner on any unhandled errors
+  process.on('unhandledRejection', () => {
+    ownerError('Unhandled', new Error()).catch()
+  })
+
+  // Message the bot owner on any uncaught errors
+  process.on('uncaughtException', (err) => {
+    ownerError('Uncaught', err).catch()
   })
 }

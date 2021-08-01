@@ -10,9 +10,7 @@ interface CmdInfo {
   movedToSlash?: boolean
 }
 
-type Message = import('discord.js').Message
-
-interface Cmd {
+interface MsgCmd {
   name: string
   info: CmdInfo
   run: Run
@@ -20,4 +18,26 @@ interface Cmd {
   prefixUsed: string
 }
 
-type Run = (msg: Message, params: string[], cmd: Cmd) => Promise<void>
+type Run = (
+  msg: import('discord.js').Message,
+  params: string[],
+  cmd: MsgCmd,
+) => Promise<void>
+
+interface SlashCmdInfo {
+  global: boolean
+  guilds?: import('discord.js').Snowflake[]
+}
+
+type SlashRun = (
+  interaction: import('discord.js').CommandInteraction,
+) => Promise<void>
+
+type SlashCommandData = import('discord.js').ApplicationCommandData
+
+interface SlashCmd {
+  info: SlashCmdInfo
+  commandData: SlashCommandData
+  run: SlashRun
+  permissions?: import('discord.js').ApplicationCommandPermissionData[]
+}

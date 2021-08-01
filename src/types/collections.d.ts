@@ -1,5 +1,5 @@
-type CommandCollection = import('discord.js').Collection<string, Cmd>
-type AliasCollection = import('discord.js').Collection<string, Cmd>
+type MsgCommandCollection = import('discord.js').Collection<string, MsgCmd>
+type AliasCollection = import('discord.js').Collection<string, MsgCmd>
 
 interface GuildConfig {
   prefix: string
@@ -21,7 +21,9 @@ interface CommandPerms {
   deny: CommandPermItems
 }
 
-type CommandPermsCollection = import('discord.js').Collection<
+type CommandPermCollection = import('discord.js').Collection<
   string,
   CommandPerms
 >
+
+type SlashCommandCollection = import('discord.js').Collection<string, SlashCmd>

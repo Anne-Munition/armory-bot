@@ -1,4 +1,4 @@
-import { commands } from '../collections'
+import { msgCommands } from '../collections'
 import { usage } from '../utilities'
 
 export const info: CmdInfo = {
@@ -14,7 +14,7 @@ export const run: Run = async function (msg, params, cmd): Promise<void> {
   params = params.map((p) => p.toLowerCase())
   const cmdName = params[0]
 
-  const helpCmd = commands.get(cmdName)
+  const helpCmd = msgCommands.get(cmdName)
   if (!helpCmd) {
     await msg.reply(`**${cmdName}** is not a registered command.`)
     return

@@ -1,5 +1,5 @@
 import Discord from 'discord.js'
-import { commands } from '../collections'
+import { msgCommands } from '../collections'
 
 export const info: CmdInfo = {
   desc: 'Shows list and descriptions of available commands. (this)',
@@ -14,7 +14,7 @@ export const run: Run = async function (msg): Promise<void> {
   const ownerIds = msg.client.guilds.cache.map((guild) => guild.ownerId)
   ownerIds.push(<Discord.Snowflake>process.env.OWNER_ID)
   const seeHidden = ownerIds.includes(msg.author.id)
-  const cmds = commands
+  const cmds = msgCommands
     .filter((command) => !(command.info.hidden && !seeHidden))
     .map((command) => `${command.name}: ${command.info.desc}`)
 

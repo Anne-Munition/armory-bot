@@ -1,5 +1,7 @@
 import Discord, { Intents } from 'discord.js'
+import { slashCommands } from './collections'
 import interactionHandler from './interactions/interaction_handler'
+import interactionLoader from './interactions/interaction_loader'
 import log from './logger'
 import auditor from './messages/message_auditor'
 import messageHandler from './messages/message_handler'
@@ -82,11 +84,12 @@ client.on('messageUpdate', auditor.messageUpdate)
 
 client.on('interactionCreate', interactionHandler)
 
-client.once('ready', () => {
+client.once('ready', async () => {
   // Fetch all members from all guilds so we are aware of guild member parts after a bot restart
-  client.guilds.cache.forEach(async (guild) => {
-    await guild.members.fetch()
+  client.guilds.cache.forEach((guild) => {
+    guild.members.fetch()
   })
+  await interactionLoader(client)
 })
 
 export async function connect(): Promise<void> {

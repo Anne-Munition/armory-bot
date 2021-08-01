@@ -7,7 +7,11 @@ import * as timeouts from './timeouts'
 
 export async function start(): Promise<void> {
   await commandLoader.loadAllMsgCmds().catch((err) => {
-    throw new Error(`Error loading commands: ${err.message}`)
+    throw new Error(`Error loading msg commands: ${err.message}`)
+  })
+
+  await commandLoader.loadAllSlashCommands().catch((err) => {
+    throw new Error(`Error loading slash commands: ${err.message}`)
   })
 
   await database.connect()

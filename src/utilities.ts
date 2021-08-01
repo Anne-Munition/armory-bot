@@ -1,4 +1,5 @@
 import { Message, Snowflake } from 'discord.js'
+import moment, { Duration } from 'moment'
 import client from './discord'
 import log from './logger'
 
@@ -10,7 +11,7 @@ export function getRandomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min)) + min
 }
 
-export async function usage(msg: Message, cmd: Cmd): Promise<void> {
+export async function usage(msg: Message, cmd: MsgCmd): Promise<void> {
   let str = `Usage: \`\`${cmd.prefixUsed}${cmd.nameUsed} ${cmd.info.usage}\`\``
   if (cmd.nameUsed === 'help') {
     str += `\nRun \`\`${cmd.prefixUsed}cmds\`\` to see a list of commands`
@@ -18,7 +19,7 @@ export async function usage(msg: Message, cmd: Cmd): Promise<void> {
   await msg.reply(str)
 }
 
-export async function dmDenied(msg: Message, cmd: Cmd): Promise<void> {
+export async function dmDenied(msg: Message, cmd: MsgCmd): Promise<void> {
   await msg.reply(
     `Unable to run command **${cmd.nameUsed}** from a DM channel.`,
   )
@@ -36,7 +37,7 @@ export async function ownerError(
   title: string,
   err?: Error,
   msg?: Message,
-  cmd?: Cmd,
+  cmd?: MsgCmd,
   str?: string,
 ): Promise<void> {
   if (err) log.error(err.stack || err.message || err)
@@ -87,4 +88,29 @@ export async function ownerError(
         'Unable to send message to bot owner. May be blocked or DMs are disabled in general',
       )
     })
+}
+
+export function formatDuration(time: Duration): string {
+  let str = ''
+  const years = time.years()
+  if (years > 0) {
+    str += `${years} year${years === 1 ? '' : 's'} `
+  }
+  const months = time.months()
+  if (months > 0) {
+    str += `${months} month${months === 1 ? '' : 's'} `
+  }
+  const days = time.days()
+  if (days > 0) {
+    str += `${days} day${days === 1 ? '' : 's'} `
+  }
+  str += `${time.hours()} hour${time.hours() === 1 ? '' : 's'} `
+  str += `${time.minutes()} minute${time.minutes() === 1 ? '' : 's'} `
+  str += `${time.seconds()} second${time.seconds() === 1 ? '' : 's'} `
+  return str
+}
+
+export function formatTimeDiff(time: string): string {
+  const diff = moment().diff(moment(time))
+  return formatDuration(moment.duration(diff))
 }

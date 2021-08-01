@@ -1,11 +1,11 @@
-import { CommandInteraction, Interaction } from 'discord.js'
+import { Interaction } from 'discord.js'
+import { slashCommands } from '../collections'
+import log from '../logger'
 
 export default async function (interaction: Interaction): Promise<void> {
-  if (interaction.isCommand()) await command(interaction)
-}
-
-async function command(interaction: CommandInteraction): Promise<void> {
-  if (interaction.commandName === 'ping') {
-    await interaction.reply('Pong!')
+  log.debug(`received interaction: ${interaction.id}`)
+  if (interaction.isCommand()) {
+    const cmd = slashCommands.get(interaction.commandName)
+    if (cmd) await cmd.run(interaction)
   }
 }

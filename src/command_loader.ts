@@ -1,76 +1,117 @@
 import fs from 'fs'
 import path from 'path'
-import { aliases, commands } from './collections'
-import { msgCmdsDir } from './directories'
+import { aliases, msgCommands, slashCommands } from './collections'
+import { msgCmdsDir, slashCmdsDir } from './directories'
 import log from './logger'
 
+const ext = process.env.NODE_ENV === 'production' ? 'js' : 'ts'
+
 async function loadAllMsgCmds(): Promise<void> {
-  log.debug('loading all commands into memory')
+  log.debug('loading all msg commands into memory')
   const files = fs.readdirSync(msgCmdsDir)
-  log.debug(`Loading ${files.length} command(s).`)
-  const promiseArray = files.map((file) => loadMsgCommand(file))
-  const ext = process.env.NODE_ENV === 'production' ? 'js' : 'ts'
-  commands
-    .map((command) => command.name)
-    .filter((command) => !files.includes(`${command}.${ext}`))
-    .forEach((command) => {
-      log.debug(`command file '${command}' not found.`)
-      removeMsgCommand(command)
-    })
-  await Promise.all(promiseArray)
+  log.debug(`loading ${files.length} msg command(s)`)
+  await Promise.all(files.map((file) => loadMsgCommand(file)))
   log.info(
-    `Loaded ${commands.size} command${commands.size === 1 ? '' : 's'} with ${
-      aliases.size
-    } aliases.`,
+    `Loaded ${msgCommands.size} msg command(s) with ${aliases.size} aliases.`,
   )
 }
 
 async function loadMsgCommand(cmdName: string): Promise<void> {
   const cmdPath = path.join(msgCmdsDir, cmdName)
   const name = path.parse(cmdPath).name
-  if (commands.has(name)) removeMsgCommand(name)
-  log.debug(`loading command: '${name}'`)
-  let command: Cmd
+  if (msgCommands.has(name)) removeMsgCommand(name)
+  log.debug(`loading msg command: '${name}'`)
+  let cmd: MsgCmd
   try {
-    command = await import(cmdPath)
+    cmd = await import(cmdPath)
   } catch (e) {
-    log.warn(`The cmd '${cmdName}' was unable to be imported`)
+    log.warn(`The msg command '${name}' was unable to be imported.`)
     return
   }
-  if (!command.info || typeof command.info !== 'object') {
-    log.warn(`The cmd '${cmdName}' is missing the 'info' object`)
+  if (!cmd.info) {
+    log.warn(`The msg command '${name}' is missing the 'info' object.`)
     return
   }
-  if (!command.run || typeof command.run !== 'function') {
-    log.warn(`The cmd '${cmdName}' is missing the 'run' function`)
+  if (!cmd.run) {
+    log.warn(`The msg command '${name}' is missing the 'run' function.`)
     return
   }
-  command.name = name
-  commands.set(name, command)
-  if (command.info.aliases) {
-    command.info.aliases.forEach((alias) => {
-      if (commands.has(alias)) {
-        log.warn(`The command ${name} alias ${alias} already exists.`)
+  cmd.name = name
+  msgCommands.set(name, cmd)
+  if (cmd.info.aliases) {
+    cmd.info.aliases.forEach((alias) => {
+      if (msgCommands.has(alias)) {
+        log.warn(`The msg command '${name}' alias '${alias}' already exists.`)
       } else {
-        aliases.set(alias, command)
+        aliases.set(alias, cmd)
       }
     })
   }
 }
 
 function removeMsgCommand(cmdName: string) {
-  log.debug(`flushing command: '${cmdName}'`)
+  log.debug(`flushing msg command: '${cmdName}'`)
   aliases.forEach((cmd, alias) => {
     if (cmd.name === cmdName) aliases.delete(alias)
   })
-  const ext = process.env.NODE_ENV === 'production' ? 'js' : 'ts'
   delete require.cache[
     require.resolve(path.join(msgCmdsDir, `${cmdName}.${ext}`))
   ]
-  commands.delete(cmdName)
+  msgCommands.delete(cmdName)
+}
+
+async function loadAllSlashCommands(): Promise<void> {
+  log.debug('loading all slash commands into memory')
+  const files = fs.readdirSync(slashCmdsDir)
+  log.debug(`loading ${files.length} slash command(s).`)
+  await Promise.all(files.map((file) => loadSlashCommand(file)))
+  log.info(`Loaded ${slashCommands.size} slash command(s).`)
+}
+
+async function loadSlashCommand(cmdName: string): Promise<void> {
+  const cmdPath = path.join(slashCmdsDir, cmdName)
+  const name = path.parse(cmdPath).name
+  if (slashCommands.has(name)) removeSlashCommand(name)
+  log.debug(`loading slash command: '${name}'`)
+  let cmd: SlashCmd
+  try {
+    cmd = await import(cmdPath)
+  } catch (e) {
+    log.warn(`The slash command '${name}' was unable to be imported.`)
+    return
+  }
+  if (!cmd.info) {
+    log.warn(`The slash command '${name}' is missing the 'info' object.`)
+    return
+  }
+  if (!cmd.commandData) {
+    log.warn(`The slash command '${name}' is missing the 'commandData' object.`)
+    return
+  }
+  if (cmd.commandData.name !== name) {
+    log.warn(
+      `The slash command '${name}' command options name MUST match the filename.`,
+    )
+    return
+  }
+  if (!cmd.run) {
+    log.warn(`The slash command '${name}' is missing the 'run' function.`)
+    return
+  }
+  slashCommands.set(name, cmd)
+}
+
+function removeSlashCommand(cmdName: string) {
+  log.debug(`flushing slash command: '${cmdName}'`)
+  delete require.cache[
+    require.resolve(path.join(slashCmdsDir, `${cmdName}.${ext}`))
+  ]
+  slashCommands.delete(cmdName)
 }
 
 export default {
   loadAllMsgCmds,
   loadMsgCommand,
+  loadAllSlashCommands,
+  loadSlashCommand,
 }

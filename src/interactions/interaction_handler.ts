@@ -5,7 +5,17 @@ import log from '../logger'
 export default async function (interaction: Interaction): Promise<void> {
   log.debug(`received interaction: ${interaction.id}`)
   if (interaction.isCommand()) {
-    const cmd = slashCommands.get(interaction.commandName)
-    if (cmd) await cmd.run(interaction)
+    const command = slashCommands.get(interaction.commandName)
+    if (command) {
+      try {
+        await command.run(interaction)
+      } catch (err) {
+        log.error(err)
+        await interaction.reply({
+          content: 'There was an error while executing this command.',
+          ephemeral: true,
+        })
+      }
+    }
   }
 }

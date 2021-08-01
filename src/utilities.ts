@@ -1,5 +1,7 @@
+import axios from 'axios'
 import { Message, Snowflake } from 'discord.js'
 import moment, { Duration } from 'moment'
+import Vibrant from 'node-vibrant'
 import client from './discord'
 import log from './logger'
 
@@ -113,4 +115,23 @@ export function formatDuration(time: Duration): string {
 export function formatTimeDiff(time: string): string {
   const diff = moment().diff(moment(time))
   return formatDuration(moment.duration(diff))
+}
+
+export async function palette(
+  image: string,
+): Promise<[number, number, number] | null> {
+  return new Promise(async (resolve, reject) => {
+    const buffer = await axios
+      .get(image, { responseType: 'arraybuffer' })
+      .then(({ data }) => data)
+
+    await Vibrant.from(buffer).getPalette((err, palette) => {
+      if (err) {
+        reject(err)
+      }
+      const lightVibrant = palette?.LightVibrant?.rgb
+      const vibrant = palette?.Vibrant?.rgb
+      resolve(vibrant || lightVibrant || null)
+    })
+  })
 }

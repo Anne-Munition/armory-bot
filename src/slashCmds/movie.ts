@@ -9,7 +9,7 @@ export const info: SlashCmdInfo = {
 
 export const commandData: SlashCommandData = {
   name: 'movie',
-  description: 'Search for data about a movie and post info and poster image.',
+  description: 'Post TMDB movie info and poster.',
   options: [
     {
       name: 'title',
@@ -39,7 +39,8 @@ export const run: SlashRun = async (interaction): Promise<void> => {
     .get('https://api.themoviedb.org/3/search/movie', {
       params: {
         api_key: process.env.MOVIE_DB_APIKEY,
-        query: encodeURIComponent(query),
+        query,
+        primary_release_year: year,
       },
     })
     .then(({ data }) => data)
@@ -50,19 +51,9 @@ export const run: SlashRun = async (interaction): Promise<void> => {
     return
   }
 
-  const toSearch = year
-    ? searchResults.results.filter((x) => {
-        return x.release_date.slice(0, 4) === year.toString()
-      })
-    : searchResults.results
-  log.debug(`movies to sort: ${toSearch.length}`)
-
-  if (!toSearch.length) {
-    await interaction.editReply(`No results found for: ${queryStr}`)
-    return
-  }
-
-  const sorted = toSearch.sort((a, b) => b.popularity - a.popularity)
+  const sorted = searchResults.results.sort(
+    (a, b) => b.popularity - a.popularity,
+  )
 
   const movie: Movie = await axios
     .get(`https://api.themoviedb.org/3/movie/${sorted[0].id}`, {
@@ -71,25 +62,26 @@ export const run: SlashRun = async (interaction): Promise<void> => {
     .then(({ data }) => data)
 
   if (!movie) {
-    await interaction.editReply(`Error getting results for: ${query}`)
+    await interaction.editReply(`Error getting movie results for: ${query}`)
     return
   }
 
-  let str = `Title: ${movie.title}\n`
-  str += `Released: ${movie.release_date}\n`
-  str += `Runtime: ${movie.runtime} minutes\n`
-  str += `Genre: ${movie.genres
-    .map((g: { name: string }) => g.name)
-    .join(', ')}\n`
-  str += `Description: '${movie.overview}'\n`
-  if (!movie.poster_path) str += '\nIMAGE NOT AVAILABLE'
+  let str = `
+Title: ${movie.title}
+Released: ${movie.release_date}
+Runtime: ${movie.runtime} minutes
+Genre: ${movie.genres.map((g: { name: string }) => g.name).join(', ')}
+Description: "${movie.overview}"
+`
+  if (!movie.poster_path) str += '\n\nIMAGE NOT AVAILABLE'
 
   const codeBlock = Discord.Formatters.codeBlock('apache', str)
   const embed = new Discord.MessageEmbed().setDescription(codeBlock)
+
   if (movie.poster_path) {
     const image = `https://image.tmdb.org/t/p/original${movie.poster_path}`
-    const color = await palette(image)
     embed.setImage(image)
+    const color = await palette(image)
     if (color) embed.setColor(color)
   }
   if (movie.imdb_id) {

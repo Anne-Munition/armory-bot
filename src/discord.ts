@@ -1,5 +1,4 @@
 import Discord, { Intents } from 'discord.js'
-import { slashCommands } from './collections'
 import interactionHandler from './interactions/interaction_handler'
 import interactionLoader from './interactions/interaction_loader'
 import log from './logger'

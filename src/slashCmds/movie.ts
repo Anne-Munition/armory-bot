@@ -41,6 +41,7 @@ export const run: SlashRun = async (interaction): Promise<void> => {
         api_key: process.env.MOVIE_DB_APIKEY,
         query,
         primary_release_year: year,
+        include_adult: false,
       },
     })
     .then(({ data }) => data)

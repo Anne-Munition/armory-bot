@@ -10,11 +10,17 @@ export default async function (interaction: Interaction): Promise<void> {
       try {
         await command.run(interaction)
       } catch (err) {
-        log.error(err)
-        await interaction.reply({
-          content: 'There was an error while executing this command.',
-          ephemeral: true,
-        })
+        log.error(err.stack || err.message || err)
+        if (interaction.deferred) {
+          await interaction.editReply(
+            'There was an error while executing this command.',
+          )
+        } else {
+          await interaction.reply({
+            content: 'There was an error while executing this command.',
+            ephemeral: true,
+          })
+        }
       }
     }
   }

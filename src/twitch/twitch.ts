@@ -16,6 +16,7 @@ export function startTimers(): void {
     try {
       await updateUserData()
       await checkLive()
+      log.debug('twitch - initial check complete')
     } catch (err) {
       log.error(err.stack || err.message || err)
     }
@@ -25,6 +26,7 @@ export function startTimers(): void {
   setInterval(async () => {
     try {
       await checkLive()
+      log.debug('twitch - live stream check complete')
     } catch (err) {
       log.error(err.stack || err.message || err)
     }
@@ -32,6 +34,7 @@ export function startTimers(): void {
   setInterval(async () => {
     try {
       await updateUserData()
+      log.debug('twitch - user data update complete')
     } catch (err) {
       log.error(err.stack || err.message || err)
     }

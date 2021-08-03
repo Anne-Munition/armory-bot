@@ -135,3 +135,7 @@ export async function palette(
     })
   })
 }
+
+export function makePossessive(name: string): string {
+  return `${name}'${name.endsWith('s') ? '' : 's'}`
+}

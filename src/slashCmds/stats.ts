@@ -104,11 +104,9 @@ export const run: SlashRun = async (interaction): Promise<void> => {
   ).toFixed(2)}%)\n`
   str += `CPU: ${load[0]}%\n`
 
-  /*str += '\n--Twitch Stats--\n'
-      str += `Users: ${client.utils.get(['twitch', 'users'], client) || 0}\n`
-      str += `Channels: ${
-        client.utils.get(['twitch', 'channels'], client) || 0
-      }\n`*/ // TODO
+  str += '\n--Twitch Stats--\n'
+  str += `Users: ${counts.get('twitchStreams')}\n`
+  str += `Channels: ${counts.get('twitchChannels')}\n`
 
   str += '\n--Session Stats--\n'
   str += `Messages: ${messageCount} (${msgPm}/hr)\n`

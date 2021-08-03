@@ -4,6 +4,7 @@ import * as cmdPerms from './database/services/command_permission_service'
 import * as guildConfigs from './database/services/guild_config_service'
 import * as discord from './discord'
 import * as timeouts from './timeouts'
+import * as twitch from './twitch/twitch'
 
 export async function start(): Promise<void> {
   await commandLoader.loadAllMsgCmds().catch((err) => {
@@ -25,7 +26,7 @@ export async function start(): Promise<void> {
 
   await discord.connect()
   await timeouts.init()
-  // TODO: Start Twitch
+  twitch.startTimers()
 }
 
 export async function stop(): Promise<void> {

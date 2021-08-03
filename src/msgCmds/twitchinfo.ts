@@ -1,4 +1,4 @@
-import * as twitch from '../twitch_api'
+import * as twitch from '../twitch/twitch_api'
 import { capitalize, displayName } from '../utilities'
 
 export const info: CmdInfo = {

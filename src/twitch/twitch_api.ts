@@ -30,3 +30,15 @@ export function getSubscription(userId: string): Promise<HelixSubscription[]> {
   }
   return axios.get(url, options).then(({ data }) => data.data)
 }
+
+export function getStreams(identities: string[]): Promise<HelixStream[]> {
+  const query = identities
+    .map((x) => {
+      const type = /^\d+$/.test(x) ? 'user_id' : 'user_login'
+      return `${type}=${encodeURIComponent(x)}`
+    })
+    .join('&')
+  const url = `https://api.twitch.tv/helix/streams?${query}`
+  const options = { headers: helixHeaders() }
+  return axios.get(url, options).then(({ data }) => data.data)
+}

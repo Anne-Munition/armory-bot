@@ -11,7 +11,7 @@ export const commandData: SlashCommandData = {
   options: [
     {
       name: 'degrees',
-      type: 'INTEGER',
+      type: 'NUMBER',
       description: 'Temperature value to convert',
       required: true,
     },
@@ -59,7 +59,7 @@ export const commandData: SlashCommandData = {
 }
 
 export const run: SlashRun = async (interaction): Promise<void> => {
-  const degrees = interaction.options.getInteger('degrees', true)
+  const degrees = interaction.options.getNumber('degrees', true)
   const from = interaction.options.getString('from', true)
   const to = interaction.options.getString('to', true)
 

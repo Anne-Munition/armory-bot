@@ -89,6 +89,18 @@ client.once('ready', async () => {
     guild.members.fetch()
   })
   await interactionLoader(client)
+
+  // DM the owner that the client has (re)started if in production
+  if (process.env.NODE_ENV === 'production') {
+    const owner = client.users.cache.get(
+      <Discord.Snowflake>process.env.OWNER_ID,
+    )
+    if (owner) {
+      await owner.send(
+        `I just started running. Did I crash? :worried:\nPID:\`\`${process.pid}\`\``,
+      )
+    }
+  }
 })
 
 export async function connect(): Promise<void> {

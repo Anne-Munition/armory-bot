@@ -10,9 +10,8 @@ export const info: CmdInfo = {
 
 export const run: Run = async function (msg): Promise<void> {
   if (!msg.guild) return
-  const array = msg.guild.roles.cache
-    .array()
+  const list = msg.guild.roles.cache
     .sort((a, b) => b.position - a.position)
     .map((role) => `\`\`${role.position}.\`\` **${role.name}**: ${role.id}`)
-  await msg.channel.send(array.join('\n'))
+  await msg.channel.send(list.join('\n'))
 }

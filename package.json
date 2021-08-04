@@ -28,6 +28,8 @@
     "os": "^0.1.2",
     "performance-now": "^2.1.0",
     "pidusage": "^2.0.21",
+    "puppeteer": "^10.1.0",
+    "rgb2hex": "^0.2.5",
     "rimraf": "^3.0.2",
     "temp-units-conv": "^1.0.2",
     "utf-8-validate": "^5.0.5",

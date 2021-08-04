@@ -4,11 +4,13 @@ import { TwitchChannelDoc } from '../database/models/twitch_channel_model'
 import TwitchChannel from '../database/services/twitch_channel_service'
 import client from '../discord'
 import log from '../logger'
-import { palette } from '../utilities'
+import getChannelColor from './getChannelColor'
 import { getStreams, getUsers } from './twitch_api'
 
 let firstCheck = true
 let lastState: { [key: string]: HelixStream } = {}
+
+// TODO Owner Errors
 
 export function startTimers(): void {
   // Check once shortly after startup
@@ -38,7 +40,7 @@ export function startTimers(): void {
     } catch (err) {
       log.error(err.stack || err.message || err)
     }
-  }, 1000 * 60 * 60)
+  }, 1000 * 60 * 60 * 4)
 }
 
 async function checkLive(): Promise<void> {
@@ -164,9 +166,9 @@ async function post(
   const logo =
     doc.image_url ||
     'https://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_70x70.png'
-  const color = await palette(logo)
 
   const embed = new MessageEmbed()
+    .setColor(doc.hex)
     .setThumbnail(logo)
     .addField(
       'Channel:',
@@ -178,7 +180,6 @@ async function post(
       'twitch.tv',
       'https://www.shareicon.net/data/2016/10/18/844051_media_512x512.png',
     )
-  if (color) embed.setColor(color)
   if (last) {
     embed
       .addField('New Game:', stream.game_name || 'UNKNOWN')
@@ -231,19 +232,23 @@ async function updateUserData(): Promise<void> {
   for (let i = 0; i < docs.length; i++) {
     const doc = docs[i]
     // Get the matching twitch results
-    const twitch = users.find((x) => x.id === doc.twitch_id)
-    if (!twitch) return
+    const user = users.find((x) => x.id === doc.twitch_id)
+    if (!user) return
+    const color = await getChannelColor(user)
+
     // Save record if data is different from twitch
     // display_name or profile_image_url or login
     if (
-      doc.display_name !== twitch.display_name ||
-      doc.login !== twitch.login ||
-      doc.image_url !== twitch.profile_image_url
+      doc.display_name !== user.display_name ||
+      doc.login !== user.login ||
+      doc.image_url !== user.profile_image_url ||
+      (color && doc.hex !== color)
     ) {
-      doc.display_name = twitch.display_name
-      doc.image_url = twitch.profile_image_url
-      doc.login = twitch.login
-      await doc.save()
+      doc.display_name = user.display_name
+      doc.image_url = user.profile_image_url
+      doc.login = user.login
+      if (color) doc.hex = color
+      await TwitchChannel.save(doc)
     }
   }
 }

@@ -12,6 +12,7 @@ const schema = new Schema({
   image_url: String,
   login: String,
   twitch_id: String,
+  hex: String,
 })
 
 export interface TwitchChannelDoc extends Document {
@@ -23,6 +24,7 @@ export interface TwitchChannelDoc extends Document {
   image_url: string
   login: string
   twitch_id: string
+  hex: import('discord.js').HexColorString
 }
 
 export default model<TwitchChannelDoc>('twitch_channels', schema)

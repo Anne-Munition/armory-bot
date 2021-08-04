@@ -1,4 +1,5 @@
 import { Snowflake } from 'discord.js'
+import { HexColorString } from 'discord.js'
 import TwitchChannel, { TwitchChannelDoc } from '../models/twitch_channel_model'
 
 async function list(): Promise<TwitchChannelDoc[]> {
@@ -13,6 +14,7 @@ async function get(channel: string): Promise<TwitchChannelDoc | null> {
 async function add(
   user: HelixUser,
   discordData: { guild_id: Snowflake; channel_id: Snowflake },
+  color: HexColorString | undefined,
 ): Promise<void> {
   await new TwitchChannel({
     display_name: user.display_name,
@@ -20,6 +22,7 @@ async function add(
     image_url: user.profile_image_url,
     twitch_id: user.id,
     discord_channels: [discordData],
+    hex: color,
   }).save()
 }
 

@@ -1,6 +1,7 @@
 import { CommandInteraction, GuildChannel, Snowflake, Util } from 'discord.js'
 import TwitchChannel from '../database/services/twitch_channel_service'
 import log from '../logger'
+import getChannelColor from '../twitch/getChannelColor'
 import { getUsers } from '../twitch/twitch_api'
 import { makePossessive } from '../utilities'
 
@@ -115,7 +116,7 @@ async function add(
     log.debug(`twitch add - adding channel: ${discordData.channel_id}`)
     doc.discord_channels.push(discordData)
     try {
-      await doc.save()
+      await TwitchChannel.save(doc)
     } catch (e) {
       return 'Database save error, please try again.'
     }
@@ -132,11 +133,12 @@ async function add(
     }
     const [user] = users
     if (!user) return `**${channel}** is not a known Twitch channel.`
+    const color = await getChannelColor(user)
 
     // Add a new entry to the database with this discord channel
     log.debug(`twitch add - creating new db entry for: ${channel}`)
     try {
-      await TwitchChannel.add(user, discordData)
+      await TwitchChannel.add(user, discordData, color)
     } catch (e) {
       return 'Database save error, please try again.'
     }

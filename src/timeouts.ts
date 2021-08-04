@@ -21,7 +21,7 @@ function startTimeoutTimer(discordId: Snowflake, ms: number): void {
   }, ms)
 }
 
-// TODO remove from cmd?
+// TODO remove with cmd?
 export async function remove(discordId: Snowflake): Promise<void> {
   log.debug(`removing timeout on: ${discordId}`)
   const timeoutDoc = await Timeout.get(discordId)
@@ -42,6 +42,11 @@ export async function remove(discordId: Snowflake): Promise<void> {
   await textChannel.send(response)
 }
 
-export async function add(discordId: Snowflake): Promise<void> {
-  // TODO: from cmd
+export async function add(
+  discordId: Snowflake,
+  ms: number,
+  username: string,
+): Promise<void> {
+  await Timeout.add(discordId, ms, username)
+  startTimeoutTimer(discordId, ms)
 }

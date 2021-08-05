@@ -40,7 +40,7 @@ export function startTimers(): void {
     } catch (err) {
       log.error(err.stack || err.message || err)
     }
-  }, 1000 * 60 * 60 * 4)
+  }, 1000 * 60 * 60 * 6)
 }
 
 async function checkLive(): Promise<void> {

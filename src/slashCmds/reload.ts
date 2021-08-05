@@ -3,7 +3,8 @@ import { msgCommands, slashCommands } from '../collections'
 import commandLoader from '../command_loader'
 
 export const info: SlashCmdInfo = {
-  global: true,
+  global: false,
+  guilds: ['140025699867164673'],
 }
 
 export const commandData: SlashCommandData = {

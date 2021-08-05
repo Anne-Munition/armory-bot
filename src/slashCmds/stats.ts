@@ -8,7 +8,8 @@ import counts from '../counts'
 import { capitalize, formatDuration } from '../utilities'
 
 export const info: SlashCmdInfo = {
-  global: true,
+  global: false,
+  guilds: ['140025699867164673'],
 }
 
 export const commandData: SlashCommandData = {
@@ -88,7 +89,7 @@ export const run: SlashRun = async (interaction): Promise<void> => {
     client.channels.cache.filter((c) => c.type === 'GUILD_VOICE').size
   } voice\n`
   str += `Members: ${uniqueMembers.size} unique / ${totalMembers} total\n`
-  str += `Discord.js: ${Discord.version}\n`
+  str += `Discord.js: '${Discord.version}'\n`
 
   str += '\n--System Stats--\n'
   str += `OS: '${capitalize(os.type().replace('_NT', ''))} - ${os.release()}`

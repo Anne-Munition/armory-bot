@@ -67,6 +67,6 @@ export const run: SlashRun = async (interaction): Promise<void> => {
   const trimmed = Math.floor(converted * 10) / 10
 
   await interaction.reply(
-    `${degrees}*${from.toUpperCase()}* => **${trimmed}*${to.toUpperCase()}***`,
+    `${degrees}*${from.toUpperCase()}* = **${trimmed}*${to.toUpperCase()}***`,
   )
 }

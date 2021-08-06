@@ -8,7 +8,9 @@ const ext = process.env.NODE_ENV === 'production' ? 'js' : 'ts'
 
 async function loadAllMsgCmds(): Promise<void> {
   log.debug('loading all msg commands into memory')
-  const files = fs.readdirSync(msgCmdsDir)
+  const files = fs
+    .readdirSync(msgCmdsDir)
+    .filter((file) => file.endsWith(`.${ext}`))
   log.debug(`loading ${files.length} msg command(s)`)
   await Promise.all(files.map((file) => loadMsgCommand(file)))
   log.info(
@@ -62,7 +64,9 @@ function removeMsgCommand(cmdName: string) {
 
 async function loadAllSlashCommands(): Promise<void> {
   log.debug('loading all slash commands into memory')
-  const files = fs.readdirSync(slashCmdsDir)
+  const files = fs
+    .readdirSync(slashCmdsDir)
+    .filter((file) => file.endsWith(`.${ext}`))
   log.debug(`loading ${files.length} slash command(s).`)
   await Promise.all(files.map((file) => loadSlashCommand(file)))
   log.info(`Loaded ${slashCommands.size} slash command(s).`)

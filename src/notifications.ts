@@ -162,7 +162,6 @@ async function pinActiveThreads(guild: Discord.Guild): Promise<void> {
   ) as Discord.Collection<`${bigint}`, Discord.ThreadChannel>
 
   const activeChannels = threadChannels.filter((thread) => !thread.archived)
-  if (!activeChannels.size) return
   log.debug(`active threads: ${activeChannels.size}`)
 
   const groupedThreads: {
@@ -195,6 +194,8 @@ async function pinActiveThreads(guild: Discord.Guild): Promise<void> {
       .join('\n')
     response += '\n'
   })
+
+  if (!activeChannels.size) response += 'NONE'
 
   const pinContent = `ACTIVE THREADS:\n${response}`
 

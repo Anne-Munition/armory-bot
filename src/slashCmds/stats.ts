@@ -7,12 +7,12 @@ import pidusage from 'pidusage'
 import counts from '../counts'
 import { capitalize, formatDuration } from '../utilities'
 
-export const info: SlashCmdInfo = {
+export const info: SlashInfo = {
   global: false,
   guilds: ['140025699867164673'],
 }
 
-export const commandData: SlashCommandData = {
+export const commandData: SlashData = {
   name: 'stats',
   defaultPermission: false,
   description: 'Display the client statistics.',

@@ -2,12 +2,12 @@ import Discord from 'discord.js'
 import { msgCommands, slashCommands } from '../collections'
 import commandLoader from '../command_loader'
 
-export const info: SlashCmdInfo = {
+export const info: SlashInfo = {
   global: false,
   guilds: ['140025699867164673'],
 }
 
-export const commandData: SlashCommandData = {
+export const commandData: SlashData = {
   name: 'reload',
   description: 'Reload a command.',
   options: [

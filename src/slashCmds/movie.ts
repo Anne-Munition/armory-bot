@@ -3,11 +3,11 @@ import Discord from 'discord.js'
 import log from '../logger'
 import { palette } from '../utilities'
 
-export const info: SlashCmdInfo = {
+export const info: SlashInfo = {
   global: true,
 }
 
-export const commandData: SlashCommandData = {
+export const commandData: SlashData = {
   name: 'movie',
   description: 'Post TMDB movie info and poster.',
   options: [

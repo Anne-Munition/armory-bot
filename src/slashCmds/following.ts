@@ -1,11 +1,11 @@
 import { getFollows, getUsers } from '../twitch/twitch_api'
 import { displayName, formatTimeDiff } from '../utilities'
 
-export const info: SlashCmdInfo = {
+export const info: SlashInfo = {
   global: true,
 }
 
-export const commandData: SlashCommandData = {
+export const commandData: SlashData = {
   name: 'following',
   description: 'Get Twitch following time for a user / channel.',
   options: [

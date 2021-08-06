@@ -1,8 +1,8 @@
-export const info: SlashCmdInfo = {
+export const info: SlashInfo = {
   global: true,
 }
 
-export const commandData: SlashCommandData = {
+export const commandData: SlashData = {
   name: 'join',
   description: 'Posts a link to join this bot to your own server.',
 }

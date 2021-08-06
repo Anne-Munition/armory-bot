@@ -1,10 +1,10 @@
 import tuc from 'temp-units-conv'
 
-export const info: SlashCmdInfo = {
+export const info: SlashInfo = {
   global: true,
 }
 
-export const commandData: SlashCommandData = {
+export const commandData: SlashData = {
   name: 'temp',
   defaultPermission: true,
   description: 'Convert a temperature.',

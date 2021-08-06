@@ -24,7 +24,7 @@ type Run = (
   cmd: MsgCmd,
 ) => Promise<void>
 
-interface SlashCmdInfo {
+interface SlashInfo {
   global: boolean
   guilds?: import('discord.js').Snowflake[]
 }
@@ -33,11 +33,11 @@ type SlashRun = (
   interaction: import('discord.js').CommandInteraction,
 ) => Promise<void>
 
-type SlashCommandData = import('discord.js').ApplicationCommandData
+type SlashData = import('discord.js').ApplicationCommandData
 
 interface SlashCmd {
-  info: SlashCmdInfo
-  commandData: SlashCommandData
+  info: SlashInfo
+  commandData: SlashData
   run: SlashRun
   permissions?: import('discord.js').ApplicationCommandPermissionData[]
 }

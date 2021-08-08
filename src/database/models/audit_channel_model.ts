@@ -2,12 +2,12 @@ import { Snowflake } from 'discord.js'
 import { Document, Schema, model } from 'mongoose'
 
 const schema = new Schema({
-  server_id: String,
+  guild_id: String,
   channel_id: String,
 })
 
-interface AuditChannelDoc extends Document {
-  server_id: Snowflake
+export interface AuditChannelDoc extends Document {
+  guild_id: Snowflake
   channel_id: Snowflake
 }
 

@@ -5,7 +5,6 @@ import log from './logger'
 import auditor from './messages/message_auditor'
 import messageHandler from './messages/message_handler'
 import notify from './notifications'
-import threadHandler from './thread_handler'
 
 const client = new Discord.Client({
   intents: [
@@ -58,15 +57,6 @@ client.on('guildBanAdd', notify.guildBanAdd)
 
 // Emitted whenever a member is unbanned from a guild.
 client.on('guildBanRemove', notify.guildBanRemove)
-
-// Emitted whenever a thread is created or when the client user is added to a thread.
-client.on('threadCreate', threadHandler.onCreate)
-
-// Emitted whenever a thread is updated - e.g. name change, archive state change, locked state change.
-client.on('threadUpdate', threadHandler.onUpdate)
-
-// Emitted whenever a thread is deleted.
-client.on('threadDelete', threadHandler.onDelete)
 
 /***** MESSAGE EVENTS *****/
 

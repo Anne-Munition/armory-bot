@@ -106,30 +106,6 @@ async function guildBanRemove(ban: Discord.GuildBan): Promise<void> {
   sendMessages(channelDocs, embed, ban.guild)
 }
 
-// Post in all registered welcome channels that a new thread has been created in a guild
-async function threadCreate(thread: Discord.ThreadChannel): Promise<void> {
-  const channelDocs = await NotificationChannel.get(thread.guild.id)
-  if (!channelDocs) return
-  log.debug(`posting threadCreate in (${channelDocs.length}) channels`)
-
-  let threadOwner
-  if (thread.ownerId)
-    threadOwner = await thread.client.users.fetch(thread.ownerId)
-
-  const embed = new Discord.MessageEmbed()
-    .setColor('#fd9b2e')
-    .setAuthor(
-      'New Thread Created',
-      'https://img.icons8.com/emoji/50/000000/thread.png',
-    )
-    .setDescription(`${thread.parent}\n└ ${thread}`)
-    .setTimestamp()
-
-  if (threadOwner) embed.setFooter(`Created by: ${threadOwner.tag}`)
-
-  sendMessages(channelDocs, embed, thread.guild)
-}
-
 function sendMessages(
   channelDocs: NotificationChannelDoc[],
   embed: Discord.MessageEmbed,
@@ -149,80 +125,6 @@ function sendMessages(
   })
 }
 
-async function pinActiveThreads(guild: Discord.Guild): Promise<void> {
-  const clientUser = guild.client.user
-  if (!clientUser) return
-
-  const channelDocs = await NotificationChannel.get(guild.id)
-  if (!channelDocs) return
-  log.debug(`pinning threads in (${channelDocs.length}) channels`)
-
-  const threadChannels = guild.channels.cache.filter(
-    (channel) => channel.type === 'GUILD_PUBLIC_THREAD',
-  ) as Discord.Collection<`${bigint}`, Discord.ThreadChannel>
-
-  const activeChannels = threadChannels.filter((thread) => !thread.archived)
-  log.debug(`active threads: ${activeChannels.size}`)
-
-  const groupedThreads: {
-    [key: string]: { threads: Discord.ThreadChannel[]; parent: string }
-  } = {}
-
-  activeChannels.forEach((active) => {
-    const parent = active.parent
-    if (!parent) return
-    if (groupedThreads[parent.id]) {
-      groupedThreads[parent.id].threads.push(active)
-    } else {
-      groupedThreads[parent.id] = {
-        threads: [active],
-        parent: parent.toString(),
-      }
-    }
-  })
-
-  let response = ''
-
-  Object.keys(groupedThreads).forEach((key) => {
-    const group = groupedThreads[key]
-    response += `${group.parent}\n`
-    response += group.threads
-      .map((thread, index) => {
-        const symbol = index === group.threads.length - 1 ? '└' : '├'
-        return `${symbol}${thread}`
-      })
-      .join('\n')
-    response += '\n'
-  })
-
-  if (!activeChannels.size) response += 'NONE'
-
-  const pinContent = `ACTIVE THREADS:\n${response}`
-
-  for (const i in channelDocs) {
-    const channel = guild.channels.cache.get(
-      <Discord.Snowflake>channelDocs[i].channel_id,
-    )
-    if (!channel || channel.type !== 'GUILD_TEXT') continue
-    const permissions = channel.permissionsFor(clientUser.id)
-
-    if (!permissions || !permissions.has('SEND_MESSAGES')) continue
-
-    const textChannel = channel as Discord.TextChannel
-    const pinnedMessages = await textChannel.messages.fetchPinned()
-    const existingThreadPin = pinnedMessages.find((msg) => {
-      return msg.content.startsWith('ACTIVE THREADS:')
-    })
-    if (!existingThreadPin) {
-      const newMsg = await textChannel.send(pinContent)
-      if (!permissions.has('MANAGE_MESSAGES')) continue
-      await newMsg.pin()
-    } else {
-      await existingThreadPin.edit(pinContent)
-    }
-  }
-}
-
 export default {
   guildCreate,
   guildDelete,
@@ -230,6 +132,4 @@ export default {
   guildMemberRemove,
   guildBanAdd,
   guildBanRemove,
-  threadCreate,
-  pinActiveThreads,
 }

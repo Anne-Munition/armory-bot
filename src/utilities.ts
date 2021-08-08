@@ -13,6 +13,11 @@ export function getRandomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min)) + min
 }
 
+export function makePossessive(name: string): string {
+  return `${name}'${name.endsWith('s') ? '' : 's'}`
+}
+
+// Prefixed message command usage reply
 export async function usage(msg: Message, cmd: MsgCmd): Promise<void> {
   let str = `Usage: \`\`${cmd.prefixUsed}${cmd.nameUsed} ${cmd.info.usage}\`\``
   if (cmd.nameUsed === 'help') {
@@ -27,6 +32,7 @@ export async function dmDenied(msg: Message, cmd: MsgCmd): Promise<void> {
   )
 }
 
+// Return the english localized name or display name from a twitch user
 export function displayName(user: HelixUser): string {
   if (user.login.toLowerCase() !== user.display_name.toLowerCase()) {
     return user.login
@@ -35,6 +41,7 @@ export function displayName(user: HelixUser): string {
   }
 }
 
+// Send a DM error message to the bot owner
 export async function ownerError(
   title: string,
   err?: Error,
@@ -62,9 +69,7 @@ export async function ownerError(
       details += `User: ${user} (${msg.author.id})\n`
     }
   }
-  if (str) {
-    details += `${str}\n`
-  }
+  if (str) details += `${str}\n`
   if (cmd) {
     details += `CMD: ${cmd.name}\n`
     details += `Perms_Needed: ${JSON.stringify(cmd.info.permissions)}\n`
@@ -87,12 +92,19 @@ export async function ownerError(
     )
     .catch(() => {
       log.error(
-        'Unable to send message to bot owner. May be blocked or DMs are disabled in general',
+        'Unable to send message to bot owner. May be blocked or DMs are disabled.',
       )
     })
 }
 
-export function formatDuration(time: Duration): string {
+// Get the time difference from a time to now
+export function formatTimeDiff(time: string): string {
+  const diff = moment().diff(moment(time))
+  return formatDuration(moment.duration(diff))
+}
+
+// Get a long form string representation of a duration
+function formatDuration(time: Duration): string {
   let str = ''
   const years = time.years()
   if (years > 0) {
@@ -112,30 +124,17 @@ export function formatDuration(time: Duration): string {
   return str
 }
 
-export function formatTimeDiff(time: string): string {
-  const diff = moment().diff(moment(time))
-  return formatDuration(moment.duration(diff))
-}
-
+// Get the prominent color from an image url
 export async function palette(
   image: string,
 ): Promise<[number, number, number] | null> {
-  return new Promise(async (resolve, reject) => {
-    const buffer = await axios
-      .get(image, { responseType: 'arraybuffer' })
-      .then(({ data }) => data)
+  const buffer = await axios
+    .get(image, { responseType: 'arraybuffer' })
+    .then(({ data }) => data)
 
-    await Vibrant.from(buffer).getPalette((err, palette) => {
-      if (err) {
-        reject(err)
-      }
-      const lightVibrant = palette?.LightVibrant?.rgb
-      const vibrant = palette?.Vibrant?.rgb
-      resolve(vibrant || lightVibrant || null)
-    })
-  })
-}
+  const pal = await Vibrant.from(buffer).getPalette()
 
-export function makePossessive(name: string): string {
-  return `${name}'${name.endsWith('s') ? '' : 's'}`
+  const lightVibrant = pal?.LightVibrant?.rgb
+  const vibrant = pal?.Vibrant?.rgb
+  return vibrant || lightVibrant || null
 }

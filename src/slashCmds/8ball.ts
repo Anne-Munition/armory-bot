@@ -1,12 +1,20 @@
 import { getRandomInt } from '../utilities'
 
-export const info: CmdInfo = {
-  desc: 'Responds with an 8ball message when asked a question.',
-  usage: '<question>',
-  aliases: [],
-  permissions: ['SEND_MESSAGES'],
-  dmAllowed: true,
-  paramsRequired: true,
+export const info: SlashInfo = {
+  global: true,
+}
+
+export const commandData: SlashData = {
+  name: '8ball',
+  description: 'Ask the magic 8ball a question.',
+  options: [
+    {
+      name: 'question',
+      type: 'STRING',
+      description: 'Your question for the 8ball.',
+      required: true,
+    },
+  ],
 }
 
 const responses = [
@@ -32,13 +40,12 @@ const responses = [
   'Very doubtful',
 ]
 
-export const run: Run = async function (msg, params): Promise<void> {
+export const run: SlashRun = async (interaction): Promise<void> => {
+  const question = interaction.options.getString('question', true)
+
   let response = responses[getRandomInt(0, responses.length)]
-  if (
-    msg.author.id === process.env.OWNER_ID &&
-    params[params.length - 1].endsWith('?')
-  )
+  if (interaction.user.id === process.env.OWNER_ID && question.endsWith('?'))
     response = 'Of course!'
 
-  await msg.reply(response)
+  await interaction.reply(`**Q:** *${question}*\n**A:** ${response}`)
 }

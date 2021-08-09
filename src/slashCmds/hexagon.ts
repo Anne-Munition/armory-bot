@@ -6,7 +6,7 @@ export const info: SlashInfo = {
 }
 
 export const commandData: SlashData = {
-  name: 'shame',
+  name: 'hexagon',
   description: 'Post the hexagon gif.',
 }
 

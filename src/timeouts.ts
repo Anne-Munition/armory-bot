@@ -14,39 +14,36 @@ export async function init(): Promise<void> {
   timeouts.forEach((timeout) => {
     const duration =
       new Date(timeout.expires_at).valueOf() - new Date().valueOf()
-    startTimeoutTimer(timeout.discord_id, duration)
+    startTimeoutTimer(timeout.user_id, duration)
   })
 }
 
 // Add a timeout to the database and start a timeout removal timer
 export async function add(
-  discordId: Snowflake,
+  userId: Snowflake,
   guildId: Snowflake,
   ms: number,
   username: string,
 ): Promise<void> {
-  await Timeout.add(discordId, guildId, ms, username)
-  startTimeoutTimer(discordId, ms)
+  await Timeout.add(userId, guildId, ms, username)
+  startTimeoutTimer(userId, ms)
 }
 
 // Timer to remove the timeout at a later time
-function startTimeoutTimer(discordId: Snowflake, ms: number): void {
-  activeTimeouts[discordId] = setTimeout(() => {
-    remove(discordId).catch()
+function startTimeoutTimer(userId: Snowflake, ms: number): void {
+  activeTimeouts[userId] = setTimeout(() => {
+    remove(userId).catch()
   }, ms)
 }
 
 // Remove the timeout either manually or from the timer
-export async function remove(
-  discordId: Snowflake,
-  manual = false,
-): Promise<void> {
-  log.debug(`removing timeout on: ${discordId}`)
-  if (activeTimeouts[discordId]) {
-    clearTimeout(activeTimeouts[discordId])
-    delete activeTimeouts[discordId]
+export async function remove(userId: Snowflake, manual = false): Promise<void> {
+  log.debug(`removing timeout on: ${userId}`)
+  if (activeTimeouts[userId]) {
+    clearTimeout(activeTimeouts[userId])
+    delete activeTimeouts[userId]
   }
-  const timeoutDoc = await Timeout.get(discordId)
+  const timeoutDoc = await Timeout.get(userId)
   if (!timeoutDoc) return
   await Timeout.remove(timeoutDoc.id)
 
@@ -57,11 +54,11 @@ export async function remove(
   if (!channel || channel.type !== 'GUILD_TEXT') return
   const textChannel = channel as TextChannel
 
-  const member = await guild.members.fetch(timeoutDoc.discord_id)
+  const member = await guild.members.fetch(timeoutDoc.user_id)
   let response: string
   if (member) {
     await member.roles.remove(timeoutDoc.roles)
-    response = `The timeout has ended for **${member.user.tag}** (${timeoutDoc.discord_id}).`
+    response = `The timeout has ended for ${member} (${member.id}).`
   } else {
     response = `The timeout has ended for ${timeoutDoc.username}.\nThough they seem to no longer be a member of this guild.`
   }

@@ -119,7 +119,7 @@ export const run: SlashRun = async (interaction): Promise<void> => {
     return
   }
 
-  await interaction.defer()
+  await interaction.deferReply()
 
   const subCommand = interaction.options.getSubcommand(true) as
     | 'list'
@@ -133,10 +133,8 @@ export const run: SlashRun = async (interaction): Promise<void> => {
       return
     }
     const responseMap = active.map((timeoutDoc) => {
-      const user = interaction.client.users.cache.get(timeoutDoc.discord_id)
-      return `**${user?.tag}** - Expires at: ${getExpiry(
-        timeoutDoc.expires_at,
-      )}.`
+      const user = interaction.client.users.cache.get(timeoutDoc.user_id)
+      return `${user} - Expires at: ${getExpiry(timeoutDoc.expires_at)}.`
     })
     await interaction.editReply(responseMap.join('\n'))
     return
@@ -173,9 +171,9 @@ export const run: SlashRun = async (interaction): Promise<void> => {
 
       if (existing) {
         await interaction.editReply(
-          `A timeout is already in place for **${
-            member.user.tag
-          }**.\nExpires at: ${getExpiry(existing.expires_at)}.`,
+          `A timeout is already in place for ${member}.\nExpires at: ${getExpiry(
+            existing.expires_at,
+          )}.`,
         )
         return
       }
@@ -184,20 +182,21 @@ export const run: SlashRun = async (interaction): Promise<void> => {
       await timeouts.add(target.id, guildId, ms, targetString)
       await member.roles.add(muteRole)
 
-      let reply = `${targetString} has been timed out for **${duration}** ${unit}(s)`
+      const unitString = duration === 1 ? unit.slice(0, -1) : unit
+      let reply = `${member} (${member.id}) has been timed out for **${duration}** ${unitString}.`
       if (reason) reply += `\nReason: ${reason}`
       await interaction.editReply(reply)
     } else if (subCommand === 'remove') {
       if (!existing) {
         await interaction.editReply(
-          `**${target.tag}** is not currently under a timeout.`,
+          `${target} is not currently under a timeout.`,
         )
         return
       }
 
       await timeouts.remove(target.id, true)
       await interaction.editReply(
-        `Manually removed timeout on ${targetString}.`,
+        `Manually removed timeout on ${target} (${target.id}).`,
       )
     }
   }

@@ -6,18 +6,18 @@ async function list(): Promise<TimeoutsDoc[]> {
   return Timeout.find({})
 }
 
-async function get(discordId: Snowflake): Promise<TimeoutsDoc | null> {
-  return Timeout.findOne({ discord_id: discordId })
+async function get(userId: Snowflake): Promise<TimeoutsDoc | null> {
+  return Timeout.findOne({ user_id: userId })
 }
 
 async function add(
-  discordId: Snowflake,
+  userId: Snowflake,
   guildId: Snowflake,
   ms: number,
   username: string,
 ): Promise<void> {
   await new Timeout({
-    discord_id: discordId,
+    user_id: userId,
     guild_id: guildId,
     expires_at: new Date(new Date().valueOf() + ms).toISOString(),
     username,

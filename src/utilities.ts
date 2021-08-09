@@ -1,9 +1,12 @@
 import axios from 'axios'
+import dayjs from 'dayjs'
+import duration, { Duration } from 'dayjs/plugin/duration'
 import { Message, Snowflake } from 'discord.js'
-import moment, { Duration } from 'moment'
 import Vibrant from 'node-vibrant'
 import client from './discord'
 import log from './logger'
+
+dayjs.extend(duration)
 
 export function capitalize(word: string): string {
   return word.replace(/\b\w/g, (l) => l.toUpperCase())
@@ -99,8 +102,8 @@ export async function ownerError(
 
 // Get the time difference from a time to now
 export function formatTimeDiff(time: string): string {
-  const diff = moment().diff(moment(time))
-  return formatDuration(moment.duration(diff))
+  const diff = dayjs().diff(dayjs(time))
+  return formatDuration(dayjs.duration(diff))
 }
 
 // Get a long form string representation of a duration

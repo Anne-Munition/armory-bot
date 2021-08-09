@@ -1,11 +1,14 @@
 import os from 'os'
 import util from 'util'
+import dayjs from 'dayjs'
+import duration from 'dayjs/plugin/duration'
 import Discord from 'discord.js'
 import getos from 'getos'
-import moment from 'moment'
 import pidusage from 'pidusage'
 import counts from '../counts'
 import { capitalize, formatDuration } from '../utilities'
+
+dayjs.extend(duration)
 
 export const info: SlashInfo = {
   global: false,
@@ -32,11 +35,11 @@ export const run: SlashRun = async (interaction): Promise<void> => {
   const client = interaction.client
   const thisOs = (await getOs()).os
 
-  const nodeUp = moment.duration(process.uptime() * 1000)
+  const nodeUp = dayjs.duration(process.uptime() * 1000)
   const totalMem = Math.floor(os.totalmem() / 1024 / 1024)
   const freeMem = Math.floor(os.freemem() / 1024 / 1024)
   const load = os.loadavg().map((x) => (x * 100).toFixed(3))
-  const osUp = moment.duration(os.uptime() * 1000)
+  const osUp = dayjs.duration(os.uptime() * 1000)
   const cpuData = os.cpus()
   const usedRam = Math.floor(totalMem - freeMem)
 

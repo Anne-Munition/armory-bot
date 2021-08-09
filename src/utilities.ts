@@ -104,7 +104,7 @@ export function formatTimeDiff(time: string): string {
 }
 
 // Get a long form string representation of a duration
-function formatDuration(time: Duration): string {
+export function formatDuration(time: Duration): string {
   let str = ''
   const years = time.years()
   if (years > 0) {

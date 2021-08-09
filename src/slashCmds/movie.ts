@@ -26,7 +26,7 @@ export const commandData: SlashData = {
 }
 
 export const run: SlashRun = async (interaction): Promise<void> => {
-  await interaction.defer()
+  await interaction.deferReply()
 
   const query = interaction.options.getString('title', true)
   const year = interaction.options.getInteger('year')

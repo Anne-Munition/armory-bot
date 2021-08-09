@@ -25,7 +25,7 @@ export const commandData: SlashData = {
 }
 
 export const run: SlashRun = async (interaction): Promise<void> => {
-  await interaction.defer()
+  await interaction.deferReply()
 
   const user = interaction.options.getString('user', true).toLowerCase()
   const channel = interaction.options.getString('channel', true).toLowerCase()
@@ -37,7 +37,7 @@ export const run: SlashRun = async (interaction): Promise<void> => {
 
   if (!userData) {
     await interaction.editReply({
-      content: `**${user}** is not a registered Twitch channel.`,
+      content: `**${user}** is not a registered Twitch user.`,
     })
     return
   } else if (!channelData) {
@@ -46,21 +46,24 @@ export const run: SlashRun = async (interaction): Promise<void> => {
     })
     return
   }
+
   // Get localized display_names
-  const nameA = displayName(userData)
-  const nameB = displayName(channelData)
+  const userName = displayName(userData)
+  const channelName = displayName(channelData)
 
   // Get following data
   const [followData] = await getFollows(userData.id, channelData.id)
 
   // Not Following
   if (!followData) {
-    await interaction.editReply(`**${nameA}** does not follow **${nameB}**`)
+    await interaction.editReply(
+      `**${userName}** does not follow **${channelName}**`,
+    )
     return
   }
   // Is Following
   await interaction.editReply(
-    `**${nameA}** has been following **${nameB}** since: ` +
+    `**${userName}** has been following **${channelName}** since: ` +
       `\`\`${followData.followed_at}\`\`\n${formatTimeDiff(
         followData.followed_at,
       )}`,

@@ -45,7 +45,7 @@ export const commandData: SlashData = {
 }
 
 export const run: SlashRun = async (interaction): Promise<void> => {
-  await interaction.defer({ ephemeral: true })
+  await interaction.deferReply({ ephemeral: true })
 
   const type = interaction.options.getString('type', true) as
     | 'msgCmd'
@@ -55,7 +55,7 @@ export const run: SlashRun = async (interaction): Promise<void> => {
   // TODO: Figure out a good way to reload slash commands
   if (type === 'slashCmd') {
     await interaction.editReply(
-      'Unable to do slash command reloads at this time.',
+      'Unable to do reload slash commands at this time.',
     )
     return
   }

@@ -43,9 +43,13 @@ async function list(msg: Discord.Message, params: string[]): Promise<void> {
   const guild = msg.guild
   if (!guild) return
 
+  let owner = false
+  if (msg.author.id === process.env.OWNER_ID) owner = true
+  const filter = owner ? {} : { guild_id: guild.id }
+
   let results
   try {
-    results = await TwitchChannel.list()
+    results = await TwitchChannel.search(filter)
   } catch (err) {
     await msg.reply('Database error. Please try again.')
     return
@@ -59,7 +63,7 @@ async function list(msg: Discord.Message, params: string[]): Promise<void> {
   }
 
   let str = ''
-  if (params[1] === 'all' && msg.author.id === process.env.OWNER_ID) {
+  if (params[1] === 'all' && owner) {
     logger.debug('list all guilds')
     results.forEach((n) => {
       const channels: Discord.GuildChannel[] = []
@@ -96,12 +100,6 @@ async function list(msg: Discord.Message, params: string[]): Promise<void> {
         str += `${getListHeader(n.display_name)}${channels.join('\n')}\n\n`
       }
     })
-  }
-  if (!str) {
-    await msg.reply(
-      'No Twitch channels are currently posting when they go live.',
-    )
-    return
   }
   const split = Discord.Util.splitMessage(str, { maxLength: 1800 })
   for (let i = 0; i < split.length; i++) {

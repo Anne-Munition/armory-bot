@@ -6,6 +6,12 @@ async function list(): Promise<TwitchChannelDoc[]> {
   return TwitchChannel.find({})
 }
 
+async function search(filter: {
+  [key: string]: any
+}): Promise<TwitchChannelDoc[]> {
+  return TwitchChannel.find(filter)
+}
+
 async function get(twitchChannel: string): Promise<TwitchChannelDoc | null> {
   const r = new RegExp(twitchChannel, 'i')
   return TwitchChannel.findOne({ display_name: { $regex: r } })
@@ -40,4 +46,5 @@ export default {
   add,
   remove,
   save,
+  search,
 }

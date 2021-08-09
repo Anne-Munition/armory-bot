@@ -1,0 +1,12 @@
+version: '3.1'
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    environment:
+      - BOT_TOKEN=
+      - OWNER_ID=
+      - TWITCH_ID=
+      - TWITCH_CLIENT_ID=
+      - TWITCH_ACCESS_TOKEN=
+      - MOVIE_DB_APIKEY=

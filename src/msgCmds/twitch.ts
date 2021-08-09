@@ -98,7 +98,7 @@ async function list(msg: Discord.Message, params: string[]): Promise<void> {
     })
   }
   if (!str) {
-    await msg.channel.send(
+    await msg.reply(
       'No Twitch channels are currently posting when they go live.',
     )
     return
@@ -141,15 +141,15 @@ async function addChannel(
         await TwitchChannel.save(result)
       } catch (err) {
         logger.error(err)
-        msg.channel.send('There was a database error, please try again.')
+        await msg.reply('There was a database error, please try again.')
         return
       }
-      msg.channel.send(
+      await msg.reply(
         `This channel will now be notified when **${result.display_name}** ` +
           `goes live on Twitch.`,
       )
     } else {
-      await msg.channel.send(
+      await msg.reply(
         `This channel already gets notified when ` +
           `**${result.display_name}** goes live on Twitch.`,
       )
@@ -157,7 +157,7 @@ async function addChannel(
   } else {
     const [user] = await getUsers([channel])
     if (!user) {
-      msg.channel.send(`**${channel}** is not a known Twitch channel.`)
+      await msg.reply(`**${channel}** is not a known Twitch channel.`)
       return
     }
     let color
@@ -177,10 +177,10 @@ async function addChannel(
       )
     } catch (err) {
       logger.error(err)
-      msg.channel.send('There was a database error, please try again.')
+      await msg.reply('Database error, please try again.')
       return
     }
-    msg.channel.send(
+    await msg.reply(
       `This channel will now be notified when **${user.display_name}** goes live on Twitch.\n\nWe have not yet synced with this Twitch channel.\nAn initial message may post within a few minutes if the channel is currently live.`,
     )
   }
@@ -199,9 +199,8 @@ async function removeChannel(
       }
     }
     if (index === -1) {
-      await msg.channel.send(
-        `This channel is not notified when **${result.display_name}** ` +
-          `goes live on Twitch.`,
+      await msg.reply(
+        `This channel is not notified when **${result.display_name}** goes live on Twitch.`,
       )
       return
     }
@@ -209,34 +208,34 @@ async function removeChannel(
     if (result.discord_channels.length === 0) {
       try {
         await TwitchChannel.remove(result.id)
-        msg.channel.send(
+        await msg.reply(
           `This channel will no longer be notified when ` +
             `**${result.display_name}** goes live on Twitch.`,
         )
       } catch (err) {
         logger.error(err)
-        msg.channel.send('There was a database error, please try again.')
+        await msg.reply('Database error, please try again.')
       }
     } else {
       try {
         await TwitchChannel.save(result)
-        msg.channel.send(
+        await msg.reply(
           `This channel will no longer be notified when ` +
             `**${result.display_name}** goes live on Twitch.`,
         )
       } catch (err) {
         logger.error(err)
-        msg.channel.send('There was a database error, please try again.')
+        await msg.reply('Database error, please try again.')
       }
     }
   } else {
     const [user] = await getUsers([twitchChannel])
     if (!user) {
-      msg.channel.send(`**${twitchChannel}** is not a known Twitch channel.`)
+      await msg.reply(`**${twitchChannel}** is not a known Twitch channel.`)
       return
     }
     const name = displayName(user)
-    msg.channel.send(
+    await msg.reply(
       `No channels are set to be notified when **${name}** ` +
         `goes live on Twitch.`,
     )

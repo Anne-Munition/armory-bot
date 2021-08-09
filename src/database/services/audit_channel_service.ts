@@ -6,6 +6,12 @@ async function search(filter: {
   return AuditChannel.find(filter)
 }
 
+async function getByChannel(
+  channelId: string,
+): Promise<AuditChannelDoc | null> {
+  return AuditChannel.findOne({ channel_id: channelId })
+}
+
 async function save(guildId: string, channelId: string): Promise<void> {
   await new AuditChannel({
     guild_id: guildId,
@@ -21,4 +27,5 @@ export default {
   search,
   save,
   remove,
+  getByChannel,
 }

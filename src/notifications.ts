@@ -37,7 +37,7 @@ async function guildDelete(guild: Discord.Guild): Promise<void> {
 // Post in all registered welcome channels that a member has joined a guild
 async function guildMemberAdd(member: Discord.GuildMember): Promise<void> {
   log.debug(`guildMemberAdd event: ${member.displayName}`)
-  const channelDocs = await NotificationChannel.get(member.guild.id)
+  const channelDocs = await NotificationChannel.getByGuild(member.guild.id)
   if (!channelDocs) return
   log.debug(`posting guildMemberAdd in (${channelDocs.length}) channels`)
   const embed = new Discord.MessageEmbed()
@@ -58,7 +58,7 @@ async function guildMemberRemove(
 ): Promise<void> {
   log.debug(`guildMemberRemove event: ${member.displayName}`)
   const guildMember = member as Discord.GuildMember
-  const channelDocs = await NotificationChannel.get(guildMember.guild.id)
+  const channelDocs = await NotificationChannel.getByGuild(guildMember.guild.id)
   if (!channelDocs) return
   log.debug(`posting guildMemberRemove in (${channelDocs.length}) channels`)
   const embed = new Discord.MessageEmbed()
@@ -76,7 +76,7 @@ async function guildMemberRemove(
 // Post in all registered welcome channels that a member has been banned from a guild
 async function guildBanAdd(ban: Discord.GuildBan): Promise<void> {
   log.debug(`guildBanAdd event: ${ban.user.username}`)
-  const channelDocs = await NotificationChannel.get(ban.guild.id)
+  const channelDocs = await NotificationChannel.getByGuild(ban.guild.id)
   if (!channelDocs) return
   log.debug(`posting guildBanAdd in (${channelDocs.length}) channels`)
 
@@ -93,7 +93,7 @@ async function guildBanAdd(ban: Discord.GuildBan): Promise<void> {
 // Post in all registered welcome channels that a member has been unbanned from a guild
 async function guildBanRemove(ban: Discord.GuildBan): Promise<void> {
   log.debug(`guildBanRemove event: ${ban.user.username}`)
-  const channelDocs = await NotificationChannel.get(ban.guild.id)
+  const channelDocs = await NotificationChannel.getByGuild(ban.guild.id)
   if (!channelDocs) return
   log.debug(`posting guildBanRemove in (${channelDocs.length}) channels`)
 

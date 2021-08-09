@@ -9,8 +9,16 @@ async function search(filter: {
   return NotificationChannel.find(filter)
 }
 
-async function get(guildId: Snowflake): Promise<NotificationChannelDoc[]> {
+async function getByGuild(
+  guildId: Snowflake,
+): Promise<NotificationChannelDoc[]> {
   return NotificationChannel.find({ guild_id: guildId })
+}
+
+async function getByChannel(
+  channelId: Snowflake,
+): Promise<NotificationChannelDoc | null> {
+  return NotificationChannel.findOne({ channel_id: channelId })
 }
 
 async function save(guildId: string, channelId: string): Promise<void> {
@@ -26,7 +34,8 @@ async function remove(id: string): Promise<void> {
 
 export default {
   search,
-  get,
+  getByGuild,
+  getByChannel,
   save,
   remove,
 }

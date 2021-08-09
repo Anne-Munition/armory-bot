@@ -1,7 +1,7 @@
 import Discord from 'discord.js'
 import { NotificationChannelDoc } from '../database/models/notification_channel_model'
 import NotificationChannel from '../database/services/notification_channel_service'
-import logger from '../logger'
+import log from '../logger'
 import { usage } from '../utilities'
 
 export const info: CmdInfo = {
@@ -41,11 +41,11 @@ async function list(msg: Discord.Message, params: string[]) {
   try {
     results = await NotificationChannel.search(filter)
   } catch (err) {
-    logger.error('Error getting notification channels')
+    log.error('Error getting notification channels')
     await msg.reply('Database error, please try again.')
     return
   }
-  logger.debug(`notification channels list ${results.length}`)
+  log.debug(`notification channels list ${results.length}`)
   if (!results.length) {
     await msg.reply('No channels currently post notification messages.')
     return
@@ -53,7 +53,7 @@ async function list(msg: Discord.Message, params: string[]) {
 
   let str = ''
   if (params[1] === 'all' && owner) {
-    logger.debug('list all guilds')
+    log.debug('list all guilds')
     const mapped: { [key: string]: string[] } = {}
     results.forEach((n) => {
       if (mapped[n.guild_id]) {
@@ -81,7 +81,7 @@ async function list(msg: Discord.Message, params: string[]) {
       }
     }
   } else {
-    logger.debug('list this guild')
+    log.debug('list this guild')
     const channels: Discord.GuildChannel[] = []
     results.forEach((n) => {
       const channel = guild.channels.cache.get(n.channel_id)
@@ -104,7 +104,7 @@ async function getNotificationDoc(
   try {
     return NotificationChannel.getByChannel(msg.channel.id)
   } catch (err) {
-    logger.error('Error getting notification channel data')
+    log.error('Error getting notification channel data')
     await msg.channel.send('Database error, please try again.')
   }
 }
@@ -116,7 +116,7 @@ async function addChannel(msg: Discord.Message): Promise<void> {
     try {
       await NotificationChannel.save(msg.guild.id, msg.channel.id)
     } catch (e) {
-      logger.error('Error Saving notification channel to the mongoDB')
+      log.error('Error Saving notification channel to the mongoDB')
       await msg.reply('Database error, please try again.')
       return
     }
@@ -136,7 +136,7 @@ async function removeChannel(msg: Discord.Message) {
     try {
       await NotificationChannel.remove(channel.id)
     } catch (e) {
-      logger.error('Error removing notification channel from the mongoDB')
+      log.error('Error removing notification channel from the mongoDB')
       await msg.reply('There was a database error. Please try again.')
       return
     }

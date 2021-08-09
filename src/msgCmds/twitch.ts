@@ -1,7 +1,7 @@
 import Discord from 'discord.js'
 import { TwitchChannelDoc } from '../database/models/twitch_channel_model'
 import TwitchChannel from '../database/services/twitch_channel_service'
-import logger from '../logger'
+import log from '../logger'
 import getChannelColor from '../twitch/getChannelColor'
 import { getUsers } from '../twitch/twitch_api'
 import { displayName, makePossessive, usage } from '../utilities'
@@ -54,7 +54,7 @@ async function list(msg: Discord.Message, params: string[]): Promise<void> {
     await msg.reply('Database error. Please try again.')
     return
   }
-  logger.debug(`twitch list results: ${results.length}`)
+  log.debug(`twitch list results: ${results.length}`)
   if (!results.length) {
     await msg.reply(
       'No Twitch channels are currently posting when they go live.',
@@ -64,7 +64,7 @@ async function list(msg: Discord.Message, params: string[]): Promise<void> {
 
   let str = ''
   if (params[1] === 'all' && owner) {
-    logger.debug('list all guilds')
+    log.debug('list all guilds')
     results.forEach((n) => {
       const channels: Discord.GuildChannel[] = []
       n.discord_channels.forEach((c) => {
@@ -82,7 +82,7 @@ async function list(msg: Discord.Message, params: string[]): Promise<void> {
       }
     })
   } else {
-    logger.debug('list this guild')
+    log.debug('list this guild')
     const thisGuild = results.filter((n) => {
       const s = n.discord_channels.filter((c) => c.guild_id === guild.id)
       return !(s === null)
@@ -114,7 +114,7 @@ async function getDocument(
   try {
     return TwitchChannel.get(twitchChannel)
   } catch (err) {
-    logger.error(err)
+    log.error(err)
     await msg.reply('Database error. Please try again.')
   }
 }
@@ -138,7 +138,7 @@ async function addChannel(
       try {
         await TwitchChannel.save(result)
       } catch (err) {
-        logger.error(err)
+        log.error(err)
         await msg.reply('There was a database error, please try again.')
         return
       }
@@ -174,7 +174,7 @@ async function addChannel(
         color,
       )
     } catch (err) {
-      logger.error(err)
+      log.error(err)
       await msg.reply('Database error, please try again.')
       return
     }
@@ -211,7 +211,7 @@ async function removeChannel(
             `**${result.display_name}** goes live on Twitch.`,
         )
       } catch (err) {
-        logger.error(err)
+        log.error(err)
         await msg.reply('Database error, please try again.')
       }
     } else {
@@ -222,7 +222,7 @@ async function removeChannel(
             `**${result.display_name}** goes live on Twitch.`,
         )
       } catch (err) {
-        logger.error(err)
+        log.error(err)
         await msg.reply('Database error, please try again.')
       }
     }

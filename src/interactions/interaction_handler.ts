@@ -1,5 +1,6 @@
 import { Interaction } from 'discord.js'
 import { slashCommands } from '../collections'
+import counts from '../counts'
 import log from '../logger'
 
 export default async function (interaction: Interaction): Promise<void> {
@@ -9,6 +10,7 @@ export default async function (interaction: Interaction): Promise<void> {
     if (command) {
       try {
         await command.run(interaction)
+        counts.increment('slashCommandsRan')
       } catch (err) {
         log.error(err.stack || err.message || err)
         if (interaction.deferred) {

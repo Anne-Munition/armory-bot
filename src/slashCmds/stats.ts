@@ -41,11 +41,13 @@ export const run: SlashRun = async (interaction): Promise<void> => {
   const usedRam = Math.floor(totalMem - freeMem)
 
   const messageCount = counts.get('messagesSeen')
-  const commandsCount = counts.get('msgCommandsRan')
+  const msgCommandsCount = counts.get('msgCommandsRan')
+  const slashCommandsCount = counts.get('slashCommandsRan')
   const twitchCount = counts.get('twitchLivePosts')
 
   let msgPm: number
-  let cmdPm: number
+  let msgCmdPm: number
+  let slashCmdPm: number
   let twitchPm: number
   if (nodeUp.asHours() > 1) {
     msgPm = Math.floor(messageCount / nodeUp.asHours())
@@ -53,10 +55,12 @@ export const run: SlashRun = async (interaction): Promise<void> => {
     msgPm = messageCount
   }
   if (nodeUp.asDays() > 1) {
-    cmdPm = Math.floor(commandsCount / nodeUp.asDays())
+    msgCmdPm = Math.floor(msgCommandsCount / nodeUp.asDays())
+    slashCmdPm = Math.floor(slashCommandsCount / nodeUp.asDays())
     twitchPm = Math.floor(twitchCount / nodeUp.asDays())
   } else {
-    cmdPm = commandsCount
+    msgCmdPm = msgCommandsCount
+    slashCmdPm = slashCommandsCount
     twitchPm = twitchCount
   }
 
@@ -111,7 +115,8 @@ export const run: SlashRun = async (interaction): Promise<void> => {
 
   str += '\n--Session Stats--\n'
   str += `Messages: ${messageCount} (${msgPm}/hr)\n`
-  str += `Commands: ${commandsCount} (${cmdPm}/day)\n`
+  str += `Msg_Commands: ${msgCommandsCount} (${msgCmdPm}/day)\n`
+  str += `Slash_Commands: ${slashCommandsCount} (${slashCmdPm}/day)\n`
   str += `Twitch: ${twitchCount} (${twitchPm}/day)\n`
 
   const codeBlock = Discord.Formatters.codeBlock('qml', str)

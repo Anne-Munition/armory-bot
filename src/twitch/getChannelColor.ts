@@ -13,7 +13,7 @@ export default async function (
     const browser = await puppeteer.launch()
     const page = await browser.newPage()
     await page.setViewport({ width: 10, height: 10 })
-    await page.goto(`https://twitch.tv/${user.login}`)
+    await page.goto(`https://twitch.tv/${user.login}/about`)
     await page.waitForSelector('.channel-root')
 
     const style = await page.evaluate(() => {
@@ -23,12 +23,13 @@ export default async function (
       if (!channelRoot) throw new Error('Unable to get channel root element.')
       return JSON.parse(JSON.stringify(getComputedStyle(channelRoot)))
     })
-
+    await page.close()
+    await browser.close()
     const { hex } = rgb2hex(style['backgroundColor'])
     log.debug(`got channel color from css: ${hex}`)
     return hex as HexColorString
   } catch (err) {
-    log.error(err)
+    log.error(err.stack || err.message || err)
   }
 
   try {
@@ -38,6 +39,6 @@ export default async function (
     log.debug(`got channel color from profile image: ${hex}`)
     return hex as HexColorString
   } catch (err) {
-    log.error(err)
+    log.error(err.stack || err.message || err)
   }
 }

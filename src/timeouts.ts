@@ -1,9 +1,12 @@
 import { Snowflake, TextChannel } from 'discord.js'
-import { modChannel } from './config'
+import { timeoutCmdChannel } from './config'
 import Timeout from './database/services/timeout_service'
 import client from './discord'
 import log from './logger'
 
+const activeTimeouts: { [key: string]: NodeJS.Timeout } = {}
+
+// Get the timeout docs from the database and start timers to remove the timeout
 export async function init(): Promise<void> {
   log.debug('init timeouts module')
   const timeouts = await Timeout.list()
@@ -15,38 +18,53 @@ export async function init(): Promise<void> {
   })
 }
 
+// Add a timeout to the database and start a timeout removal timer
+export async function add(
+  discordId: Snowflake,
+  guildId: Snowflake,
+  ms: number,
+  username: string,
+): Promise<void> {
+  await Timeout.add(discordId, guildId, ms, username)
+  startTimeoutTimer(discordId, ms)
+}
+
+// Timer to remove the timeout at a later time
 function startTimeoutTimer(discordId: Snowflake, ms: number): void {
-  setTimeout(() => {
+  activeTimeouts[discordId] = setTimeout(() => {
     remove(discordId).catch()
   }, ms)
 }
 
-// TODO remove with cmd?
-export async function remove(discordId: Snowflake): Promise<void> {
+// Remove the timeout either manually or from the timer
+export async function remove(
+  discordId: Snowflake,
+  manual = false,
+): Promise<void> {
   log.debug(`removing timeout on: ${discordId}`)
+  if (activeTimeouts[discordId]) {
+    clearTimeout(activeTimeouts[discordId])
+    delete activeTimeouts[discordId]
+  }
   const timeoutDoc = await Timeout.get(discordId)
   if (!timeoutDoc) return
+  await Timeout.remove(timeoutDoc.id)
+
   const guild = client.guilds.cache.get(timeoutDoc.guild_id)
   if (!guild) return
-  const member = guild.members.cache.get(timeoutDoc.discord_id)
-  if (!member) return
 
-  await member.roles.remove(timeoutDoc.roles)
-  await timeoutDoc.remove()
+  const channel = guild.channels.cache.get(timeoutCmdChannel)
+  if (!channel || channel.type !== 'GUILD_TEXT') return
+  const textChannel = channel as TextChannel
 
-  const modChan = guild.channels.cache.get(modChannel)
-  if (!modChan || modChan.type !== 'GUILD_TEXT') return
-  const textChannel = modChan as TextChannel
+  const member = await guild.members.fetch(timeoutDoc.discord_id)
+  let response: string
+  if (member) {
+    await member.roles.remove(timeoutDoc.roles)
+    response = `The timeout has ended for **${member.user.tag}** (${timeoutDoc.discord_id}).`
+  } else {
+    response = `The timeout has ended for ${timeoutDoc.username}.\nThough they seem to no longer be a member of this guild.`
+  }
 
-  const response = `The timeout has ended for **${member.user.tag}** (${member.user.id})`
-  await textChannel.send(response)
-}
-
-export async function add(
-  discordId: Snowflake,
-  ms: number,
-  username: string,
-): Promise<void> {
-  await Timeout.add(discordId, ms, username)
-  startTimeoutTimer(discordId, ms)
+  if (!manual) await textChannel.send(response)
 }

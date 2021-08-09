@@ -4,7 +4,6 @@ import { Document, Schema, model } from 'mongoose'
 const schema = new Schema({
   discord_id: String,
   guild_id: String,
-  issuing_channel: String,
   expires_at: Date,
   username: String,
   roles: Array,
@@ -13,8 +12,8 @@ const schema = new Schema({
 export interface TimeoutsDoc extends Document {
   discord_id: Snowflake
   guild_id: Snowflake
-  issuing_channel: Snowflake
   expires_at: Date
+  username: string
   roles: Snowflake[]
 }
 

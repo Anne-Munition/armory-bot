@@ -13,10 +13,10 @@ export const spoilerChannel: Snowflake =
     ? '148124154602717193'
     : '872987015677898813'
 
-export const modChannel: Snowflake =
+export const timeoutCmdChannel: Snowflake =
   process.env.NODE_ENV === 'production'
     ? '763506251291557918'
-    : '872987096925757440'
+    : '872709719465263165'
 
 export const muteRole: Snowflake =
   process.env.NODE_ENV === 'production'

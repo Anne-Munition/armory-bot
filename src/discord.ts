@@ -110,6 +110,7 @@ export async function connect(): Promise<void> {
 
 export function disconnect(): void {
   client.destroy()
+  log.info('Closed the Discord connection.')
 }
 
 export default client

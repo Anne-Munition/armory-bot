@@ -12,19 +12,19 @@ export const info: SlashInfo = {
   guilds: ['140025699867164673'],
 }
 
-export const commandData: SlashData = {
-  name: 'stats',
-  defaultPermission: false,
-  description: 'Display the client statistics.',
-}
-
-export const permissions: Discord.ApplicationCommandPermissionData[] = [
+export const permissions: SlashPerms = [
   {
     id: <Discord.Snowflake>process.env.OWNER_ID,
     type: 'USER',
     permission: true,
   },
 ]
+
+export const commandData: SlashData = {
+  name: 'stats',
+  defaultPermission: false,
+  description: 'Display the client statistics.',
+}
 
 const getOs = util.promisify(getos)
 

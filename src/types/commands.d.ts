@@ -34,10 +34,11 @@ type SlashRun = (
 ) => Promise<void>
 
 type SlashData = import('discord.js').ApplicationCommandData
+type SlashPerms = import('discord.js').ApplicationCommandPermissionData[]
 
 interface SlashCmd {
   info: SlashInfo
   commandData: SlashData
   run: SlashRun
-  permissions?: import('discord.js').ApplicationCommandPermissionData[]
+  permissions?: SlashPerms
 }

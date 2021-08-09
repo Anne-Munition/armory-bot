@@ -1,4 +1,4 @@
-import Discord from 'discord.js'
+import { Snowflake } from 'discord.js'
 import { msgCommands, slashCommands } from '../collections'
 import commandLoader from '../command_loader'
 
@@ -6,6 +6,14 @@ export const info: SlashInfo = {
   global: false,
   guilds: ['140025699867164673'],
 }
+
+export const permissions: SlashPerms = [
+  {
+    id: <Snowflake>process.env.OWNER_ID,
+    type: 'USER',
+    permission: true,
+  },
+]
 
 export const commandData: SlashData = {
   name: 'reload',
@@ -36,14 +44,6 @@ export const commandData: SlashData = {
   ],
 }
 
-export const permissions: Discord.ApplicationCommandPermissionData[] = [
-  {
-    id: <Discord.Snowflake>process.env.OWNER_ID,
-    type: 'USER',
-    permission: true,
-  },
-]
-
 export const run: SlashRun = async (interaction): Promise<void> => {
   await interaction.defer({ ephemeral: true })
 
@@ -51,6 +51,14 @@ export const run: SlashRun = async (interaction): Promise<void> => {
     | 'msgCmd'
     | 'slashCmd'
   const command = interaction.options.getString('command', true).toLowerCase()
+
+  // TODO: Figure out a good way to reload slash commands
+  if (type === 'slashCmd') {
+    await interaction.editReply(
+      'Unable to do slash command reloads at this time.',
+    )
+    return
+  }
 
   if (command === 'all') {
     if (type === 'msgCmd') {

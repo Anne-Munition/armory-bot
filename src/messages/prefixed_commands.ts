@@ -67,12 +67,7 @@ export default async function (msg: Message): Promise<void> {
 
 function getPrefix(message: Message): string | undefined {
   let conf = defaultGuildConfig
-  if (message.channel.type === 'GUILD_TEXT') {
-    if (!message.guild) return
-    const configs = guildConfigs.get(message.guild.id)
-    if (configs) conf = configs
-    if (!message.content.startsWith(conf.prefix)) return
-  } else if (message.channel.type === 'DM') {
+  if (message.channel.type === 'DM') {
     if (!message.content.startsWith(conf.prefix)) {
       const anyConfig = guildConfigs.find((config) =>
         message.content.startsWith(config.prefix),
@@ -80,8 +75,14 @@ function getPrefix(message: Message): string | undefined {
       if (!anyConfig) return
       conf.prefix = anyConfig.prefix
     }
+    return conf.prefix
+  } else {
+    if (!message.guild) return
+    const configs = guildConfigs.get(message.guild.id)
+    if (configs) conf = configs
+    if (!message.content.startsWith(conf.prefix)) return
+    return conf.prefix
   }
-  return conf.prefix
 }
 
 function getCommand(message: Message, cmdName: string): MsgCmd | undefined {

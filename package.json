@@ -18,7 +18,7 @@
     "bufferutil": "^4.0.3",
     "cheerio": "^1.0.0-rc.10",
     "dayjs": "^1.10.6",
-    "discord.js": "^13.0.0-dev.t1627949059.35fa3b3",
+    "discord.js": "^13.0.1",
     "emoji-regex": "^9.2.2",
     "erlpack": "discord/erlpack",
     "getos": "^3.2.1",

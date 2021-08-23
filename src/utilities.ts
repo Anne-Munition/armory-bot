@@ -20,21 +20,6 @@ export function makePossessive(name: string): string {
   return `${name}'${name.endsWith('s') ? '' : 's'}`
 }
 
-// Prefixed message command usage reply
-export async function usage(msg: Message, cmd: MsgCmd): Promise<void> {
-  let str = `Usage: \`\`${cmd.prefixUsed}${cmd.nameUsed} ${cmd.info.usage}\`\``
-  if (cmd.nameUsed === 'help') {
-    str += `\nRun \`\`${cmd.prefixUsed}cmds\`\` to see a list of commands`
-  }
-  await msg.reply(str)
-}
-
-export async function dmDenied(msg: Message, cmd: MsgCmd): Promise<void> {
-  await msg.reply(
-    `Unable to run command **${cmd.nameUsed}** from a DM channel.`,
-  )
-}
-
 // Return the english localized name or display name from a twitch user
 export function displayName(user: HelixUser): string {
   if (user.login.toLowerCase() !== user.display_name.toLowerCase()) {

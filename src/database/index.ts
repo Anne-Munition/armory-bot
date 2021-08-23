@@ -8,7 +8,7 @@ mongoose.Promise = global.Promise
 const options: ConnectionOptions = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  useFindAndModify: true,
+  useFindAndModify: false,
   keepAlive: true,
   connectTimeoutMS: 30000,
 }

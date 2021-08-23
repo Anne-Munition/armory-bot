@@ -1,23 +1,14 @@
-import { commandPerms } from '../../collections'
-import log from '../../logger'
-import CmdPerm, { PermDoc } from '../models/command_permission_model'
+import CmdPerm, { CmdPermDoc } from '../models/command_permission_model'
 
-export async function load(): Promise<void> {
-  const perms = await CmdPerm.find({})
-  commandPerms.clear()
-  perms.forEach((perm) => {
-    commandPerms.set(`${perm.server_id}-${perm.cmd}`, perm.perms)
-  })
-  log.info(`Loaded ${commandPerms.size} command permissions.`)
+async function getByCmd(cmd: string): Promise<CmdPermDoc[]> {
+  return CmdPerm.find({ command_name: cmd })
 }
 
-export async function search(
-  guildId: string,
-  cmd: string,
-): Promise<PermDoc | null> {
-  return CmdPerm.findOne({ guild_id: guildId, cmd })
+async function getByGuildId(guildId: string): Promise<CmdPermDoc[]> {
+  return CmdPerm.find({ guild_id: guildId })
 }
 
-export function create(guildId: string, cmd: string): PermDoc {
-  return new CmdPerm({ guild_id: guildId, cmd })
+export default {
+  getByCmd,
+  getByGuildId,
 }

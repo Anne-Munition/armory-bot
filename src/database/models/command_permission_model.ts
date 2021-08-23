@@ -2,29 +2,23 @@ import { Snowflake } from 'discord.js'
 import { Document, Schema, model } from 'mongoose'
 
 const schema = new Schema({
-  server_id: String,
-  cmd: String,
-  perms: {
-    allow: {
-      members: Array,
-      channels: Array,
-      roles: Array,
-    },
-    deny: {
-      members: Array,
-      channels: Array,
-      roles: Array,
-    },
+  guild_id: String,
+  command_name: String,
+  permission: {
+    id: String,
+    type: String,
+    permission: Boolean,
   },
 })
 
-export interface PermDoc extends Document {
-  server_id: Snowflake
-  cmd: string
-  perms: {
-    allow: CommandPermItems
-    deny: CommandPermItems
+export interface CmdPermDoc extends Document {
+  guild_id: Snowflake
+  command_name: string
+  permission: {
+    id: Snowflake
+    type: 'USER' | 'ROLE'
+    permission: boolean
   }
 }
 
-export default model<PermDoc>('cmd_perms', schema)
+export default model<CmdPermDoc>('command_permissions', schema)

@@ -1,6 +1,5 @@
 import { Snowflake } from 'discord.js'
 
-export const defaultPrefix = process.env.DEFAULT_PREFIX || '~'
 export const mongoUrl = process.env.MONGO_URL || 'mongodb://localhost:27017'
 
 export const scheduleChannel: Snowflake =

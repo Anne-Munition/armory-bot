@@ -1,44 +1,28 @@
+type Commands = import('discord.js').Collection<
+  string,
+  {
+    cmd: Cmd
+    id?: import('discord.js').Snowflake
+  }
+>
+
 interface CmdInfo {
-  desc: string
-  usage: string
-  aliases: string[]
-  hidden?: boolean
-  permissions: import('discord.js').PermissionString[]
-  dmAllowed: boolean
-  paramsRequired: boolean
-  disabled?: boolean
-  movedToSlash?: boolean
-}
-
-interface MsgCmd {
-  name: string
-  info: CmdInfo
-  run: Run
-  nameUsed: string
-  prefixUsed: string
-}
-
-type Run = (
-  msg: import('discord.js').Message,
-  params: string[],
-  cmd: MsgCmd,
-) => Promise<void>
-
-interface SlashInfo {
   global: boolean
   guilds?: import('discord.js').Snowflake[]
+  defaultPermission: boolean
+  editablePermissions: boolean
 }
 
-type SlashRun = (
+type CmdRun = (
   interaction: import('discord.js').CommandInteraction,
 ) => Promise<void>
 
-type SlashData = import('discord.js').ApplicationCommandData
-type SlashPerms = import('discord.js').ApplicationCommandPermissionData[]
+type CmdStructure = import('discord.js').ApplicationCommandData
+type CmdPerms = import('discord.js').ApplicationCommandPermissionData[]
 
-interface SlashCmd {
-  info: SlashInfo
-  commandData: SlashData
-  run: SlashRun
-  permissions?: SlashPerms
+interface Cmd {
+  info: CmdInfo
+  structure: CmdStructure
+  run: CmdRun
+  permissions?: CmdPerms
 }

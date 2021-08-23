@@ -1,4 +1,4 @@
-import Discord, { Intents } from 'discord.js'
+import { Client, Intents, Snowflake } from 'discord.js'
 import interactionHandler from './interactions/interaction_handler'
 import interactionLoader from './interactions/interaction_loader'
 import log from './logger'
@@ -6,19 +6,19 @@ import auditor from './messages/message_auditor'
 import messageHandler from './messages/message_handler'
 import notify from './notifications'
 
-const client = new Discord.Client({
+const client = new Client({
   intents: [
     Intents.FLAGS.GUILDS,
     Intents.FLAGS.GUILD_BANS,
     Intents.FLAGS.GUILD_MESSAGES,
     Intents.FLAGS.GUILD_MEMBERS,
-    Intents.FLAGS.DIRECT_MESSAGES,
+    // Intents.FLAGS.DIRECT_MESSAGES,
   ],
   allowedMentions: {
     roles: [],
     repliedUser: true,
   },
-  partials: ['CHANNEL'],
+  // partials: ['CHANNEL'],
 })
 
 /***** GENERAL EVENTS *****/
@@ -82,9 +82,7 @@ client.once('ready', async () => {
 
   // DM the owner that the client has (re)started if in production
   if (process.env.NODE_ENV === 'production') {
-    const owner = client.users.cache.get(
-      <Discord.Snowflake>process.env.OWNER_ID,
-    )
+    const owner = client.users.cache.get(<Snowflake>process.env.OWNER_ID)
     if (owner) {
       await owner.send(
         `I just started running. Did I crash? :worried:\nPID:\`\`${process.pid}\`\``,

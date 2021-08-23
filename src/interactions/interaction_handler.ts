@@ -1,16 +1,16 @@
 import { Interaction } from 'discord.js'
-import { slashCommands } from '../collections'
+import { commands } from '../collections'
 import counts from '../counts'
 import log from '../logger'
 
 export default async function (interaction: Interaction): Promise<void> {
   log.debug(`received interaction: ${interaction.id}`)
   if (interaction.isCommand()) {
-    const command = slashCommands.get(interaction.commandName)
+    const command = commands.get(interaction.commandName)
     if (command) {
       try {
-        await command.run(interaction)
-        counts.increment('slashCommandsRan')
+        await command.cmd.run(interaction)
+        counts.increment('commandsRan')
       } catch (err) {
         log.error(err.stack || err.message || err)
         if (interaction.deferred) {

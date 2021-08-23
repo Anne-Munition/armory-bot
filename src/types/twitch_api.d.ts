@@ -52,9 +52,3 @@ interface HelixStream {
   tag_ids: string[]
   is_mature: boolean
 }
-
-interface HelixGame {
-  id: string
-  name: string
-  box_art_url: string
-}

@@ -1,121 +1,89 @@
 import fs from 'fs'
 import path from 'path'
-import { aliases, msgCommands, slashCommands } from './collections'
-import { msgCmdsDir, slashCmdsDir } from './directories'
+import { commands } from './collections'
+import CmdPerm from './database/services/command_permission_service'
+import { cmdsDir } from './directories'
 import log from './logger'
 
 const ext = process.env.NODE_ENV === 'production' ? 'js' : 'ts'
 
-async function loadAllMsgCmds(): Promise<void> {
-  log.debug('loading all msg commands into memory')
+async function loadAllCommands(): Promise<void> {
+  log.debug('loading all commands into memory')
   const files = fs
-    .readdirSync(msgCmdsDir)
+    .readdirSync(cmdsDir)
     .filter((file) => file.endsWith(`.${ext}`))
-  log.debug(`loading ${files.length} msg command(s)`)
-  await Promise.all(files.map((file) => loadMsgCommand(file)))
-  log.info(
-    `Loaded ${msgCommands.size} msg command(s) with ${aliases.size} aliases.`,
+    .filter((file) => !file.startsWith('permissions'))
+    .map((file) => path.parse(file).name)
+  log.debug(`loading ${files.length} command(s).`)
+  await Promise.all(files.map((file) => loadCommand(file)))
+  log.info(`Loaded ${commands.size} slash command(s).`)
+}
+
+async function loadCommand(name: string): Promise<void> {
+  const cmdPath = path.join(cmdsDir, `${name}.${ext}`)
+  if (commands.has(name)) removeSlashCommand(name)
+  log.debug(`loading command: '${name}'`)
+  let cmd: Cmd
+  try {
+    cmd = await import(cmdPath)
+  } catch (e) {
+    log.warn(`The '${name}' command was unable to be imported.`)
+    return
+  }
+  if (!cmd.info) {
+    log.warn(`The '${name}' command is missing the 'info' object.`)
+    return
+  }
+  if (!cmd.structure) {
+    log.warn(`The '${name}' command is missing the 'structure' object.`)
+    return
+  }
+  if (cmd.structure.name !== name) {
+    log.warn(`The '${name}' command structure name MUST match the filename.`)
+    return
+  }
+  if (!cmd.run) {
+    log.warn(`The '${name}' command is missing the 'run' function.`)
+    return
+  }
+  cmd.structure.defaultPermission = cmd.info.defaultPermission
+  if (!cmd.permissions) cmd.permissions = []
+  const ids = cmd.permissions.map((x) => x.id)
+  const overwrites = await CmdPerm.getByCmd(name)
+  log.debug(
+    `${overwrites.length} permission overwrites found for '${name}' command`,
   )
-}
-
-async function loadMsgCommand(cmdName: string): Promise<void> {
-  const cmdPath = path.join(msgCmdsDir, cmdName)
-  const name = path.parse(cmdPath).name
-  if (msgCommands.has(name)) removeMsgCommand(name)
-  log.debug(`loading msg command: '${name}'`)
-  let cmd: MsgCmd
-  try {
-    cmd = await import(cmdPath)
-  } catch (e) {
-    log.warn(`The msg command '${name}' was unable to be imported.`)
-    return
-  }
-  if (!cmd.info) {
-    log.warn(`The msg command '${name}' is missing the 'info' object.`)
-    return
-  }
-  if (!cmd.run) {
-    log.warn(`The msg command '${name}' is missing the 'run' function.`)
-    return
-  }
-  cmd.name = name
-  msgCommands.set(name, cmd)
-  if (cmd.info.aliases) {
-    cmd.info.aliases.forEach((alias) => {
-      if (msgCommands.has(alias)) {
-        log.warn(`The msg command '${name}' alias '${alias}' already exists.`)
-      } else {
-        aliases.set(alias, cmd)
+  overwrites.forEach((overwrite) => {
+    const id = overwrite.permission.id
+    const index = ids.indexOf(id)
+    log.debug(`perm overwrite: ${overwrite.permission.type} permission ${id}`)
+    if (index > -1) {
+      const oldPerm = cmd.permissions?.[index]
+      if (overwrite.permission.permission !== oldPerm?.permission) {
+        log.debug(
+          `perm overwrite: ${overwrite.permission.type} permission ${id}: removing permission ${oldPerm?.permission}`,
+        )
+        cmd.permissions?.splice(index, 1)
+        ids.splice(index, 1)
       }
-    })
-  }
-}
-
-function removeMsgCommand(cmdName: string) {
-  log.debug(`flushing msg command: '${cmdName}'`)
-  aliases.forEach((cmd, alias) => {
-    if (cmd.name === cmdName) aliases.delete(alias)
-  })
-  delete require.cache[
-    require.resolve(path.join(msgCmdsDir, `${cmdName}.${ext}`))
-  ]
-  msgCommands.delete(cmdName)
-}
-
-async function loadAllSlashCommands(): Promise<void> {
-  log.debug('loading all slash commands into memory')
-  const files = fs
-    .readdirSync(slashCmdsDir)
-    .filter((file) => file.endsWith(`.${ext}`))
-  log.debug(`loading ${files.length} slash command(s).`)
-  await Promise.all(files.map((file) => loadSlashCommand(file)))
-  log.info(`Loaded ${slashCommands.size} slash command(s).`)
-}
-
-async function loadSlashCommand(cmdName: string): Promise<void> {
-  const cmdPath = path.join(slashCmdsDir, cmdName)
-  const name = path.parse(cmdPath).name
-  if (slashCommands.has(name)) removeSlashCommand(name)
-  log.debug(`loading slash command: '${name}'`)
-  let cmd: SlashCmd
-  try {
-    cmd = await import(cmdPath)
-  } catch (e) {
-    log.warn(`The slash command '${name}' was unable to be imported.`)
-    return
-  }
-  if (!cmd.info) {
-    log.warn(`The slash command '${name}' is missing the 'info' object.`)
-    return
-  }
-  if (!cmd.commandData) {
-    log.warn(`The slash command '${name}' is missing the 'commandData' object.`)
-    return
-  }
-  if (cmd.commandData.name !== name) {
-    log.warn(
-      `The slash command '${name}' command options name MUST match the filename.`,
+    }
+    log.debug(
+      `perm overwrite: ${overwrite.permission.type} permission ${id}: adding permission ${overwrite.permission.permission}`,
     )
-    return
-  }
-  if (!cmd.run) {
-    log.warn(`The slash command '${name}' is missing the 'run' function.`)
-    return
-  }
-  slashCommands.set(name, cmd)
+    cmd.permissions?.push(overwrite.permission)
+    ids.push(id)
+  })
+  if (!cmd.permissions.length) delete cmd.permissions
+  commands.set(name, { cmd })
 }
 
-function removeSlashCommand(cmdName: string) {
-  log.debug(`flushing slash command: '${cmdName}'`)
-  delete require.cache[
-    require.resolve(path.join(slashCmdsDir, `${cmdName}.${ext}`))
-  ]
-  slashCommands.delete(cmdName)
+function removeSlashCommand(name: string) {
+  log.debug(`flushing command: '${name}'`)
+  delete require.cache[require.resolve(path.join(cmdsDir, `${name}.${ext}`))]
+  commands.delete(name)
 }
 
 export default {
-  loadAllMsgCmds,
-  loadMsgCommand,
-  loadAllSlashCommands,
-  loadSlashCommand,
+  loadAllCommands,
+  loadCommand,
 }

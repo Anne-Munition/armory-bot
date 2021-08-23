@@ -20,7 +20,6 @@
     "dayjs": "^1.10.6",
     "discord.js": "^13.0.1",
     "emoji-regex": "^9.2.2",
-    "erlpack": "discord/erlpack",
     "getos": "^3.2.1",
     "gm": "^1.23.1",
     "mathjs": "^9.4.4",
@@ -34,8 +33,7 @@
     "rimraf": "^3.0.2",
     "temp-units-conv": "^1.0.2",
     "utf-8-validate": "^5.0.5",
-    "winston": "^3.3.3",
-    "zlib-sync": "^0.1.7"
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "@types/getos": "^3.0.1",

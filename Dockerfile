@@ -15,7 +15,6 @@ RUN yarn test
 RUN yarn build
 
 FROM base
-RUN apk del temp
 ENV DOCKER=true \
     NODE_ENV=production
 COPY package.json .

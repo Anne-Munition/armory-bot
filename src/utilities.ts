@@ -34,7 +34,7 @@ export async function ownerError(
   title: string,
   err?: Error,
   msg?: Message,
-  cmd?: MsgCmd,
+  cmd?: Cmd,
   str?: string,
 ): Promise<void> {
   if (err) log.error(err.stack || err.message || err)
@@ -59,8 +59,8 @@ export async function ownerError(
   }
   if (str) details += `${str}\n`
   if (cmd) {
-    details += `CMD: ${cmd.name}\n`
-    details += `Perms_Needed: ${JSON.stringify(cmd.info.permissions)}\n`
+    details += `CMD: ${cmd.structure.name}\n`
+    // details += `Perms_Needed: ${JSON.stringify(cmd.info.permissions)}\n`
   }
   if (msg) details += `Content: ${msg.content}\n`
   details += '```'

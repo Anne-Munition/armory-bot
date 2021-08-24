@@ -3,6 +3,8 @@ import { NotificationChannelDoc } from '../database/models/notification_channel_
 import NotificationChannel from '../database/services/notification_channel_service'
 import log from '../logger'
 
+// TODO Merge with other managers?
+
 export const info: CmdInfo = {
   global: true,
   defaultPermission: false,

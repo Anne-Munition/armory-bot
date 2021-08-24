@@ -7,6 +7,8 @@ import { assetsDir, tempDir } from '../directories'
 import log from '../logger'
 import { capitalize } from '../utilities'
 
+// TODO DMs?
+
 const hats: string[] = fs
   .readdirSync(path.join(assetsDir, 'hats'))
   .filter((x) => x.endsWith('.png'))

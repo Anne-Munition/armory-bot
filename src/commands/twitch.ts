@@ -6,6 +6,8 @@ import getChannelColor from '../twitch/getChannelColor'
 import { getUsers } from '../twitch/twitch_api'
 import { displayName, makePossessive } from '../utilities'
 
+// TODO Merge with other managers?
+
 export const info: CmdInfo = {
   global: true,
   defaultPermission: false,

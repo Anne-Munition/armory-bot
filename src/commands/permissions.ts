@@ -1,6 +1,5 @@
 import Discord from 'discord.js'
 import { commands } from '../collections'
-import CmdPerms from '../database/services/command_permission_service'
 
 export const info: CmdInfo = {
   global: true,
@@ -8,11 +7,16 @@ export const info: CmdInfo = {
   editablePermissions: true,
 }
 
-const editableCommands = Object.keys(commands.keys())
-if (info.editablePermissions) editableCommands.push('permissions')
-const choices = editableCommands
+const commandNames = [...commands.keys()]
+const choices = commandNames.filter((x) => {
+  const cmd = commands.get(x)
+  if (!cmd) return false
+  return cmd.cmd.info.editablePermissions
+})
+choices.push('permissions')
+const sortedChoices = choices
   .sort((a, b) => {
-    if (a > b) return -1
+    if (a < b) return -1
     if (a > b) return 1
     return 0
   })
@@ -22,8 +26,6 @@ const choices = editableCommands
       value: x,
     }
   })
-
-console.log(editableCommands)
 
 export const structure: CmdStructure = {
   name: 'permissions',
@@ -39,7 +41,7 @@ export const structure: CmdStructure = {
           type: 'STRING',
           description: 'The command to list the permissions for.',
           required: true,
-          choices,
+          choices: sortedChoices,
         },
       ],
     },
@@ -47,26 +49,19 @@ export const structure: CmdStructure = {
 }
 
 export const run: CmdRun = async (interaction): Promise<void> => {
-  if (!interaction.guildId) throw new Error('No Guild ID')
   const sub = interaction.options.getSubcommand()
   if (sub === 'list') {
     const name = interaction.options.getString('command', true)
+    console.log(name)
     const command = commands.get(name)
-    if (!command) {
-      await interaction.reply({
-        content: 'Unable to get that command data.',
-        ephemeral: true,
-      })
-      return
-    }
-    const perms = await CmdPerms.getByGuildId(interaction.guildId)
+    if (!command) throw new Error('Command not found')
+    console.log(command.id)
+    const perms = await interaction.guild?.commands.permissions.fetch({
+      command: command.id,
+    })
     const codeBlock = Discord.Formatters.codeBlock(
       'js',
-      JSON.stringify(
-        perms.map((x) => x.permission),
-        null,
-        2,
-      ),
+      JSON.stringify(perms, null, 2),
     )
     await interaction.reply(codeBlock)
   }

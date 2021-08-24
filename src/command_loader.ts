@@ -1,7 +1,6 @@
 import fs from 'fs'
 import path from 'path'
 import { commands } from './collections'
-import CmdPerm from './database/services/command_permission_service'
 import { cmdsDir } from './directories'
 import log from './logger'
 
@@ -49,7 +48,7 @@ async function loadCommand(name: string): Promise<void> {
   cmd.structure.defaultPermission = cmd.info.defaultPermission
   if (!cmd.permissions) cmd.permissions = []
   const ids = cmd.permissions.map((x) => x.id)
-  const overwrites = await CmdPerm.getByCmd(name)
+  /*const overwrites = await CmdPerm.getByCmd(name)
   log.debug(
     `${overwrites.length} permission overwrites found for '${name}' command`,
   )
@@ -73,7 +72,7 @@ async function loadCommand(name: string): Promise<void> {
     cmd.permissions?.push(overwrite.permission)
     ids.push(id)
   })
-  if (!cmd.permissions.length) delete cmd.permissions
+  if (!cmd.permissions.length) delete cmd.permissions*/
   commands.set(name, { cmd })
 }
 

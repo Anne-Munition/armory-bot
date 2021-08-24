@@ -6,7 +6,7 @@ export const info: CmdInfo = {
 
 export const structure: CmdStructure = {
   name: 'say',
-  description: 'Post a message as Becky.',
+  description: 'Post a message as the bot.',
   options: [
     {
       name: 'message',

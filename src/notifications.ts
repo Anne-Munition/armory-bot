@@ -42,10 +42,8 @@ async function guildMemberAdd(member: Discord.GuildMember): Promise<void> {
   log.debug(`posting guildMemberAdd in (${channelDocs.length}) channels`)
   const embed = new Discord.MessageEmbed()
     .setColor('#1ed21e')
-    .setAuthor(
-      `${member.user.tag} (${member.id})`,
-      member.user.displayAvatarURL(),
-    )
+    .setAuthor(member.user.tag, member.user.displayAvatarURL())
+    .setDescription(member.user.toString())
     .setFooter('User Joined')
     .setTimestamp()
 
@@ -63,10 +61,8 @@ async function guildMemberRemove(
   log.debug(`posting guildMemberRemove in (${channelDocs.length}) channels`)
   const embed = new Discord.MessageEmbed()
     .setColor('#d7d71e')
-    .setAuthor(
-      `${guildMember.user.tag} (${guildMember.id})`,
-      guildMember.user.displayAvatarURL(),
-    )
+    .setAuthor(guildMember.user.tag, guildMember.user.displayAvatarURL())
+    .setDescription(guildMember.user.toString())
     .setFooter('User Left')
     .setTimestamp()
 
@@ -82,7 +78,8 @@ async function guildBanAdd(ban: Discord.GuildBan): Promise<void> {
 
   const embed = new Discord.MessageEmbed()
     .setColor('#b42326')
-    .setAuthor(`${ban.user.tag} (${ban.user.id})`, ban.user.displayAvatarURL())
+    .setAuthor(ban.user.tag, ban.user.displayAvatarURL())
+    .setDescription(ban.user.toString())
     .setFooter('User Banned')
     .setTimestamp()
   if (ban.reason) embed.setDescription(ban.reason)
@@ -99,7 +96,8 @@ async function guildBanRemove(ban: Discord.GuildBan): Promise<void> {
 
   const embed = new Discord.MessageEmbed()
     .setColor('#236cb4')
-    .setAuthor(`${ban.user.tag} (${ban.user.id})`, ban.user.displayAvatarURL())
+    .setAuthor(ban.user.tag, ban.user.displayAvatarURL())
+    .setDescription(ban.user.toString())
     .setFooter('User Unbanned')
     .setTimestamp()
 

@@ -7,7 +7,7 @@ import log from '../logger'
 
 export const info: CmdInfo = {
   global: true,
-  defaultPermission: false,
+  defaultPermission: true,
   editablePermissions: true,
 }
 

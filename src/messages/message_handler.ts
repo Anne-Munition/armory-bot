@@ -7,6 +7,8 @@ import spoilerTags from './spoiler_tags'
 export default async function (msg: Message): Promise<void> {
   counts.increment('messagesSeen')
 
+  return // TODO
+
   const wasSchedule = await schedulePinning(msg).catch((err) => {
     log.error(err)
   })

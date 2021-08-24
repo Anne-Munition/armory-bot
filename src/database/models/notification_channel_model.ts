@@ -11,4 +11,4 @@ export interface NotificationChannelDoc extends Document {
   channel_id: Snowflake
 }
 
-export default model<NotificationChannelDoc>('notification_channels', schema)
+export default model<NotificationChannelDoc>('welcome_channels', schema)

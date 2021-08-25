@@ -34,7 +34,7 @@ async function guildDelete(guild: Discord.Guild): Promise<void> {
   await botOwner.send(str)
 }
 
-// Post in all registered welcome channels that a member has joined a guild
+// Post in all registered notification channels that a member has joined a guild
 async function guildMemberAdd(member: Discord.GuildMember): Promise<void> {
   log.debug(`guildMemberAdd event: ${member.displayName}`)
   const channelDocs = await NotificationChannel.getByGuild(member.guild.id)
@@ -50,7 +50,7 @@ async function guildMemberAdd(member: Discord.GuildMember): Promise<void> {
   sendMessages(channelDocs, embed, member.guild)
 }
 
-// Post in all registered welcome channels that a member has left a guild
+// Post in all registered notification channels that a member has left a guild
 async function guildMemberRemove(
   member: Discord.GuildMember | Discord.PartialGuildMember,
 ): Promise<void> {
@@ -69,7 +69,7 @@ async function guildMemberRemove(
   sendMessages(channelDocs, embed, guildMember.guild)
 }
 
-// Post in all registered welcome channels that a member has been banned from a guild
+// Post in all registered notification channels that a member has been banned from a guild
 async function guildBanAdd(ban: Discord.GuildBan): Promise<void> {
   log.debug(`guildBanAdd event: ${ban.user.username}`)
   const channelDocs = await NotificationChannel.getByGuild(ban.guild.id)
@@ -87,7 +87,7 @@ async function guildBanAdd(ban: Discord.GuildBan): Promise<void> {
   sendMessages(channelDocs, embed, ban.guild)
 }
 
-// Post in all registered welcome channels that a member has been unbanned from a guild
+// Post in all registered notification channels that a member has been unbanned from a guild
 async function guildBanRemove(ban: Discord.GuildBan): Promise<void> {
   log.debug(`guildBanRemove event: ${ban.user.username}`)
   const channelDocs = await NotificationChannel.getByGuild(ban.guild.id)

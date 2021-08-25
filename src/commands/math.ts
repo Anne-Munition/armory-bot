@@ -1,6 +1,6 @@
 import util from 'util'
 import Discord from 'discord.js'
-import { evaluate, parse } from 'mathjs'
+import * as math from 'mathjs'
 import log from '../logger'
 
 export const info: CmdInfo = {
@@ -14,28 +14,26 @@ export const structure: CmdStructure = {
   description: 'Evaluate an equation using math.js.',
   options: [
     {
-      name: 'equation',
+      name: 'expression',
       type: 'STRING',
-      description: 'Equation to evaluate.',
+      description: 'Expression to evaluate.',
       required: true,
     },
   ],
 }
 
 export const run: CmdRun = async (interaction): Promise<void> => {
-  const equation = interaction.options.getString('equation', true)
-  log.debug(equation)
+  const expression = interaction.options.getString('expression', true)
+  log.debug(expression)
 
-  const parsed = parse(equation)
+  const parsed = math.parse(expression)
 
   try {
-    let result = evaluate(equation)
-    if (typeof result !== 'string') result = util.inspect(result)
-    await interaction.reply(`${parsed.toString()} = **${result}**`)
+    const result = math.evaluate(expression)
+    // if (typeof result !== 'string') result = util.inspect(result)
+    await interaction.reply(`${parsed} = **${result}**`)
   } catch (err) {
-    log.warn(
-      `Error with math.evaluate(): '${parsed.toString()}' ${err.message}`,
-    )
+    log.warn(`Error with math.evaluate(): '${parsed}' ${err.message}`)
     const codeBlock = Discord.Formatters.codeBlock('js', err)
     await interaction.reply({
       content: `${parsed}\n${codeBlock}`,

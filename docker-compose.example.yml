@@ -6,6 +6,7 @@ services:
     environment:
       - BOT_TOKEN=
       - OWNER_ID=
+      - MONGO_URL=
       - TWITCH_ID=
       - TWITCH_CLIENT_ID=
       - TWITCH_ACCESS_TOKEN=

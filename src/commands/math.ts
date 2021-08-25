@@ -11,7 +11,7 @@ export const info: CmdInfo = {
 
 export const structure: CmdStructure = {
   name: 'math',
-  description: 'Evaluate an equation using math.js.',
+  description: 'Evaluate an expression using math.js.',
   options: [
     {
       name: 'expression',

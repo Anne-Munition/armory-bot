@@ -1,4 +1,3 @@
-import util from 'util'
 import Discord from 'discord.js'
 import * as math from 'mathjs'
 import log from '../logger'
@@ -30,7 +29,6 @@ export const run: CmdRun = async (interaction): Promise<void> => {
 
   try {
     const result = math.evaluate(expression)
-    // if (typeof result !== 'string') result = util.inspect(result)
     await interaction.reply(`${parsed} = **${result}**`)
   } catch (err) {
     log.warn(`Error with math.evaluate(): '${parsed}' ${err.message}`)

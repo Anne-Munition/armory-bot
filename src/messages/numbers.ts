@@ -14,13 +14,13 @@ export default async function (msg: Message): Promise<void> {
   if (msg.channel.id !== numberChannel) return
   // Delete if not a number
   if (!/^\d+$/.test(msg.content)) {
-    if (msg.deletable) await msg.delete()
+    await deleteUserMistake(msg)
     return
   }
 
   // Delete message is user posted recently
   if (lastUsers.includes(msg.author.id)) {
-    if (msg.deletable) await msg.delete()
+    await deleteUserMistake(msg)
     return
   }
 
@@ -38,7 +38,7 @@ export default async function (msg: Message): Promise<void> {
 
   // Delete if not the next number
   if (contentNum !== nextNum) {
-    if (msg.deletable) await msg.delete()
+    await deleteUserMistake(msg)
     return
   }
   // Delete if over the max number
@@ -97,17 +97,23 @@ export default async function (msg: Message): Promise<void> {
     const results = []
     for (let i = 0; i < top10.length; i++) {
       const user = await msg.client.users.fetch(top10[i].discord_id)
-      if (user) results.push({ name: user.toString(), count: top10[i].count })
+      if (user)
+        results.push({
+          name: user.toString(),
+          count: top10[i].count,
+          deleted: top10[i].deleted_count,
+        })
       else
         results.push({
           name: `@${top10[i].discord_name}`,
           count: top10[i].count,
+          deleted: top10[i].deleted_count,
         })
     }
     // Format the response content
     const content = results
       .map((x) => {
-        return `${x.name} - ${x.count}`
+        return `${x.name} - Count: **${x.count}** - Deleted: **${x.deleted}**`
       })
       .join('\n')
 
@@ -122,5 +128,14 @@ export default async function (msg: Message): Promise<void> {
       content: str,
       allowedMentions: { users: [] },
     })
+  }
+}
+
+async function deleteUserMistake(msg: Message) {
+  if (msg.deletable) await msg.delete()
+  try {
+    await NumberUserService.incDeleted(msg.author.id, msg.author.username)
+  } catch (e) {
+    // Do Nothing
   }
 }

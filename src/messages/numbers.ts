@@ -93,7 +93,7 @@ export default async function (msg: Message): Promise<void> {
     // Get the top 10 counters
     const top10 = await NumberUserService.top10()
 
-    // Fetch the member or use the name from the database
+    // Fetch the user or use the name from the database
     const results = []
     for (let i = 0; i < top10.length; i++) {
       const user = await msg.client.users.fetch(top10[i].discord_id)

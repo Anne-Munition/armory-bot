@@ -12,7 +12,7 @@ export default async function (msg: Message): Promise<void> {
   if (msg.channel.id !== numberChannel) return
   // Delete if not a number
   if (!/\d+/.test(msg.content)) {
-    await msg.delete()
+    if (msg.deletable) await msg.delete()
     return
   }
   // Get current number from the database

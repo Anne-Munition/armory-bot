@@ -20,12 +20,12 @@ export default async function (msg: Message): Promise<void> {
   const nextNum = currentNum + 1
   // Delete if not the next number
   if (parseInt(msg.content) !== nextNum) {
-    await msg.delete()
+    if (msg.deletable) await msg.delete()
     return
   }
   // Delete if over the max number
   if (parseInt(msg.content) > max) {
-    await msg.delete()
+    if (msg.deletable) await msg.delete()
     return
   }
   // Store the new number
@@ -37,25 +37,26 @@ export default async function (msg: Message): Promise<void> {
     // Lock the channel
     // Deny @everyone SEND_MESSAGES permission
     const guildId = msg.guild?.id
-    if (!guildId) return
-    const guild = await msg.client.guilds.cache.get(guildId)
-    const channel = await guild?.channels.fetch(msg.channel.id)
-    try {
-      channel?.permissionOverwrites.set([
-        { id: guildId, deny: 'SEND_MESSAGES', type: 'role' },
-      ])
-    } catch (e) {
-      // Do Nothing
-    }
+    if (guildId) {
+      const guild = await msg.client.guilds.cache.get(guildId)
+      const channel = await guild?.channels.fetch(msg.channel.id)
+      try {
+        channel?.permissionOverwrites.set([
+          { id: guildId, deny: 'SEND_MESSAGES', type: 'role' },
+        ])
+      } catch (e) {
+        // Do Nothing
+      }
 
-    await msg.channel.send({
-      content:
-        ':partying_face: :partying_face: CONGRATULATIONS, YOU DID IT! :partying_face: :partying_face:',
-    })
+      await msg.channel.send({
+        content:
+          ':partying_face: :partying_face: CONGRATULATIONS, YOU DID IT! :partying_face: :partying_face:',
+      })
+    }
   }
 
   // On trigger
-  if (nextNum % trigger === 0) {
+  if (nextNum % trigger === 0 || nextNum === max) {
     // Get the top 10 counters
     const top10 = await NumberUserService.top10()
 

@@ -4,8 +4,8 @@ import CountService from '../database/services/count_service'
 import NumberUserService from '../database/services/number_user_service'
 import { formatTimeDiff } from '../utilities'
 
-const trigger = 5000
 const max = 1e5
+const trigger = 5000
 
 export default async function (msg: Message): Promise<void> {
   // Only in number counting channel
@@ -15,26 +15,43 @@ export default async function (msg: Message): Promise<void> {
     if (msg.deletable) await msg.delete()
     return
   }
+
   // Get current number from the database
-  const currentNum = await CountService.get('numberCount')
+  let currentNum
+  try {
+    currentNum = await CountService.get('numberCount')
+  } catch (e) {
+    // Delete message if database throws
+    if (msg.deletable) await msg.delete()
+    return
+  }
   const nextNum = currentNum + 1
+  const contentNum = parseInt(msg.content)
+
   // Delete if not the next number
-  if (parseInt(msg.content) !== nextNum) {
+  if (contentNum !== nextNum) {
     if (msg.deletable) await msg.delete()
     return
   }
   // Delete if over the max number
-  if (parseInt(msg.content) > max) {
+  if (contentNum > max) {
     if (msg.deletable) await msg.delete()
     return
   }
-  // Store the new number
-  await CountService.set('numberCount', nextNum)
-  // Increment the user count
-  await NumberUserService.inc(msg.author.id, msg.author.username)
 
-  if (nextNum >= max) {
-    // Lock the channel
+  // Store the new number
+  // Increment the user count
+  try {
+    await CountService.set('numberCount', nextNum)
+    await NumberUserService.inc(msg.author.id, msg.author.username)
+  } catch (e) {
+    // Delete message if database throws
+    if (msg.deletable) await msg.delete()
+    return
+  }
+
+  // Lock the channel once max count is reached
+  if (nextNum === max) {
     // Deny @everyone SEND_MESSAGES permission
     const guildId = msg.guild?.id
     if (guildId) {
@@ -47,15 +64,19 @@ export default async function (msg: Message): Promise<void> {
       } catch (e) {
         // Do Nothing
       }
+    }
 
-      await msg.channel.send({
+    await msg.channel
+      .send({
         content:
           ':partying_face: :partying_face: CONGRATULATIONS, YOU DID IT! :partying_face: :partying_face:',
       })
-    }
+      .catch((e) => {
+        // Do nothing if congrats message fails
+      })
   }
 
-  // On trigger
+  // Post stats on trigger or max count
   if (nextNum % trigger === 0 || nextNum === max) {
     // Get the top 10 counters
     const top10 = await NumberUserService.top10()

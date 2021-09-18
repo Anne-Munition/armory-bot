@@ -1,4 +1,4 @@
-import { Message } from 'discord.js'
+import { Message, Snowflake } from 'discord.js'
 import { numberChannel } from '../config'
 import CountService from '../database/services/count_service'
 import NumberUserService from '../database/services/number_user_service'
@@ -6,12 +6,20 @@ import { formatTimeDiff } from '../utilities'
 
 const max = 1e5
 const trigger = 1000
+const lastUsers: Snowflake[] = []
+const uniqueUsers = 3
 
 export default async function (msg: Message): Promise<void> {
   // Only in number counting channel
   if (msg.channel.id !== numberChannel) return
   // Delete if not a number
   if (!/^\d+$/.test(msg.content)) {
+    if (msg.deletable) await msg.delete()
+    return
+  }
+
+  // Delete message is user posted recently
+  if (lastUsers.includes(msg.author.id)) {
     if (msg.deletable) await msg.delete()
     return
   }
@@ -49,6 +57,10 @@ export default async function (msg: Message): Promise<void> {
     if (msg.deletable) await msg.delete()
     return
   }
+
+  // Manipulate lastUsers array
+  lastUsers.push(msg.author.id)
+  if (lastUsers.length === uniqueUsers) lastUsers.shift()
 
   // Lock the channel once max count is reached
   if (nextNum === max) {

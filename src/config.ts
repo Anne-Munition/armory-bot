@@ -21,3 +21,8 @@ export const muteRole: Snowflake =
   process.env.NODE_ENV === 'production'
     ? '706906565784895509'
     : '835696708657872906'
+
+export const numberChannel: Snowflake =
+  process.env.NODE_ENV === 'production'
+    ? '888689437029068810'
+    : '888655212204666881'

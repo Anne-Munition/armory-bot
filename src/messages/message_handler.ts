@@ -1,6 +1,7 @@
 import { Message } from 'discord.js'
 import counts from '../counts'
 import log from '../logger'
+import numberCounter from './numbers'
 import schedulePinning from './schedule_pinning'
 import spoilerTags from './spoiler_tags'
 
@@ -15,6 +16,10 @@ export default async function (msg: Message): Promise<void> {
   if (msg.author.bot) return
 
   spoilerTags(msg).catch((err) => {
+    log.error(err.stack || err.message || err)
+  })
+
+  numberCounter(msg).catch((err) => {
     log.error(err.stack || err.message || err)
   })
 }

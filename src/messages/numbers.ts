@@ -101,19 +101,17 @@ export default async function (msg: Message): Promise<void> {
         results.push({
           name: user.toString(),
           count: top10[i].count,
-          deleted: top10[i].deleted_count,
         })
       else
         results.push({
           name: `@${top10[i].discord_name}`,
           count: top10[i].count,
-          deleted: top10[i].deleted_count,
         })
     }
     // Format the response content
     const content = results
       .map((x) => {
-        return `${x.name} - Count: **${x.count}** - Deleted: **${x.deleted}**`
+        return `${x.count} - ${x.name}`
       })
       .join('\n')
 

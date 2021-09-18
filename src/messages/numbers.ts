@@ -11,7 +11,7 @@ export default async function (msg: Message): Promise<void> {
   // Only in number counting channel
   if (msg.channel.id !== numberChannel) return
   // Delete if not a number
-  if (!/\d+/.test(msg.content)) {
+  if (!/^\d+$/.test(msg.content)) {
     if (msg.deletable) await msg.delete()
     return
   }

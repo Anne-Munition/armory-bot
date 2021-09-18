@@ -12,14 +12,14 @@ const uniqueUsers = 3
 export default async function (msg: Message): Promise<void> {
   // Only in number counting channel
   if (msg.channel.id !== numberChannel) return
-  // Delete if not a number
-  if (!/^\d+$/.test(msg.content)) {
+
+  // Delete message if user posted recently
+  if (lastUsers.includes(msg.author.id)) {
     await deleteUserMistake(msg)
     return
   }
-
-  // Delete message is user posted recently
-  if (lastUsers.includes(msg.author.id)) {
+  // Delete message if not a number
+  if (!/^\d+$/.test(msg.content)) {
     await deleteUserMistake(msg)
     return
   }
@@ -109,17 +109,17 @@ export default async function (msg: Message): Promise<void> {
         })
     }
     // Format the response content
-    const content = results
-      .map((x) => {
-        return `${x.count} - ${x.name}`
-      })
-      .join('\n')
+    const mappedResults = results.map((x) => {
+      return `${x.count} - ${x.name}`
+    })
 
+    // Get time difference string since the first number was posted
     const createdAt = await CountService.time('numberCount')
     let time
     if (createdAt) time = formatTimeDiff(createdAt.toISOString())
 
-    let str = `**Top 10 counters:**\n${content}`
+    // Create statistics string to post
+    let str = `**Top 10 counters:**\n${mappedResults.join('\n')}`
     if (time) str += `\n${time}`
 
     await msg.channel.send({

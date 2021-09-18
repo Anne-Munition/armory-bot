@@ -5,7 +5,7 @@ import NumberUserService from '../database/services/number_user_service'
 import { formatTimeDiff } from '../utilities'
 
 const max = 1e5
-const trigger = 5000
+const trigger = 1000
 
 export default async function (msg: Message): Promise<void> {
   // Only in number counting channel

@@ -71,7 +71,7 @@ export default async function (msg: Message): Promise<void> {
         content:
           ':partying_face: :partying_face: CONGRATULATIONS, YOU DID IT! :partying_face: :partying_face:',
       })
-      .catch((e) => {
+      .catch(() => {
         // Do nothing if congrats message fails
       })
   }

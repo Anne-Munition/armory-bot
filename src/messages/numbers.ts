@@ -8,6 +8,7 @@ const max = 1e5
 const trigger = 1000
 const lastUsers: Snowflake[] = []
 const uniqueUsers = 3
+const recentContent: { [key: string]: NodeJS.Timeout } = {}
 
 export default async function (msg: Message): Promise<void> {
   // Only in number counting channel
@@ -22,6 +23,15 @@ export default async function (msg: Message): Promise<void> {
   if (!/^\d+$/.test(msg.content)) {
     await deleteUserMistake(msg)
     return
+  }
+  // Delete message if content entered recently
+  if (recentContent[msg.content]) {
+    await deleteUserMistake(msg)
+    return
+  } else {
+    recentContent[msg.content] = setTimeout(() => {
+      delete recentContent[msg.content]
+    }, 3000)
   }
 
   // Get current number from the database

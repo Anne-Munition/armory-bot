@@ -183,10 +183,10 @@ async function deleteUserMistake(msg: Message) {
 export async function numbersDeleted(
   msg: Message | PartialMessage,
 ): Promise<void> {
-  const currentNum = await CountService.get('numberCount')
   if (msg.content) {
+    const currentNum = await CountService.get('numberCount')
     const contentNum = parseInt(msg.content)
-    // Sent the correct current number if the current number was deleted and wasn't recently fixed
+    // Send the correct current number if the current number was deleted
     if (currentNum === contentNum && currentNum !== lastDeleted) {
       await msg.channel.send(msg.content)
     }
@@ -196,10 +196,10 @@ export async function numbersDeleted(
 export async function numbersEdited(
   prev: Message | PartialMessage,
 ): Promise<void> {
-  const currentNum = await CountService.get('numberCount')
   if (prev.content) {
+    const currentNum = await CountService.get('numberCount')
     const contentNum = parseInt(prev.content)
-    // Sent the correct current number if the current number was edited and wasn't recently fixed
+    // Send the correct current number if the current number was edited
     if (currentNum === contentNum && currentNum !== lastDeleted) {
       // Delete edited message
       lastDeleted = contentNum

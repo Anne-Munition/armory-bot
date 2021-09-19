@@ -1,4 +1,4 @@
-import { Message, Snowflake } from 'discord.js'
+import { Message, PartialMessage, Snowflake } from 'discord.js'
 import { numberChannel, numberRole } from '../config'
 import CountService from '../database/services/count_service'
 import NumberUserService from '../database/services/number_user_service'
@@ -161,4 +161,17 @@ async function deleteUserMistake(msg: Message) {
   } catch (e) {
     // Do Nothing
   }
+}
+
+export async function numbersDeleted(
+  msg: Message | PartialMessage,
+): Promise<void> {
+  // if (msg.content) await msg.channel.send(msg.content)
+}
+
+export async function numbersEdited(
+  prev: Message | PartialMessage,
+): Promise<void> {
+  // if (prev.deletable) await prev.delete()
+  // if (prev.content) await prev.channel.send(prev.content)
 }

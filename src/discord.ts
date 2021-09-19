@@ -5,6 +5,8 @@ import log from './logger'
 import auditor from './messages/message_auditor'
 import messageHandler from './messages/message_handler'
 import notify from './notifications'
+import { numberChannel } from './config'
+import { numbersDeleted, numbersEdited } from './messages/numbers'
 
 const client = new Client({
   intents: [
@@ -64,10 +66,24 @@ client.on('guildBanRemove', notify.guildBanRemove)
 client.on('messageCreate', messageHandler)
 
 // Emitted whenever a message is deleted.
-client.on('messageDelete', auditor.messageDelete)
+client.on('messageDelete', (msg) => {
+  if (msg.channel.id === numberChannel) {
+    numbersDeleted(msg).catch(() => {
+      // Do Nothing
+    })
+  }
+  auditor.messageDelete(msg)
+})
 
 // Emitted whenever a message is updated - e.g. embed or content change.
-client.on('messageUpdate', auditor.messageUpdate)
+client.on('messageUpdate', (prev, next) => {
+  if (prev.channel.id === numberChannel) {
+    numbersEdited(prev).catch(() => {
+      // Do Nothing
+    })
+  }
+  auditor.messageUpdate(prev, next)
+})
 
 /***** INTERACTION EVENTS *****/
 

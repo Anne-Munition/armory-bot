@@ -4,7 +4,10 @@ function messageDelete(msg: Message | PartialMessage) {
   // TODO
 }
 
-function messageUpdate(msg: Message | PartialMessage) {
+function messageUpdate(
+  prev: Message | PartialMessage,
+  next: Message | PartialMessage,
+) {
   // TODO
 }
 

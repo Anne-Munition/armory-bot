@@ -1,20 +1,28 @@
 import { Message, PartialMessage, Snowflake } from 'discord.js'
 import { numberChannel, numberRole } from '../config'
+import { NumberUserDoc } from '../database/models/number_user_model'
 import CountService from '../database/services/count_service'
 import NumberUserService from '../database/services/number_user_service'
 import { formatTimeDiff } from '../utilities'
 
 const max = 1e5
-const trigger = 1000
+const trigger = process.env.NODE_ENV === 'production' ? 1000 : 5
 const lastUsers: Snowflake[] = []
 const uniqueUsers = process.env.NODE_ENV === 'production' ? 3 : 1
 const recentContent: { [key: number]: NodeJS.Timeout } = {}
 let lastDeleted: number
 let currentNum: number
+const flairCount = process.env.NODE_ENV === 'production' ? 3 : 1
+
+// Get current number on startup
+CountService.get('numberCount').then((num) => {
+  currentNum = num
+})
 
 export default async function (msg: Message): Promise<void> {
   // Only in number counting channel
   if (msg.channel.id !== numberChannel) return
+
   // Delete message if not a number
   if (!/^\d+$/.test(msg.content)) {
     await deleteUserMistake(msg)
@@ -28,6 +36,7 @@ export default async function (msg: Message): Promise<void> {
     await deleteUserMistake(msg)
     return
   }
+
   // Delete message if content entered recently
   if (recentContent[contentNum]) {
     lastDeleted = contentNum
@@ -39,13 +48,15 @@ export default async function (msg: Message): Promise<void> {
     }, 3000)
   }
 
-  // Get current number from the database
-  try {
-    currentNum = await CountService.get('numberCount')
-  } catch (e) {
-    // Delete message if database throws
-    lastDeleted = contentNum
-    if (msg.deletable) await msg.delete()
+  if (currentNum === undefined) {
+    await msg.channel
+      .send({
+        content: '<@84770528526602240>, error getting current count.',
+        allowedMentions: { users: ['84770528526602240'] },
+      })
+      .catch(() => {
+        // Do nothing if message fails
+      })
     return
   }
   const nextNum = currentNum + 1
@@ -56,6 +67,7 @@ export default async function (msg: Message): Promise<void> {
     await deleteUserMistake(msg)
     return
   }
+
   // Delete if over the max number
   if (contentNum > max) {
     lastDeleted = contentNum
@@ -63,113 +75,138 @@ export default async function (msg: Message): Promise<void> {
     return
   }
 
-  // Store the new number
-  // Increment the user count
-  try {
-    await CountService.set('numberCount', nextNum)
-    await NumberUserService.inc(msg.author.id, msg.author.username)
-    currentNum = nextNum
-  } catch (e) {
-    // Delete message if database throws
-    lastDeleted = contentNum
-    if (msg.deletable) await msg.delete()
-    return
-  }
+  // Accept this as the new number
+  currentNum = nextNum
 
   // Manipulate lastUsers array
   lastUsers.push(msg.author.id)
   if (lastUsers.length === uniqueUsers) lastUsers.shift()
 
-  // Lock the channel once max count is reached
-  if (nextNum === max) {
-    // Deny @everyone SEND_MESSAGES permission
-    const guildId = msg.guild?.id
-    if (guildId) {
-      const guild = await msg.client.guilds.cache.get(guildId)
-      const channel = await guild?.channels.fetch(msg.channel.id)
-      try {
-        channel?.permissionOverwrites.set([
-          { id: guildId, deny: 'SEND_MESSAGES', type: 'role' },
-        ])
-      } catch (e) {
-        // Do Nothing
-      }
-    }
-
+  // Store the new number
+  // Increment the user count
+  try {
+    await CountService.set('numberCount', nextNum)
+    await NumberUserService.inc(msg.author.id, msg.author.username)
+  } catch (e) {
     await msg.channel
       .send({
-        content:
-          ':partying_face: :partying_face: CONGRATULATIONS, YOU DID IT! :partying_face: :partying_face:',
+        content: '<@84770528526602240>, database warning.',
+        allowedMentions: { users: ['84770528526602240'] },
       })
       .catch(() => {
-        // Do nothing if congrats message fails
+        // Do nothing if message fails
       })
+  }
+
+  // Lock the channel once max count is reached
+  if (nextNum === max) {
+    try {
+      await lockChannel(msg)
+    } catch (e) {
+      // Do nothing
+    }
   }
 
   // Post stats on trigger or max count
   if (nextNum % trigger === 0 || nextNum === max) {
-    // Get the top 10 counters
-    const top10 = await NumberUserService.top10()
-
-    // Update roles
     try {
-      const guild = msg.guild
-      if (guild) {
-        const role = await guild.roles.fetch(numberRole)
-        // Remove role from all existing members
-        if (role) {
-          const members = role.members.map((x) => x)
-          for (let i = 0; i < members.length; i++) {
-            await members[i].roles.remove(numberRole).catch(() => {
-              // Do Nothing
-            })
-          }
-        }
-        // Give role to top 3 counters
-        for (let i = 0; i < 3; i++) {
-          const topCounter = await guild.members.fetch(top10[i].discord_id)
-          await topCounter.roles.add(numberRole).catch(() => {
-            // Do Nothing
-          })
-        }
-      }
+      await postStats(msg)
     } catch (e) {
-      // Do Nothing
+      // Do nothing
     }
+  }
+}
 
-    // Fetch the user or use the name from the database
-    const results = []
-    for (let i = 0; i < top10.length; i++) {
-      const user = await msg.client.users.fetch(top10[i].discord_id)
-      if (user)
-        results.push({
-          name: user.toString(),
-          count: top10[i].count,
-        })
-      else
-        results.push({
-          name: `@${top10[i].discord_name}`,
-          count: top10[i].count,
-        })
+async function lockChannel(msg: Message): Promise<void> {
+  // Deny @everyone SEND_MESSAGES permission
+  if (msg.guildId) {
+    try {
+      const guild = await msg.client.guilds.cache.get(msg.guildId)
+      const channel = await guild?.channels.fetch(msg.channel.id)
+      channel?.permissionOverwrites.set([
+        { id: msg.guildId, deny: 'SEND_MESSAGES', type: 'role' },
+      ])
+    } catch (e) {
+      // Do nothing if permissions throw
     }
-    // Format the response content
-    const mappedResults = results.map((x) => {
-      return `${x.count} - ${x.name}`
-    })
+  }
 
-    // Get time difference string since the first number was posted
-    const createdAt = await CountService.time('numberCount')
-    let time
-    if (createdAt) time = formatTimeDiff(createdAt.toISOString())
+  await msg.channel.send({
+    content:
+      ':partying_face: :partying_face: CONGRATULATIONS, YOU DID IT! :partying_face: :partying_face:',
+  })
+}
 
-    // Create statistics string to post
-    let str = `**Top 10 counters:**\n${mappedResults.join('\n')}`
-    if (time) str += `\n${time}`
+async function postStats(msg: Message): Promise<void> {
+  // Get the top 10 counters
+  const top10 = await NumberUserService.top10()
+  if (!top10.length) return
 
-    await msg.channel.send({
-      content: str,
-      allowedMentions: { users: [] },
-    })
+  // Update roles
+  try {
+    await updateRoles(msg, top10)
+  } catch (e) {
+    // Do nothing if updating roles throws
+  }
+
+  // Fetch the user or use the name from the database
+  const results = []
+  for (let i = 0; i < top10.length; i++) {
+    const user = await msg.client.users.fetch(top10[i].discord_id)
+    if (user)
+      results.push({
+        name: user.toString(),
+        count: top10[i].count,
+      })
+    else
+      results.push({
+        name: `@${top10[i].discord_name}`,
+        count: top10[i].count,
+      })
+  }
+  // Format the response content
+  const mappedResults = results.map((x) => {
+    return `${x.count} - ${x.name}`
+  })
+
+  // Get time difference string since the first number was posted
+  const createdAt = await CountService.time('numberCount')
+  let time
+  if (createdAt) time = formatTimeDiff(createdAt.toISOString())
+
+  // Create statistics string to post
+  let str = `**Top 10 counters:**\n${mappedResults.join('\n')}`
+  if (time) str += `\n${time}`
+
+  await msg.channel.send({
+    content: str,
+    allowedMentions: { users: [] },
+  })
+}
+
+async function updateRoles(
+  msg: Message,
+  top10: NumberUserDoc[],
+): Promise<void> {
+  const guild = msg.guild
+  if (guild) {
+    const role = await guild.roles.fetch(numberRole)
+    // Remove role from all existing members
+    if (role) {
+      const members = role.members.map((x) => x)
+      for (let i = 0; i < members.length; i++) {
+        await members[i].roles.remove(numberRole).catch(() => {
+          // Do Nothing
+        })
+      }
+    }
+    // Give role to top counters
+    for (let i = 0; i < flairCount; i++) {
+      const topCounter = await guild.members.fetch(top10[i].discord_id)
+      await topCounter.roles.add(numberRole).catch(() => {
+        // Do Nothing
+      })
+    }
   }
 }
 

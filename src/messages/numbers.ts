@@ -194,16 +194,37 @@ async function updateRoles(
     const role = await guild.roles.fetch(numberRole)
     // Remove role from all existing members
     if (role) {
-      const members = role.members.map((x) => x)
-      for (let i = 0; i < members.length; i++) {
-        await members[i].roles.remove(numberRole).catch(() => {
-          // Do Nothing
-        })
-      }
-      // Give role to top counters
+      // Map all the members currently with the role
+      const membersWithRole = role.members.map((x) => x)
+
+      // Get the members that should now have the role
+      const membersToGetRole = []
       for (let i = 0; i < flairCount; i++) {
-        const topCounter = await guild.members.fetch(top10[i].discord_id)
-        await topCounter.roles.add(role).catch(() => {
+        const topCounter = await guild.members
+          .fetch(top10[i].discord_id)
+          .catch(() => null)
+        if (topCounter) membersToGetRole.push(topCounter)
+      }
+
+      // Remove the role from members
+      for (let i = 0; i < membersWithRole.length; i++) {
+        const index = membersToGetRole.findIndex(
+          (x) => x.id === membersWithRole[i].id,
+        )
+        // Remove role from members that are not in the next batch of top counters
+        if (index === -1) {
+          await membersWithRole[i].roles.remove(numberRole).catch(() => {
+            // Do Nothing
+          })
+        } else {
+          // Remove the member from the list of members to add the role to since they already have it
+          membersToGetRole.splice(index, 1)
+        }
+      }
+
+      // Give role to remaining top counters
+      for (let i = 0; i < membersToGetRole.length; i++) {
+        await membersToGetRole[i].roles.add(role).catch(() => {
           // Do Nothing
         })
       }

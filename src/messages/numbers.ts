@@ -1,5 +1,5 @@
 import { Message, Snowflake } from 'discord.js'
-import { numberChannel } from '../config'
+import { numberChannel, numberRole } from '../config'
 import CountService from '../database/services/count_service'
 import NumberUserService from '../database/services/number_user_service'
 import { formatTimeDiff } from '../utilities'
@@ -92,6 +92,31 @@ export default async function (msg: Message): Promise<void> {
   if (nextNum % trigger === 0 || nextNum === max) {
     // Get the top 10 counters
     const top10 = await NumberUserService.top10()
+
+    // Update roles
+    try {
+      const guild = msg.guild
+      if (guild) {
+        const role = await guild.roles.fetch(numberRole)
+        // Remove role from all existing members
+        if (role) {
+          role.members.forEach((member) => {
+            member.roles.remove(numberRole).catch(() => {
+              // Do Nothing
+            })
+          })
+        }
+        // Give role to top 3 counters
+        for (let i = 0; i < 3; i++) {
+          const topCounter = await guild.members.fetch(top10[i].discord_id)
+          await topCounter.roles.add(numberRole).catch(() => {
+            // Do Nothing
+          })
+        }
+      }
+    } catch (e) {
+      // Do Nothing
+    }
 
     // Fetch the user or use the name from the database
     const results = []

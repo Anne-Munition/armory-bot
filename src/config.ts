@@ -26,3 +26,8 @@ export const numberChannel: Snowflake =
   process.env.NODE_ENV === 'production'
     ? '888689437029068810'
     : '888655212204666881'
+
+export const numberRole: Snowflake =
+  process.env.NODE_ENV === 'production'
+    ? '888946210944217109'
+    : '888943005975851049'

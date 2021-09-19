@@ -10,6 +10,7 @@ const lastUsers: Snowflake[] = []
 const uniqueUsers = process.env.NODE_ENV === 'production' ? 3 : 1
 const recentContent: { [key: number]: NodeJS.Timeout } = {}
 let lastDeleted: number
+let currentNum: number
 
 export default async function (msg: Message): Promise<void> {
   // Only in number counting channel
@@ -39,7 +40,6 @@ export default async function (msg: Message): Promise<void> {
   }
 
   // Get current number from the database
-  let currentNum
   try {
     currentNum = await CountService.get('numberCount')
   } catch (e) {
@@ -68,6 +68,7 @@ export default async function (msg: Message): Promise<void> {
   try {
     await CountService.set('numberCount', nextNum)
     await NumberUserService.inc(msg.author.id, msg.author.username)
+    currentNum = nextNum
   } catch (e) {
     // Delete message if database throws
     lastDeleted = contentNum
@@ -184,8 +185,8 @@ async function deleteUserMistake(msg: Message) {
 export async function numbersDeleted(
   msg: Message | PartialMessage,
 ): Promise<void> {
+  if (!currentNum) currentNum = await CountService.get('numberCount')
   if (msg.content) {
-    const currentNum = await CountService.get('numberCount')
     const contentNum = parseInt(msg.content)
     // Send the correct current number if the current number was deleted
     if (currentNum === contentNum && currentNum !== lastDeleted) {
@@ -198,7 +199,7 @@ export async function numbersEdited(
   prev: Message | PartialMessage,
 ): Promise<void> {
   if (prev.content) {
-    const currentNum = await CountService.get('numberCount')
+    if (!currentNum) currentNum = await CountService.get('numberCount')
     const contentNum = parseInt(prev.content)
     // Send the correct current number if the current number was edited
     if (currentNum === contentNum && currentNum !== lastDeleted) {

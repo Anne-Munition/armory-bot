@@ -9,6 +9,7 @@ const trigger = 1000
 const lastUsers: Snowflake[] = []
 const uniqueUsers = 3
 const recentContent: { [key: string]: NodeJS.Timeout } = {}
+let lastFix: number
 
 export default async function (msg: Message): Promise<void> {
   // Only in number counting channel
@@ -176,16 +177,29 @@ async function deleteUserMistake(msg: Message) {
 export async function numbersDeleted(
   msg: Message | PartialMessage,
 ): Promise<void> {
-  if (msg) {
-    // await msg.channel.send(msg.content)
+  const currentNum = await CountService.get('numberCount')
+  if (msg.content) {
+    const contentNum = parseInt(msg.content)
+    // Sent the correct current number if the current number was deleted and wasn't recently fixed
+    if (currentNum === contentNum && currentNum !== lastFix) {
+      lastFix = contentNum
+      await msg.channel.send(msg.content)
+    }
   }
 }
 
 export async function numbersEdited(
   prev: Message | PartialMessage,
 ): Promise<void> {
-  if (prev) {
-    // if (prev.deletable) await prev.delete()
-    // if (prev.content) await prev.channel.send(prev.content)
+  const currentNum = await CountService.get('numberCount')
+  if (prev.content) {
+    const contentNum = parseInt(prev.content)
+    // Sent the correct current number if the current number was edited and wasn't recently fixed
+    if (currentNum === contentNum && currentNum !== lastFix) {
+      lastFix = contentNum
+      // Delete edited message
+      if (prev.deletable) await prev.delete()
+      await prev.channel.send(prev.content)
+    }
   }
 }

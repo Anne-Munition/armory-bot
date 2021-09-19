@@ -7,31 +7,34 @@ import { formatTimeDiff } from '../utilities'
 const max = 1e5
 const trigger = 1000
 const lastUsers: Snowflake[] = []
-const uniqueUsers = 3
-const recentContent: { [key: string]: NodeJS.Timeout } = {}
-let lastFix: number
+const uniqueUsers = 1
+const recentContent: { [key: number]: NodeJS.Timeout } = {}
+let lastDeleted: number
 
 export default async function (msg: Message): Promise<void> {
   // Only in number counting channel
   if (msg.channel.id !== numberChannel) return
-
-  // Delete message if user posted recently
-  if (lastUsers.includes(msg.author.id)) {
-    await deleteUserMistake(msg)
-    return
-  }
   // Delete message if not a number
   if (!/^\d+$/.test(msg.content)) {
     await deleteUserMistake(msg)
     return
   }
+  const contentNum = parseInt(msg.content)
+
+  // Delete message if user posted recently
+  if (lastUsers.includes(msg.author.id)) {
+    lastDeleted = contentNum
+    await deleteUserMistake(msg)
+    return
+  }
   // Delete message if content entered recently
-  if (recentContent[msg.content]) {
+  if (recentContent[contentNum]) {
+    lastDeleted = contentNum
     await deleteUserMistake(msg)
     return
   } else {
-    recentContent[msg.content] = setTimeout(() => {
-      delete recentContent[msg.content]
+    recentContent[contentNum] = setTimeout(() => {
+      delete recentContent[contentNum]
     }, 3000)
   }
 
@@ -41,19 +44,21 @@ export default async function (msg: Message): Promise<void> {
     currentNum = await CountService.get('numberCount')
   } catch (e) {
     // Delete message if database throws
+    lastDeleted = contentNum
     if (msg.deletable) await msg.delete()
     return
   }
   const nextNum = currentNum + 1
-  const contentNum = parseInt(msg.content)
 
   // Delete if not the next number
   if (contentNum !== nextNum) {
+    lastDeleted = contentNum
     await deleteUserMistake(msg)
     return
   }
   // Delete if over the max number
   if (contentNum > max) {
+    lastDeleted = contentNum
     if (msg.deletable) await msg.delete()
     return
   }
@@ -65,6 +70,7 @@ export default async function (msg: Message): Promise<void> {
     await NumberUserService.inc(msg.author.id, msg.author.username)
   } catch (e) {
     // Delete message if database throws
+    lastDeleted = contentNum
     if (msg.deletable) await msg.delete()
     return
   }
@@ -181,8 +187,7 @@ export async function numbersDeleted(
   if (msg.content) {
     const contentNum = parseInt(msg.content)
     // Sent the correct current number if the current number was deleted and wasn't recently fixed
-    if (currentNum === contentNum && currentNum !== lastFix) {
-      lastFix = contentNum
+    if (currentNum === contentNum && currentNum !== lastDeleted) {
       await msg.channel.send(msg.content)
     }
   }
@@ -195,9 +200,9 @@ export async function numbersEdited(
   if (prev.content) {
     const contentNum = parseInt(prev.content)
     // Sent the correct current number if the current number was edited and wasn't recently fixed
-    if (currentNum === contentNum && currentNum !== lastFix) {
-      lastFix = contentNum
+    if (currentNum === contentNum && currentNum !== lastDeleted) {
       // Delete edited message
+      lastDeleted = contentNum
       if (prev.deletable) await prev.delete()
       await prev.channel.send(prev.content)
     }

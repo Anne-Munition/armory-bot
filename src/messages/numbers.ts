@@ -7,7 +7,7 @@ import { formatTimeDiff } from '../utilities'
 const max = 1e5
 const trigger = 1000
 const lastUsers: Snowflake[] = []
-const uniqueUsers = 3
+const uniqueUsers = process.env.NODE_ENV === 'production' ? 3 : 1
 const recentContent: { [key: number]: NodeJS.Timeout } = {}
 let lastDeleted: number
 
@@ -117,11 +117,12 @@ export default async function (msg: Message): Promise<void> {
         const role = await guild.roles.fetch(numberRole)
         // Remove role from all existing members
         if (role) {
-          role.members.forEach((member) => {
-            member.roles.remove(numberRole).catch(() => {
+          const members = role.members.map((x) => x)
+          for (let i = 0; i < members.length; i++) {
+            await members[i].roles.remove(numberRole).catch(() => {
               // Do Nothing
             })
-          })
+          }
         }
         // Give role to top 3 counters
         for (let i = 0; i < 3; i++) {
@@ -188,7 +189,7 @@ export async function numbersDeleted(
     const contentNum = parseInt(msg.content)
     // Send the correct current number if the current number was deleted
     if (currentNum === contentNum && currentNum !== lastDeleted) {
-      await msg.channel.send(msg.content)
+      await msg.channel.send(currentNum.toString())
     }
   }
 }
@@ -204,7 +205,7 @@ export async function numbersEdited(
       // Delete edited message
       lastDeleted = contentNum
       if (prev.deletable) await prev.delete()
-      await prev.channel.send(prev.content)
+      await prev.channel.send(currentNum.toString())
     }
   }
 }

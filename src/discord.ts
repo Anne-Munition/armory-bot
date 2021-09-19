@@ -1,12 +1,12 @@
 import { Client, Intents, Snowflake } from 'discord.js'
+import { numberChannel } from './config'
 import interactionHandler from './interactions/interaction_handler'
 import interactionLoader from './interactions/interaction_loader'
 import log from './logger'
 import auditor from './messages/message_auditor'
 import messageHandler from './messages/message_handler'
-import notify from './notifications'
-import { numberChannel } from './config'
 import { numbersDeleted, numbersEdited } from './messages/numbers'
+import notify from './notifications'
 
 const client = new Client({
   intents: [

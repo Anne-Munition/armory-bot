@@ -1,14 +1,18 @@
 import { Message, PartialMessage } from 'discord.js'
 
 function messageDelete(msg: Message | PartialMessage) {
-  // TODO
+  if (msg) {
+    // TODO
+  }
 }
 
 function messageUpdate(
   prev: Message | PartialMessage,
   next: Message | PartialMessage,
 ) {
-  // TODO
+  if (prev && next) {
+    // TODO
+  }
 }
 
 export default {

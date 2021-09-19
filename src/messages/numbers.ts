@@ -7,7 +7,7 @@ import { formatTimeDiff } from '../utilities'
 const max = 1e5
 const trigger = 1000
 const lastUsers: Snowflake[] = []
-const uniqueUsers = 1
+const uniqueUsers = 3
 const recentContent: { [key: number]: NodeJS.Timeout } = {}
 let lastDeleted: number
 

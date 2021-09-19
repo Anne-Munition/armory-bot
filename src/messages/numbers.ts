@@ -24,7 +24,7 @@ export default async function (msg: Message): Promise<void> {
   if (msg.channel.id !== numberChannel) return
 
   // Delete message if not a number
-  if (!/^\d+$/.test(msg.content)) {
+  if (!/^[1-9]\d+$/.test(msg.content)) {
     await deleteUserMistake(msg)
     return
   }

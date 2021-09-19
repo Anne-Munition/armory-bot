@@ -12,7 +12,7 @@ const uniqueUsers = process.env.NODE_ENV === 'production' ? 3 : 1
 const recentContent: { [key: number]: NodeJS.Timeout } = {}
 let lastDeleted: number
 let currentNum: number
-const flairCount = process.env.NODE_ENV === 'production' ? 3 : 1
+const flairCount = process.env.NODE_ENV === 'production' ? 5 : 1
 
 // Get current number on startup
 CountService.get('numberCount').then((num) => {
@@ -200,13 +200,13 @@ async function updateRoles(
           // Do Nothing
         })
       }
-    }
-    // Give role to top counters
-    for (let i = 0; i < flairCount; i++) {
-      const topCounter = await guild.members.fetch(top10[i].discord_id)
-      await topCounter.roles.add(numberRole).catch(() => {
-        // Do Nothing
-      })
+      // Give role to top counters
+      for (let i = 0; i < flairCount; i++) {
+        const topCounter = await guild.members.fetch(top10[i].discord_id)
+        await topCounter.roles.add(role).catch(() => {
+          // Do Nothing
+        })
+      }
     }
   }
 }

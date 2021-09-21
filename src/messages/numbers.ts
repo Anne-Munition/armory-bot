@@ -3,45 +3,44 @@ import { numberChannel, numberRole } from '../config'
 import { NumberUserDoc } from '../database/models/number_user_model'
 import CountService from '../database/services/count_service'
 import NumberUserService from '../database/services/number_user_service'
-import { formatTimeDiff } from '../utilities'
+import { formatTimeDiff, ignore } from '../utilities'
+import Count from './Count'
 
 const max = 1e5
 const trigger = process.env.NODE_ENV === 'production' ? 1000 : 5
 const lastUsers: Snowflake[] = []
 const uniqueUsers = process.env.NODE_ENV === 'production' ? 3 : 1
 const recentContent: { [key: number]: NodeJS.Timeout } = {}
-let lastDeleted: number
-let currentNum: number
 const flairCount = process.env.NODE_ENV === 'production' ? 5 : 1
+const numberReg = /^[1-9](\d+)?$/
+const botDeletedMessages: string[] = []
 
 // Get current number on startup
-CountService.get('numberCount').then((num) => {
-  currentNum = num
-})
+Count.init()
 
 export default async function (msg: Message): Promise<void> {
   // Only in number counting channel
   if (msg.channel.id !== numberChannel) return
+  // Don't process bot messages
+  if (msg.author.bot) return
 
   // Delete message if not a number
   // No leading 0s
-  if (!/^[1-9](\d+)?$/.test(msg.content)) {
-    await deleteUserMistake(msg)
+  if (!numberReg.test(msg.content)) {
+    deleteUserMistake(msg)
     return
   }
   const contentNum = parseInt(msg.content)
 
   // Delete message if user posted recently
   if (lastUsers.includes(msg.author.id)) {
-    lastDeleted = contentNum
-    await deleteUserMistake(msg)
+    deleteUserMistake(msg)
     return
   }
 
   // Delete message if content entered recently
   if (recentContent[contentNum]) {
-    lastDeleted = contentNum
-    await deleteUserMistake(msg)
+    deleteUserMistake(msg)
     return
   } else {
     recentContent[contentNum] = setTimeout(() => {
@@ -49,35 +48,22 @@ export default async function (msg: Message): Promise<void> {
     }, 3000)
   }
 
-  if (currentNum === undefined) {
-    await msg.channel
-      .send({
-        content: '<@84770528526602240>, error getting current count.',
-        allowedMentions: { users: ['84770528526602240'] },
-      })
-      .catch(() => {
-        // Do nothing if message fails
-      })
-    return
-  }
-  const nextNum = currentNum + 1
+  const nextNum = Count.get() + 1
 
   // Delete if not the next number
   if (contentNum !== nextNum) {
-    lastDeleted = contentNum
-    await deleteUserMistake(msg)
+    deleteUserMistake(msg)
     return
   }
 
   // Delete if over the max number
   if (contentNum > max) {
-    lastDeleted = contentNum
-    if (msg.deletable) await msg.delete()
+    deleteMsg(msg)
     return
   }
 
-  // Accept this as the new number
-  currentNum = nextNum
+  // Increment the count
+  Count.inc()
 
   // Manipulate lastUsers array
   lastUsers.push(msg.author.id)
@@ -89,32 +75,17 @@ export default async function (msg: Message): Promise<void> {
     await CountService.set('numberCount', nextNum)
     await NumberUserService.inc(msg.author.id, msg.author.username)
   } catch (e) {
-    await msg.channel
-      .send({
-        content: '<@84770528526602240>, database warning.',
-        allowedMentions: { users: ['84770528526602240'] },
-      })
-      .catch(() => {
-        // Do nothing if message fails
-      })
+    // Do Nothing
   }
 
   // Lock the channel once max count is reached
   if (nextNum === max) {
-    try {
-      await lockChannel(msg)
-    } catch (e) {
-      // Do nothing
-    }
+    await lockChannel(msg).catch(ignore)
   }
 
   // Post stats on trigger or max count
   if (nextNum % trigger === 0 || nextNum === max) {
-    try {
-      await postStats(msg)
-    } catch (e) {
-      // Do nothing
-    }
+    await postStats(msg).catch(ignore)
   }
 }
 
@@ -124,7 +95,7 @@ async function lockChannel(msg: Message): Promise<void> {
     try {
       const guild = await msg.client.guilds.cache.get(msg.guildId)
       const channel = await guild?.channels.fetch(msg.channel.id)
-      channel?.permissionOverwrites.set([
+      await channel?.permissionOverwrites.set([
         { id: msg.guildId, deny: 'SEND_MESSAGES', type: 'role' },
       ])
     } catch (e) {
@@ -132,10 +103,12 @@ async function lockChannel(msg: Message): Promise<void> {
     }
   }
 
-  await msg.channel.send({
-    content:
-      ':partying_face: :partying_face: CONGRATULATIONS, YOU DID IT! :partying_face: :partying_face:',
-  })
+  await msg.channel
+    .send({
+      content:
+        ':partying_face: :partying_face: CONGRATULATIONS, YOU DID IT! :partying_face: :partying_face:',
+    })
+    .catch(ignore)
 }
 
 async function postStats(msg: Message): Promise<void> {
@@ -144,16 +117,14 @@ async function postStats(msg: Message): Promise<void> {
   if (!top10.length) return
 
   // Update roles
-  try {
-    await updateRoles(msg, top10)
-  } catch (e) {
-    // Do nothing if updating roles throws
-  }
+  await updateRoles(msg, top10).catch(ignore)
 
   // Fetch the user or use the name from the database
   const results = []
   for (let i = 0; i < top10.length; i++) {
-    const user = await msg.client.users.fetch(top10[i].discord_id)
+    const user = await msg.client.users
+      .fetch(top10[i].discord_id)
+      .catch(() => null)
     if (user)
       results.push({
         name: user.toString(),
@@ -171,7 +142,7 @@ async function postStats(msg: Message): Promise<void> {
   })
 
   // Get time difference string since the first number was posted
-  const createdAt = await CountService.time('numberCount')
+  const createdAt = await CountService.time('numberCount').catch(ignore)
   let time
   if (createdAt) time = formatTimeDiff(createdAt.toISOString())
 
@@ -179,10 +150,12 @@ async function postStats(msg: Message): Promise<void> {
   let str = `**Top 10 counters:**\n${mappedResults.join('\n')}`
   if (time) str += `\n${time}`
 
-  await msg.channel.send({
-    content: str,
-    allowedMentions: { users: [] },
-  })
+  await msg.channel
+    .send({
+      content: str,
+      allowedMentions: { users: [] },
+    })
+    .catch(ignore)
 }
 
 async function updateRoles(
@@ -191,7 +164,7 @@ async function updateRoles(
 ): Promise<void> {
   const guild = msg.guild
   if (guild) {
-    const role = await guild.roles.fetch(numberRole)
+    const role = await guild.roles.fetch(numberRole).catch(() => null)
     // Remove role from all existing members
     if (role) {
       // Map all the members currently with the role
@@ -213,9 +186,7 @@ async function updateRoles(
         )
         // Remove role from members that are not in the next batch of top counters
         if (index === -1) {
-          await membersWithRole[i].roles.remove(numberRole).catch(() => {
-            // Do Nothing
-          })
+          await membersWithRole[i].roles.remove(numberRole).catch(ignore)
         } else {
           // Remove the member from the list of members to add the role to since they already have it
           membersToGetRole.splice(index, 1)
@@ -224,32 +195,33 @@ async function updateRoles(
 
       // Give role to remaining top counters
       for (let i = 0; i < membersToGetRole.length; i++) {
-        await membersToGetRole[i].roles.add(role).catch(() => {
-          // Do Nothing
-        })
+        await membersToGetRole[i].roles.add(role).catch(ignore)
       }
     }
   }
 }
 
-async function deleteUserMistake(msg: Message) {
-  if (msg.deletable) await msg.delete()
-  try {
-    await NumberUserService.incDeleted(msg.author.id, msg.author.username)
-  } catch (e) {
-    // Do Nothing
+function deleteUserMistake(msg: Message): void {
+  deleteMsg(msg)
+  NumberUserService.incDeleted(msg.author.id, msg.author.username).catch(ignore)
+}
+
+function deleteMsg(msg: Message): void {
+  if (msg.deletable) {
+    msg.delete().catch(ignore)
+    botDeletedMessages.push(msg.id)
+    if (botDeletedMessages.length > 50) botDeletedMessages.shift()
   }
 }
 
 export async function numbersDeleted(
   msg: Message | PartialMessage,
 ): Promise<void> {
-  if (!currentNum) currentNum = await CountService.get('numberCount')
+  if (botDeletedMessages.includes(msg.id)) return
   if (msg.content) {
-    const contentNum = parseInt(msg.content)
-    // Send the correct current number if the current number was deleted
-    if (currentNum === contentNum && currentNum !== lastDeleted) {
-      await msg.channel.send(currentNum.toString())
+    const count = Count.get().toString()
+    if (count === msg.content) {
+      await msg.channel.send(count)
     }
   }
 }
@@ -258,14 +230,10 @@ export async function numbersEdited(
   prev: Message | PartialMessage,
 ): Promise<void> {
   if (prev.content) {
-    if (!currentNum) currentNum = await CountService.get('numberCount')
-    const contentNum = parseInt(prev.content)
-    // Send the correct current number if the current number was edited
-    if (currentNum === contentNum && currentNum !== lastDeleted) {
-      // Delete edited message
-      lastDeleted = contentNum
-      if (prev.deletable) await prev.delete()
-      await prev.channel.send(currentNum.toString())
+    const count = Count.get().toString()
+    if (count === prev.content) {
+      deleteMsg(prev as Message)
+      prev.channel.send(count).catch(ignore)
     }
   }
 }

@@ -126,3 +126,7 @@ export async function palette(
   const vibrant = pal?.Vibrant?.rgb
   return vibrant || lightVibrant || null
 }
+
+export function ignore(): void {
+  // Do Nothing
+}

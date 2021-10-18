@@ -11,6 +11,19 @@ export const info: CmdInfo = {
   editablePermissions: true,
 }
 
+export const permissions: CmdPerms = [
+  {
+    id: '<Discord.Snowflake>process.env.OWNER_ID',
+    type: 'USER',
+    permission: true,
+  },
+  {
+    id: '84778943529365504',
+    type: 'ROLE',
+    permission: true,
+  },
+]
+
 export const structure: CmdStructure = {
   name: 'twitchinfo',
   description: 'Get the subscription status of a Twitch viewer by name or id.',

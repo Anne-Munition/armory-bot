@@ -1,3 +1,4 @@
+import Discord from 'discord.js'
 import * as twitch from '../twitch/twitch_api'
 import { capitalize, displayName } from '../utilities'
 
@@ -13,7 +14,7 @@ export const info: CmdInfo = {
 
 export const permissions: CmdPerms = [
   {
-    id: '<Discord.Snowflake>process.env.OWNER_ID',
+    id: <Discord.Snowflake>process.env.OWNER_ID,
     type: 'USER',
     permission: true,
   },

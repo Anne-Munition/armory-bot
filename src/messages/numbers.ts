@@ -1,12 +1,13 @@
-import { Message, PartialMessage, Snowflake } from 'discord.js'
+import { Message, PartialMessage, Snowflake, TextChannel } from 'discord.js'
 import { numberChannel, numberRole } from '../config'
 import { NumberUserDoc } from '../database/models/number_user_model'
 import CountService from '../database/services/count_service'
 import NumberUserService from '../database/services/number_user_service'
+import client from '../discord'
 import { formatTimeDiff, ignore } from '../utilities'
 import Count from './Count'
 
-const max = 1e5
+export const max = process.env.NODE_ENV === 'production' ? 1e5 : 100
 const trigger = process.env.NODE_ENV === 'production' ? 1000 : 5
 const lastUsers: Snowflake[] = []
 const uniqueUsers = process.env.NODE_ENV === 'production' ? 3 : 1
@@ -14,9 +15,6 @@ const recentContent: { [key: number]: NodeJS.Timeout } = {}
 const flairCount = process.env.NODE_ENV === 'production' ? 5 : 1
 const numberReg = /^[1-9](\d+)?$/
 const botDeletedMessages: string[] = []
-
-// Get current number on startup
-Count.init()
 
 export default async function (msg: Message): Promise<void> {
   // Only in number counting channel
@@ -89,19 +87,31 @@ export default async function (msg: Message): Promise<void> {
   }
 }
 
+export async function lock(): Promise<void> {
+  try {
+    const channel = client.channels.cache.get(numberChannel) as TextChannel
+    await channel.permissionOverwrites.set([
+      { id: channel.guild.id, deny: 'SEND_MESSAGES', type: 'role' },
+    ])
+  } catch (e) {
+    // Do nothing if permissions throw
+  }
+}
+
+export async function unlock(): Promise<void> {
+  try {
+    const channel = (await client.channels.fetch(numberChannel)) as TextChannel
+    await channel.permissionOverwrites.set([
+      { id: channel.guild.id, allow: 'SEND_MESSAGES', type: 'role' },
+    ])
+  } catch (e) {
+    // Do nothing if permissions throw
+  }
+}
+
 async function lockChannel(msg: Message): Promise<void> {
   // Deny @everyone SEND_MESSAGES permission
-  if (msg.guildId) {
-    try {
-      const guild = await msg.client.guilds.cache.get(msg.guildId)
-      const channel = await guild?.channels.fetch(msg.channel.id)
-      await channel?.permissionOverwrites.set([
-        { id: msg.guildId, deny: 'SEND_MESSAGES', type: 'role' },
-      ])
-    } catch (e) {
-      // Do nothing if permissions throw
-    }
-  }
+  await lock()
 
   await msg.channel
     .send({

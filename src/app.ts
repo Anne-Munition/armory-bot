@@ -3,8 +3,10 @@ import * as database from './database'
 import * as discord from './discord'
 import * as timeouts from './timeouts'
 import * as twitch from './twitch/twitch'
+import * as token from './twitch_token'
 
 export async function start(): Promise<void> {
+  await token.fetchToken()
   await database.connect()
   await commandLoader.loadAllCommands()
   // await commandLoader.loadCommand('permissions')

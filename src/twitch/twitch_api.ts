@@ -1,9 +1,11 @@
 import axios from 'axios'
+import * as token from '../twitch_token'
 
 function helixHeaders(): { [key: string]: string } {
+  const keys = token.getToken()
   return {
-    authorization: `Bearer ${process.env.TWITCH_ACCESS_TOKEN}`,
-    'client-id': process.env.TWITCH_CLIENT_ID || '',
+    authorization: `Bearer ${keys.access_token}`,
+    'client-id': keys.client_id,
   }
 }
 

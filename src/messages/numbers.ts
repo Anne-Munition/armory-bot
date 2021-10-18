@@ -90,9 +90,9 @@ export default async function (msg: Message): Promise<void> {
 export async function lock(): Promise<void> {
   try {
     const channel = client.channels.cache.get(numberChannel) as TextChannel
-    await channel.permissionOverwrites.set([
-      { id: channel.guild.id, deny: 'SEND_MESSAGES', type: 'role' },
-    ])
+    await channel.permissionOverwrites.edit(channel.guild.id, {
+      SEND_MESSAGES: false,
+    })
   } catch (e) {
     // Do nothing if permissions throw
   }
@@ -101,9 +101,9 @@ export async function lock(): Promise<void> {
 export async function unlock(): Promise<void> {
   try {
     const channel = (await client.channels.fetch(numberChannel)) as TextChannel
-    await channel.permissionOverwrites.set([
-      { id: channel.guild.id, allow: 'SEND_MESSAGES', type: 'role' },
-    ])
+    await channel.permissionOverwrites.edit(channel.guild.id, {
+      SEND_MESSAGES: true,
+    })
   } catch (e) {
     // Do nothing if permissions throw
   }

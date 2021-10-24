@@ -1,4 +1,5 @@
 import { Message } from 'discord.js'
+import { legacyReactionWebhookId } from '../config'
 import counts from '../counts'
 import log from '../logger'
 import numberCounter from './numbers'
@@ -12,6 +13,12 @@ export default async function (msg: Message): Promise<void> {
     log.error(err.stack || err.message || err)
   })
   if (wasSchedule) return
+
+  if (msg.author.id === legacyReactionWebhookId) {
+    await msg.react('👎')
+    await msg.react('👍')
+    await msg.react('☑️')
+  }
 
   if (msg.author.bot) return
 

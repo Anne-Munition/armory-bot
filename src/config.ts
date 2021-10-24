@@ -31,3 +31,8 @@ export const numberRole: Snowflake =
   process.env.NODE_ENV === 'production'
     ? '888946210944217109'
     : '888943005975851049'
+
+export const legacyReactionWebhookId: Snowflake =
+  process.env.NODE_ENV === 'production'
+    ? '901235965216051210'
+    : '887447915440779284'

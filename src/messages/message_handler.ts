@@ -18,6 +18,7 @@ export default async function (msg: Message): Promise<void> {
     await msg.react('👎')
     await msg.react('👍')
     await msg.react('☑️')
+    await msg.react('❌')
   }
 
   if (msg.author.bot) return

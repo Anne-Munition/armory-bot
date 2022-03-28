@@ -84,6 +84,6 @@ export const run: CmdRun = async (interaction): Promise<void> => {
         return `**${count}** ⬆️: <https://discord.com/channels/${interaction.guildId}/${amaChannelId}/${m.id}>`
       })
       .filter((x) => x)
-      .join('/n'),
+      .join('\n'),
   })
 }

@@ -73,7 +73,7 @@ export const run: CmdRun = async (interaction): Promise<void> => {
   })
 
   upvotes.sort((a, b) => b - a)
-  const t = Array.from(upvotes).slice(0, count)
+  const t = Array.from(upvotes).slice(0, count - 1)
   const slicedUpvotes = new Discord.Collection(t)
 
   await interaction.editReply({

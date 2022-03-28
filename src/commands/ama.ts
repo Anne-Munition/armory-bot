@@ -1,4 +1,4 @@
-import Discord from "discord.js";
+import Discord from 'discord.js'
 
 export const info: CmdInfo = {
   global: false,
@@ -23,11 +23,16 @@ export const structure: CmdStructure = {
   ],
 }
 
+const amaChannelId =
+  process.env.NODE_ENV === 'production'
+    ? '957806150080938107'
+    : '957826492304343050'
+
 export const run: CmdRun = async (interaction): Promise<void> => {
   const channelId = interaction.channelId
-  if (channelId !== '957806150080938107') {
+  if (channelId !== amaChannelId) {
     await interaction.reply({
-      content: `This command only works in the <#957806150080938107> channel.`,
+      content: `This command only works in the <#${amaChannelId}> channel.`,
       ephemeral: true,
     })
     return

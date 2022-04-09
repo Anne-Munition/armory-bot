@@ -25,7 +25,7 @@
     "getos": "^3.2.1",
     "gm": "^1.23.1",
     "mathjs": "^7.0.2",
-    "moment": "^2.27.0",
+    "moment": "^2.29.2",
     "moment-timezone": "^0.5.31",
     "mongoose": "^5.9.20",
     "node-vibrant": "^3.1.5",

@@ -9,8 +9,6 @@ type Commands = import('discord.js').Collection<
 interface CmdInfo {
   global: boolean
   guilds?: import('discord.js').Snowflake[]
-  defaultPermission: boolean
-  editablePermissions: boolean
 }
 
 type CmdRun = (

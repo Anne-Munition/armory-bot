@@ -4,8 +4,6 @@ import log from '../logger'
 
 export const info: CmdInfo = {
   global: true,
-  defaultPermission: true,
-  editablePermissions: true,
 }
 
 export const structure: CmdStructure = {

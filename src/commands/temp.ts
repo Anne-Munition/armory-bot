@@ -2,8 +2,6 @@ import tuc from 'temp-units-conv'
 
 export const info: CmdInfo = {
   global: true,
-  defaultPermission: true,
-  editablePermissions: true,
 }
 
 const tempChoices = [

@@ -13,17 +13,7 @@ dayjs.extend(duration)
 export const info: CmdInfo = {
   global: false,
   guilds: ['140025699867164673'],
-  defaultPermission: false,
-  editablePermissions: false,
 }
-
-export const permissions: CmdPerms = [
-  {
-    id: <Discord.Snowflake>process.env.OWNER_ID,
-    type: 'USER',
-    permission: true,
-  },
-]
 
 export const structure: CmdStructure = {
   name: 'stats',

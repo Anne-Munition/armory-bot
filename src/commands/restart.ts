@@ -1,20 +1,9 @@
-import { Snowflake } from 'discord.js'
 import * as app from '../app'
 
 export const info: CmdInfo = {
   global: false,
   guilds: ['140025699867164673'],
-  defaultPermission: false,
-  editablePermissions: false,
 }
-
-export const permissions: CmdPerms = [
-  {
-    id: <Snowflake>process.env.OWNER_ID,
-    type: 'USER',
-    permission: true,
-  },
-]
 
 export const structure: CmdStructure = {
   name: 'restart',

@@ -8,8 +8,6 @@ export const info: CmdInfo = {
     '84764735832068096', // Armory
     '140025699867164673', // DBKynd
   ],
-  defaultPermission: true,
-  editablePermissions: true,
 }
 
 export const structure: CmdStructure = {

@@ -1,4 +1,3 @@
-import Discord from 'discord.js'
 import * as twitch from '../twitch/twitch_api'
 import { capitalize, displayName } from '../utilities'
 
@@ -8,22 +7,7 @@ export const info: CmdInfo = {
     '84764735832068096', // Armory
     '140025699867164673', // DBKynd
   ],
-  defaultPermission: false,
-  editablePermissions: true,
 }
-
-export const permissions: CmdPerms = [
-  {
-    id: <Discord.Snowflake>process.env.OWNER_ID,
-    type: 'USER',
-    permission: true,
-  },
-  {
-    id: '84778943529365504',
-    type: 'ROLE',
-    permission: true,
-  },
-]
 
 export const structure: CmdStructure = {
   name: 'twitchinfo',

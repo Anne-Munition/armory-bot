@@ -45,34 +45,7 @@ async function loadCommand(name: string): Promise<void> {
     log.warn(`The '${name}' command is missing the 'run' function.`)
     return
   }
-  cmd.structure.defaultPermission = cmd.info.defaultPermission
-  if (!cmd.permissions) cmd.permissions = []
-  const ids = cmd.permissions.map((x) => x.id)
-  /*const overwrites = await CmdPerm.getByCmd(name)
-  log.debug(
-    `${overwrites.length} permission overwrites found for '${name}' command`,
-  )
-  overwrites.forEach((overwrite) => {
-    const id = overwrite.permission.id
-    const index = ids.indexOf(id)
-    log.debug(`perm overwrite: ${overwrite.permission.type} permission ${id}`)
-    if (index > -1) {
-      const oldPerm = cmd.permissions?.[index]
-      if (overwrite.permission.permission !== oldPerm?.permission) {
-        log.debug(
-          `perm overwrite: ${overwrite.permission.type} permission ${id}: removing permission ${oldPerm?.permission}`,
-        )
-        cmd.permissions?.splice(index, 1)
-        ids.splice(index, 1)
-      }
-    }
-    log.debug(
-      `perm overwrite: ${overwrite.permission.type} permission ${id}: adding permission ${overwrite.permission.permission}`,
-    )
-    cmd.permissions?.push(overwrite.permission)
-    ids.push(id)
-  })
-  if (!cmd.permissions.length) delete cmd.permissions*/
+  
   commands.set(name, { cmd })
 }
 

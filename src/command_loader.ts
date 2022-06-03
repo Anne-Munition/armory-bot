@@ -45,7 +45,7 @@ async function loadCommand(name: string): Promise<void> {
     log.warn(`The '${name}' command is missing the 'run' function.`)
     return
   }
-  
+
   commands.set(name, { cmd })
 }
 

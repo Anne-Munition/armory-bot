@@ -1,7 +1,5 @@
 export const info: CmdInfo = {
   global: true,
-  defaultPermission: false,
-  editablePermissions: true,
 }
 
 export const structure: CmdStructure = {

@@ -7,8 +7,6 @@ import log from '../logger'
 
 export const info: CmdInfo = {
   global: true,
-  defaultPermission: true,
-  editablePermissions: true,
 }
 
 export const structure: CmdStructure = {
@@ -163,7 +161,7 @@ async function getNotificationDoc(
 
 function getTarget(interaction: Discord.CommandInteraction): {
   targetChannelId: string
-  targetChannel: Discord.Channel
+  targetChannel: Discord.AnyChannel
 } {
   const targetChannelId =
     interaction.options.getChannel('channel')?.id || interaction.channelId

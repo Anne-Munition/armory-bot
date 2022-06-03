@@ -7,8 +7,6 @@ import log from '../logger'
 
 export const info: CmdInfo = {
   global: true,
-  defaultPermission: false,
-  editablePermissions: true,
 }
 
 export const structure: CmdStructure = {
@@ -161,7 +159,7 @@ async function getAuditChannel(
 
 function getTarget(interaction: Discord.CommandInteraction): {
   targetChannelId: string
-  targetChannel: Discord.Channel
+  targetChannel: Discord.AnyChannel
 } {
   const targetChannelId =
     interaction.options.getChannel('channel')?.id || interaction.channelId

@@ -1,7 +1,5 @@
 export const info: CmdInfo = {
   global: true,
-  defaultPermission: false,
-  editablePermissions: true,
 }
 
 export const structure: CmdStructure = {
@@ -36,7 +34,8 @@ export const run: CmdRun = async (interaction): Promise<void> => {
   ) {
     return
   }
-  if (chanToPostIn.isText() || chanToPostIn.isThread()) {
+  if (chanToPostIn.isText()) {
+    // TODO: Threads?
     await chanToPostIn.send(message)
     await interaction.reply({ content: 'Done', ephemeral: true })
   } else {

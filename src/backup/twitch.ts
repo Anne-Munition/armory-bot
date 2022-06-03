@@ -10,8 +10,6 @@ import { displayName, makePossessive } from '../utilities'
 
 export const info: CmdInfo = {
   global: true,
-  defaultPermission: false,
-  editablePermissions: true,
 }
 
 export const structure: CmdStructure = {
@@ -176,7 +174,7 @@ async function getDocument(
 
 function getTarget(interaction: Discord.CommandInteraction): {
   targetChannelId: string
-  targetChannel: Discord.Channel
+  targetChannel: Discord.AnyChannel
 } {
   const targetChannelId =
     interaction.options.getChannel('discord_channel')?.id ||

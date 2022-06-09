@@ -1,12 +1,8 @@
-import dayjs from 'dayjs'
-import duration from 'dayjs/plugin/duration'
-import relativeTime from 'dayjs/plugin/relativeTime'
+import humanizeDuration from 'humanize-duration'
+import { Duration } from 'luxon'
 import { muteRole, timeoutCmdChannel } from '../config'
 import Timeout from '../database/services/timeout_service'
 import * as timeouts from '../timeouts'
-
-dayjs.extend(duration)
-dayjs.extend(relativeTime)
 
 export const info: CmdInfo = {
   global: false,
@@ -164,7 +160,7 @@ export const run: CmdRun = async (interaction): Promise<void> => {
         return
       }
 
-      const ms = dayjs.duration(duration, unit).asMilliseconds()
+      const ms = Duration.fromObject({ [unit]: duration }).toMillis()
       await timeouts.add(target.id, guildId, ms, targetString)
       await member.roles.add(muteRole)
 
@@ -190,9 +186,8 @@ export const run: CmdRun = async (interaction): Promise<void> => {
 
 function getExpiry(date: Date): string {
   const iso = new Date(date).toISOString()
-  const duration = dayjs.duration(
+  const duration = Duration.fromMillis(
     new Date(date).valueOf() - new Date().valueOf(),
   )
-  const relative = duration.humanize(true)
-  return `\`\`${iso}\`\` - ${relative}`
+  return `\`\`${iso}\`\` - ${humanizeDuration(duration.toMillis())}`
 }

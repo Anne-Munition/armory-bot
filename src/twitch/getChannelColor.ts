@@ -28,7 +28,7 @@ export default async function (
     const { hex } = rgb2hex(style['backgroundColor'])
     log.debug(`got channel color from css: ${hex}`)
     return hex as HexColorString
-  } catch (err) {
+  } catch (err: any) {
     log.error(err.stack || err.message || err)
   }
 
@@ -38,7 +38,7 @@ export default async function (
     const { hex } = rgb2hex(`rgb(${rgb.join(',')})`)
     log.debug(`got channel color from profile image: ${hex}`)
     return hex as HexColorString
-  } catch (err) {
+  } catch (err: any) {
     log.error(err.stack || err.message || err)
   }
 }

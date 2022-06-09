@@ -1,12 +1,9 @@
 import axios from 'axios'
-import dayjs from 'dayjs'
-import duration, { Duration } from 'dayjs/plugin/duration'
 import { Message, Snowflake } from 'discord.js'
+import { DateTime, Duration, DurationObjectUnits } from 'luxon'
 import Vibrant from 'node-vibrant'
 import client from './discord'
 import log from './logger'
-
-dayjs.extend(duration)
 
 export function capitalize(word: string): string {
   return word.replace(/\b\w/g, (l) => l.toUpperCase())
@@ -87,28 +84,28 @@ export async function ownerError(
 
 // Get the time difference from a time to now
 export function formatTimeDiff(time: string): string {
-  const diff = dayjs().diff(dayjs(time))
-  return formatDuration(dayjs.duration(diff))
+  const diff = DateTime.now().diff(DateTime.fromISO(time))
+  return formatDuration(diff)
 }
 
 // Get a long form string representation of a duration
-export function formatDuration(time: Duration): string {
+export function formatDuration(duration: Duration): string {
+  const time = duration
+    .shiftTo('years', 'months', 'days', 'hours', 'minutes', 'seconds')
+    .toObject()
   let str = ''
-  const years = time.years()
-  if (years > 0) {
-    str += `${years} year${years === 1 ? '' : 's'} `
-  }
-  const months = time.months()
-  if (months > 0) {
-    str += `${months} month${months === 1 ? '' : 's'} `
-  }
-  const days = time.days()
-  if (days > 0) {
-    str += `${days} day${days === 1 ? '' : 's'} `
-  }
-  str += `${time.hours()} hour${time.hours() === 1 ? '' : 's'} `
-  str += `${time.minutes()} minute${time.minutes() === 1 ? '' : 's'} `
-  str += `${time.seconds()} second${time.seconds() === 1 ? '' : 's'} `
+  const years = time.years || 0
+  const months = time.months || 0
+  const days = time.days || 0
+  const hours = time.hours || 0
+  const minutes = time.minutes || 0
+  const seconds = Math.floor(time.seconds || 0)
+  if (years > 0) str += `${years} year${years === 1 ? '' : 's'} `
+  if (months > 0) str += `${months} month${months === 1 ? '' : 's'} `
+  if (days > 0) str += `${days} day${days === 1 ? '' : 's'} `
+  str += `${hours} hour${hours === 1 ? '' : 's'} `
+  str += `${minutes} minute${minutes === 1 ? '' : 's'} `
+  str += `${seconds} second${seconds === 1 ? '' : 's'} `
   return str
 }
 

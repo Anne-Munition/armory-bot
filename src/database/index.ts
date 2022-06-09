@@ -1,14 +1,11 @@
-import mongoose, { ConnectionOptions } from 'mongoose'
+import mongoose, { ConnectOptions } from 'mongoose'
 import { mongoUrl } from '../config'
 import log from '../logger'
 import { ownerError } from '../utilities'
 
 mongoose.Promise = global.Promise
 
-const options: ConnectionOptions = {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useFindAndModify: false,
+const options: ConnectOptions = {
   keepAlive: true,
   connectTimeoutMS: 30000,
 }

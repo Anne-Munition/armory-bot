@@ -28,7 +28,7 @@ export const run: CmdRun = async (interaction): Promise<void> => {
   try {
     const result = math.evaluate(expression)
     await interaction.reply(`${parsed} = **${result}**`)
-  } catch (err) {
+  } catch (err: any) {
     log.warn(`Error with math.evaluate(): '${parsed}' ${err.message}`)
     const codeBlock = Discord.Formatters.codeBlock('js', err)
     await interaction.reply({

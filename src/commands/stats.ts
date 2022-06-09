@@ -1,14 +1,11 @@
 import os from 'os'
 import util from 'util'
-import dayjs from 'dayjs'
-import duration from 'dayjs/plugin/duration'
 import Discord from 'discord.js'
 import getos from 'getos'
+import { Duration } from 'luxon'
 import pidusage from 'pidusage'
 import counts from '../counts'
 import { capitalize, formatDuration } from '../utilities'
-
-dayjs.extend(duration)
 
 export const info: CmdInfo = {
   global: false,
@@ -26,11 +23,11 @@ export const run: CmdRun = async (interaction): Promise<void> => {
   const client = interaction.client
   const thisOs = (await getOs()).os
 
-  const nodeUp = dayjs.duration(process.uptime() * 1000)
+  const nodeUp = Duration.fromMillis(process.uptime() * 1000)
   const totalMem = Math.floor(os.totalmem() / 1024 / 1024)
   const freeMem = Math.floor(os.freemem() / 1024 / 1024)
   const load = os.loadavg().map((x) => (x * 100).toFixed(3))
-  const osUp = dayjs.duration(os.uptime() * 1000)
+  const osUp = Duration.fromMillis(os.uptime() * 1000)
   const cpuData = os.cpus()
   const usedRam = Math.floor(totalMem - freeMem)
 
@@ -41,14 +38,14 @@ export const run: CmdRun = async (interaction): Promise<void> => {
   let msgPm: number
   let cmdPm: number
   let twitchPm: number
-  if (nodeUp.asHours() > 1) {
-    msgPm = Math.floor(messageCount / nodeUp.asHours())
+  if (nodeUp.as('hours') > 1) {
+    msgPm = Math.floor(messageCount / nodeUp.as('hours'))
   } else {
     msgPm = messageCount
   }
-  if (nodeUp.asDays() > 1) {
-    cmdPm = Math.floor(commandsCount / nodeUp.asDays())
-    twitchPm = Math.floor(twitchCount / nodeUp.asDays())
+  if (nodeUp.as('days') > 1) {
+    cmdPm = Math.floor(commandsCount / nodeUp.as('days'))
+    twitchPm = Math.floor(twitchCount / nodeUp.as('days'))
   } else {
     cmdPm = commandsCount
     twitchPm = twitchCount

@@ -11,7 +11,7 @@ export default async function (interaction: Interaction): Promise<void> {
       try {
         await command.cmd.run(interaction)
         counts.increment('commandsRan')
-      } catch (err) {
+      } catch (err: any) {
         log.error(err.stack || err.message || err)
         if (interaction.deferred) {
           await interaction.editReply(

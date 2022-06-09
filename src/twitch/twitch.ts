@@ -19,7 +19,7 @@ export function startTimers(): void {
       await updateUserData()
       await checkLive()
       log.debug('twitch - initial check complete')
-    } catch (err) {
+    } catch (err: any) {
       log.error(err.stack || err.message || err)
     }
   }, 1000 * 5)
@@ -29,7 +29,7 @@ export function startTimers(): void {
     try {
       await checkLive()
       log.debug('twitch - live stream check complete')
-    } catch (err) {
+    } catch (err: any) {
       log.error(err.stack || err.message || err)
     }
   }, 1000 * 60 * 2)
@@ -37,7 +37,7 @@ export function startTimers(): void {
     try {
       await updateUserData()
       log.debug('twitch - user data update complete')
-    } catch (err) {
+    } catch (err: any) {
       log.error(err.stack || err.message || err)
     }
   }, 1000 * 60 * 60 * 6)

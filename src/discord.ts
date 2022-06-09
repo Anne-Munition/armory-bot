@@ -72,7 +72,9 @@ client.on('messageDelete', (msg) => {
       // Do Nothing
     })
   }
-  auditor.messageDelete(msg)
+  auditor.messageDelete(msg).catch(() => {
+    // Do Nothing
+  })
 })
 
 // Emitted whenever a message is updated - e.g. embed or content change.

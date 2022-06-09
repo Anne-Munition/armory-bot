@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { Message, Snowflake } from 'discord.js'
-import { DateTime, Duration, DurationObjectUnits } from 'luxon'
+import { DateTime, Duration } from 'luxon'
 import Vibrant from 'node-vibrant'
 import client from './discord'
 import log from './logger'

@@ -1,5 +1,5 @@
 import axios from 'axios'
-import * as token from '../twitch_token'
+import * as token from './twitch_token'
 
 function helixHeaders(): { [key: string]: string } {
   const keys = token.getToken()

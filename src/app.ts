@@ -5,7 +5,7 @@ import Count from './messages/Count'
 import * as numbers from './messages/numbers'
 import * as timeouts from './timeouts'
 import * as twitch from './twitch/twitch'
-import * as token from './twitch_token'
+import * as token from './twitch/twitch_token'
 
 export async function start(): Promise<void> {
   await token.fetchToken()

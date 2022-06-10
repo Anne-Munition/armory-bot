@@ -23,26 +23,21 @@ export const structure: CmdStructure = {
 export const run: CmdRun = async (interaction): Promise<void> => {
   const message = interaction.options.getString('message', true)
   const channel = interaction.options.getChannel('channel')
-  const chanToPostIn = channel || interaction.channel
-  if (!chanToPostIn) {
+  const targetChannel = channel || interaction.channel
+  if (!targetChannel) {
     await interaction.reply('Unable to get channel.')
     return
   }
   if (
-    chanToPostIn.type !== 'GUILD_PUBLIC_THREAD' &&
-    chanToPostIn.type !== 'GUILD_TEXT'
+    targetChannel.type !== 'GUILD_PUBLIC_THREAD' &&
+    targetChannel.type !== 'GUILD_TEXT'
   ) {
-    return
-  }
-  if (chanToPostIn.isText()) {
-    // TODO: Threads?
-    await chanToPostIn.send(message)
-    await interaction.reply({ content: 'Done', ephemeral: true })
-  } else {
     await interaction.reply({
-      content:
-        'Unable to post in this channel.\nOnly guild text and public thread channels are valid.',
+      content: 'Cannot ``/say`` in the specified channel.',
       ephemeral: true,
     })
+  } else {
+    await targetChannel.send(message)
+    await interaction.reply({ content: 'Done', ephemeral: true })
   }
 }

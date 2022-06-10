@@ -6,7 +6,7 @@ export const info: CmdInfo = {
 
 export const structure: CmdStructure = {
   name: 'ping',
-  description: 'Get latency and heartbeat.',
+  description: 'Get bot latency and heartbeat.',
 }
 
 export const run: CmdRun = async (interaction): Promise<void> => {

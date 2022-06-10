@@ -2,7 +2,7 @@ FROM node:16.15.1-alpine3.14 as base
 WORKDIR /app
 
 FROM base as system_dependencies
-RUN apk add --no-cache python3 py3-pip make g++
+RUN apk add --no-cache python3 make g++
 
 FROM system_dependencies AS prod_dependencies
 COPY package.json yarn.lock ./
@@ -13,10 +13,10 @@ RUN yarn --production=false
 
 FROM dev_dependencies AS builder
 COPY . .
-RUN yarn prettier
-RUN yarn lint
-RUN yarn test
-RUN yarn build
+RUN yarn prettier && \
+    yarn lint && \
+    yarn test && \
+    yarn build
 
 FROM base
 ENV DOCKER=true \

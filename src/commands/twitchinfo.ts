@@ -32,17 +32,14 @@ export const run: CmdRun = async (interaction): Promise<void> => {
     )
     return
   }
-  const subscription = await twitch.getSubscription(user.id)
 
+  const subscription = await twitch.getSubscription(user.id)
   const name = displayName(user)
-  const sub = `\nSubscribed: **${Boolean(subscription.length)}**`
+
   let str = /^\d+$/.test(viewer)
     ? `${user.id} => **${name}**`
     : `${name} => **${user.id}**`
-  if (user.broadcaster_type) {
-    const type = `\n${capitalize(user.broadcaster_type)}`
-    str += type
-  }
-  str += sub
+  if (user.broadcaster_type) str += `\n${capitalize(user.broadcaster_type)}`
+  str += `\nSubscribed: **${Boolean(subscription.length)}**`
   await interaction.editReply(str)
 }

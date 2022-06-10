@@ -1,6 +1,5 @@
-import Discord from 'discord.js'
 import * as math from 'mathjs'
-import log from '../logger'
+import logger from '../logger'
 
 export const info: CmdInfo = {
   global: true,
@@ -8,7 +7,7 @@ export const info: CmdInfo = {
 
 export const structure: CmdStructure = {
   name: 'math',
-  description: 'Evaluate an expression using math.js.',
+  description: 'Evaluate an expression using mathjs.',
   options: [
     {
       name: 'expression',
@@ -21,19 +20,25 @@ export const structure: CmdStructure = {
 
 export const run: CmdRun = async (interaction): Promise<void> => {
   const expression = interaction.options.getString('expression', true)
-  log.debug(expression)
+  logger.debug(expression)
 
-  const parsed = math.parse(expression)
+  let parsed, result
 
   try {
-    const result = math.evaluate(expression)
+    parsed = math.parse(expression)
+    result = math.evaluate(expression)
     await interaction.reply(`${parsed} = **${result}**`)
-  } catch (err: any) {
-    log.warn(`Error with math.evaluate(): '${parsed}' ${err.message}`)
-    const codeBlock = Discord.Formatters.codeBlock('js', err)
-    await interaction.reply({
-      content: `${parsed}\n${codeBlock}`,
-      ephemeral: true,
-    })
+  } catch (err) {
+    if (err instanceof Error) {
+      await interaction.reply({
+        content: err.message,
+        ephemeral: true,
+      })
+    } else {
+      await interaction.reply({
+        content: 'Mathjs Error',
+        ephemeral: true,
+      })
+    }
   }
 }

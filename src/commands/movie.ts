@@ -38,7 +38,7 @@ export const run: CmdRun = async (interaction): Promise<void> => {
   const searchResults: TMDBSearchResponse = await axios
     .get('https://api.themoviedb.org/3/search/movie', {
       params: {
-        api_key: process.env.MOVIE_DB_APIKEY,
+        api_key: process.env.MOVIE_DB_KEY,
         query,
         primary_release_year: year,
         include_adult: false,
@@ -58,7 +58,7 @@ export const run: CmdRun = async (interaction): Promise<void> => {
 
   const movie: Movie = await axios
     .get(`https://api.themoviedb.org/3/movie/${sorted[0].id}`, {
-      params: { api_key: process.env.MOVIE_DB_APIKEY },
+      params: { api_key: process.env.MOVIE_DB_KEY },
     })
     .then(({ data }) => data)
 

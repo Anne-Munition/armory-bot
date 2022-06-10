@@ -8,7 +8,8 @@ export const structure: CmdStructure = {
 }
 
 export const run: CmdRun = async (interaction): Promise<void> => {
-  await interaction.reply(
-    `Follow this link to add **${interaction.client.user?.username}** to your Discord server:\n<https://discord.com/oauth2/authorize?&client_id=${interaction.client.application?.id}&scope=bot%20applications.commands>`,
-  )
+  await interaction.reply({
+    content: `Follow this link to add **${interaction.client.user?.username}** to your Discord server:\n<https://discord.com/oauth2/authorize?&client_id=${interaction.client.application?.id}&scope=bot%20applications.commands>`,
+    ephemeral: true,
+  })
 }

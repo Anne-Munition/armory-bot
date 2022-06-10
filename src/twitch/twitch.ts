@@ -176,10 +176,11 @@ async function post(
       true,
     )
     .addField('Status:', last ? 'Changed Games' : 'Started Streaming', true)
-    .setFooter(
-      'twitch.tv',
-      'https://www.shareicon.net/data/2016/10/18/844051_media_512x512.png',
-    )
+    .setFooter({
+      text: 'twitch.tv',
+      iconURL:
+        'https://www.shareicon.net/data/2016/10/18/844051_media_512x512.png',
+    })
   if (last) {
     embed
       .addField('New Game:', stream.game_name || 'UNKNOWN')

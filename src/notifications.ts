@@ -42,9 +42,14 @@ async function guildMemberAdd(member: Discord.GuildMember): Promise<void> {
   log.debug(`posting guildMemberAdd in (${channelDocs.length}) channels`)
   const embed = new Discord.MessageEmbed()
     .setColor('#1ed21e')
-    .setAuthor(member.user.tag, member.user.displayAvatarURL())
+    .setAuthor({
+      name: member.user.tag,
+      iconURL: member.user.displayAvatarURL(),
+    })
     .setDescription(member.user.toString())
-    .setFooter('User Joined')
+    .setFooter({
+      text: 'User Joined',
+    })
     .setTimestamp()
 
   sendMessages(channelDocs, embed, member.guild)
@@ -61,9 +66,14 @@ async function guildMemberRemove(
   log.debug(`posting guildMemberRemove in (${channelDocs.length}) channels`)
   const embed = new Discord.MessageEmbed()
     .setColor('#d7d71e')
-    .setAuthor(guildMember.user.tag, guildMember.user.displayAvatarURL())
+    .setAuthor({
+      name: guildMember.user.tag,
+      iconURL: guildMember.user.displayAvatarURL(),
+    })
     .setDescription(guildMember.user.toString())
-    .setFooter('User Left')
+    .setFooter({
+      text: 'User Left',
+    })
     .setTimestamp()
 
   sendMessages(channelDocs, embed, guildMember.guild)
@@ -78,9 +88,14 @@ async function guildBanAdd(ban: Discord.GuildBan): Promise<void> {
 
   const embed = new Discord.MessageEmbed()
     .setColor('#b42326')
-    .setAuthor(ban.user.tag, ban.user.displayAvatarURL())
+    .setAuthor({
+      name: ban.user.tag,
+      iconURL: ban.user.displayAvatarURL(),
+    })
     .setDescription(ban.user.toString())
-    .setFooter('User Banned')
+    .setFooter({
+      text: 'User Banned',
+    })
     .setTimestamp()
   if (ban.reason) embed.setDescription(ban.reason)
 
@@ -96,9 +111,14 @@ async function guildBanRemove(ban: Discord.GuildBan): Promise<void> {
 
   const embed = new Discord.MessageEmbed()
     .setColor('#236cb4')
-    .setAuthor(ban.user.tag, ban.user.displayAvatarURL())
+    .setAuthor({
+      name: ban.user.tag,
+      iconURL: ban.user.displayAvatarURL(),
+    })
     .setDescription(ban.user.toString())
-    .setFooter('User Unbanned')
+    .setFooter({
+      text: 'User Unbanned',
+    })
     .setTimestamp()
 
   sendMessages(channelDocs, embed, ban.guild)

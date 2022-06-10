@@ -1,8 +1,11 @@
 import * as app from '../app'
+import { ownerOnlyCommand } from '../utilities'
 
 export const info: CmdInfo = {
   global: false,
-  guilds: ['140025699867164673'],
+  guilds: [
+    '140025699867164673', // DBKynd
+  ],
 }
 
 export const structure: CmdStructure = {
@@ -11,13 +14,7 @@ export const structure: CmdStructure = {
 }
 
 export const run: CmdRun = async (interaction): Promise<void> => {
-  if (interaction.user.id !== process.env.OWNER_ID) {
-    await interaction.reply({
-      content: 'Only the bot owner has permissions to /restart.',
-      ephemeral: true,
-    })
-    return
-  }
+  if (await ownerOnlyCommand(interaction)) return
 
   await interaction.reply({ content: ':ok_hand:', ephemeral: true })
   app.stop().finally(() => {

@@ -5,11 +5,13 @@ import getos from 'getos'
 import { Duration } from 'luxon'
 import pidusage from 'pidusage'
 import counts from '../counts'
-import { capitalize, formatDuration } from '../utilities'
+import { capitalize, formatDuration, ownerOnlyCommand } from '../utilities'
 
 export const info: CmdInfo = {
   global: false,
-  guilds: ['140025699867164673'],
+  guilds: [
+    '140025699867164673', // DBKynd
+  ],
 }
 
 export const structure: CmdStructure = {
@@ -20,6 +22,8 @@ export const structure: CmdStructure = {
 const getOs = util.promisify(getos)
 
 export const run: CmdRun = async (interaction): Promise<void> => {
+  if (await ownerOnlyCommand(interaction)) return
+
   const client = interaction.client
   const thisOs = (await getOs()).os
 

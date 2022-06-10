@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { Message, Snowflake } from 'discord.js'
+import { CommandInteraction, Message, Snowflake } from 'discord.js'
 import { DateTime, Duration } from 'luxon'
 import Vibrant from 'node-vibrant'
 import client from './discord'
@@ -117,23 +117,26 @@ export async function palette(
     .get(image, { responseType: 'arraybuffer' })
     .then(({ data }) => data)
 
-  const pal = await Vibrant.from(buffer).getPalette()
+  const palette = await Vibrant.from(buffer).getPalette()
 
-  const lightVibrant = pal?.LightVibrant?.rgb
-  const vibrant = pal?.Vibrant?.rgb
+  const vibrant = palette?.Vibrant?.rgb
+  const lightVibrant = palette?.LightVibrant?.rgb
   return vibrant || lightVibrant || null
 }
 
+// Do nothing function for .catch blocks
 export function ignore(): void {
   // Do Nothing
 }
 
+// Get an array of [0,1] numbers from Random.org
+// https://api.random.org/json-rpc/4/basic
 export async function getRandomDecimals(count: number): Promise<number[]> {
   const url = 'https://api.random.org/json-rpc/4/invoke'
   const id = getRandomInt(9999, 999999)
   const body = {
     jsonrpc: '2.0',
-    method: 'generateSignedDecimalFractions',
+    method: 'generateDecimalFractions',
     params: {
       apiKey: process.env.RANDOM_ORG_KEY,
       n: count,
@@ -147,4 +150,18 @@ export async function getRandomDecimals(count: number): Promise<number[]> {
       if (data.id !== id) throw new Error('Random.org ID mismatch')
       return data.result.random.data
     })
+}
+
+// Check if interaction was made from bot owner
+export async function ownerOnlyCommand(
+  interaction: CommandInteraction,
+): Promise<boolean> {
+  if (interaction.user.id !== process.env.OWNER_ID) {
+    await interaction.reply({
+      content: 'Only the bot owner has permissions to use this command.',
+      ephemeral: true,
+    })
+    return true
+  }
+  return false
 }

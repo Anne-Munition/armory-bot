@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import nock from 'nock'
-import { run } from '../pun'
+import { run } from './pun'
 
 const slug = path.join(__dirname, '../__slugs__', 'pun.html')
 

@@ -1,12 +1,11 @@
 FROM node:16.15.1-alpine3.14 as base
 WORKDIR /app
 
-FROM base as sysdeps
+FROM base as system_dependencies
 RUN apk add --no-cache python3 py3-pip make g++
 
-FROM sysdeps AS prod_dependencies
-COPY package.json .
-COPY yarn.lock .
+FROM system_dependencies AS prod_dependencies
+COPY package.json yarn.lock ./
 RUN yarn --production=true
 
 FROM prod_dependencies as dev_dependencies

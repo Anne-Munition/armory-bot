@@ -127,3 +127,24 @@ export async function palette(
 export function ignore(): void {
   // Do Nothing
 }
+
+export async function getRandomDecimals(count: number): Promise<number[]> {
+  const url = 'https://api.random.org/json-rpc/4/invoke'
+  const id = getRandomInt(9999, 999999)
+  const body = {
+    jsonrpc: '2.0',
+    method: 'generateSignedDecimalFractions',
+    params: {
+      apiKey: process.env.RANDOM_ORG_KEY,
+      n: count,
+      decimalPlaces: 8,
+    },
+    id: id,
+  }
+  return axios
+    .post(url, body)
+    .then(({ data }: { data: SignedDecimalFraction }) => {
+      if (data.id !== id) throw new Error('Random.org ID mismatch')
+      return data.result.random.data
+    })
+}

@@ -62,9 +62,10 @@ export async function remove(userId: Snowflake, manual = false): Promise<void> {
 
 export async function addRole(
   member: Discord.GuildMember,
-  roles: Snowflake | Snowflake[],
+  roles: Snowflake | Snowflake[] | null,
   reason: string,
 ) {
+  if (!roles) return
   await member.roles.add(roles, reason)
 }
 

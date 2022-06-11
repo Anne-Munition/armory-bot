@@ -21,11 +21,11 @@ export const ids: Ids = {
   },
 }
 
-export function getId(guildId: Snowflake, property: IdNames): Snowflake {
+export function getId(guildId: Snowflake, property: IdNames): Snowflake | null {
   for (const set in ids) {
     if (ids[set].guild === guildId) return ids[set]?.[property]
   }
-  throw new Error('No config id set found for that guild.')
+  return null
 }
 
 interface Ids {

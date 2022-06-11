@@ -10,7 +10,7 @@ export async function start(): Promise<void> {
   await database.connect()
   await commandLoader.loadAllCommands()
   await discord.connect()
-  // await timeouts.init()
+  await timeouts.init()
   // twitch.startTimers()
 }
 

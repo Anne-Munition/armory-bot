@@ -2,6 +2,11 @@ import { Snowflake } from 'discord.js'
 
 export const mongoUrl = process.env.MONGO_URL || 'mongodb://localhost:27017'
 
+export const guildIds = {
+  armory: '84764735832068096', // Armory
+  dev: '140025699867164673', // DBKynd
+}
+
 export const scheduleChannel: Snowflake =
   process.env.NODE_ENV === 'production'
     ? '362349719663542272'

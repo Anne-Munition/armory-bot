@@ -1,13 +1,11 @@
 import axios from 'axios'
 import Discord from 'discord.js'
+import { guildIds } from '../config'
 import { displayName } from '../utilities'
 
 export const info: CmdInfo = {
   global: false,
-  guilds: [
-    '84764735832068096', // Armory
-    '140025699867164673', // DBKynd
-  ],
+  guilds: [guildIds.armory, guildIds.dev],
 }
 
 export const structure: CmdStructure = {

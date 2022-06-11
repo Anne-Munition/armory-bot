@@ -6,10 +6,16 @@ type Commands = import('discord.js').Collection<
   }
 >
 
-interface CmdInfo {
-  global: boolean
-  guilds?: import('discord.js').Snowflake[]
+type GlobalCmdInfo = {
+  global: true
 }
+
+type GuildCmdInfo = {
+  global: false
+  guilds: import('discord.js').Snowflake[]
+}
+
+type CmdInfo = GlobalCmdInfo | GuildCmdInfo
 
 type CmdRun = (
   interaction: import('discord.js').CommandInteraction,

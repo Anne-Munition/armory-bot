@@ -4,14 +4,13 @@ import Discord from 'discord.js'
 import getos from 'getos'
 import { Duration } from 'luxon'
 import pidusage from 'pidusage'
+import { guildIds } from '../config'
 import counts from '../counts'
 import { capitalize, formatDuration, ownerOnlyCommand } from '../utilities'
 
 export const info: CmdInfo = {
   global: false,
-  guilds: [
-    '140025699867164673', // DBKynd
-  ],
+  guilds: [guildIds.dev],
 }
 
 export const structure: CmdStructure = {

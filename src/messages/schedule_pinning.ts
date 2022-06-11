@@ -1,8 +1,8 @@
 import { Message } from 'discord.js'
-import { scheduleChannel } from '../config'
+import { getId } from '../config'
 
 export default async function (msg: Message): Promise<boolean> {
-  if (msg.channel.id === scheduleChannel) {
+  if (msg.guildId && msg.channel.id === getId(msg.guildId, 'scheduleChannel')) {
     if (contentHasScheduleTerms(msg)) {
       const pinnedMessages = await msg.channel.messages.fetchPinned()
       if (pinnedMessages.size)

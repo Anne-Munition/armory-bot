@@ -1,5 +1,5 @@
 import { Message } from 'discord.js'
-import { legacyReactionWebhookId } from '../config'
+import { getId } from '../config'
 import counts from '../counts'
 import log from '../logger'
 import schedulePinning from './schedule_pinning'
@@ -13,7 +13,7 @@ export default async function (msg: Message): Promise<void> {
   })
   if (wasSchedule) return
 
-  if (msg.author.id === legacyReactionWebhookId) {
+  if (msg.guildId && msg.author.id === getId(msg.guildId, 'legacyReactionWebhookId')) {
     await msg.react('👎')
     await msg.react('👍')
     await msg.react('☑️')

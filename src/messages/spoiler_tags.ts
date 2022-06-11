@@ -1,11 +1,11 @@
 import { Message } from 'discord.js'
 import emojiRegex from 'emoji-regex'
-import { spoilerChannel } from '../config'
+import { getId } from '../config'
 
 const reg = /^(.|\n)+\|\|(.|\n)*\|\|(.|\n)*$/
 
 export default async function (msg: Message): Promise<void> {
-  if (msg.channel.id !== spoilerChannel) return
+  if (msg.guildId && msg.channel.id !== getId(msg.guildId, 'spoilerChannel')) return
 
   const attachments = msg.attachments
 

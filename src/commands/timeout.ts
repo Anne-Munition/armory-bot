@@ -1,15 +1,12 @@
 import humanizeDuration from 'humanize-duration'
 import { Duration } from 'luxon'
-import { muteRole, timeoutCmdChannel } from '../config'
+import { ids } from '../config'
 import Timeout from '../database/services/timeout_service'
 import * as timeouts from '../timeouts'
 
 export const info: CmdInfo = {
   global: false,
-  guilds: [
-    '84764735832068096', // Armory
-    '140025699867164673', // DBKynd
-  ],
+  guilds: [ids.armory.guild, ids.dev.guild],
 }
 
 export const structure: CmdStructure = {
@@ -82,49 +79,33 @@ export const structure: CmdStructure = {
 }
 
 export const run: CmdRun = async (interaction): Promise<void> => {
+  await interaction.deferReply()
   const guildId = interaction.guild?.id
   if (!guildId) throw new Error('Unable to get guild id.')
-  const channelId = interaction.channel?.id
-  if (!channelId) throw new Error('Unable to get channel id.')
-  const channel = interaction.client.channels.cache.get(channelId)
-  if (!channel) throw new Error('Unable to get channel details.')
-  const timeOutChannel =
-    interaction.client.channels.cache.get(timeoutCmdChannel)
-  if (!timeOutChannel) throw new Error('Unable to get Timeout channel details.')
 
-  // Tell the executor that they are using the slash command in the wrong channel
-  if (channelId !== timeoutCmdChannel) {
-    await interaction.reply({
-      content: `Please use this command in the ${timeOutChannel} channel.`,
-      ephemeral: true,
-    })
-    return
-  }
-
-  await interaction.deferReply()
-
-  const subCommand = interaction.options.getSubcommand(true) as
-    | 'list'
-    | 'add'
-    | 'remove'
+  const subCommand = interaction.options.getSubcommand(true) as 'list' | 'add' | 'remove'
 
   if (subCommand === 'list') {
-    const active = await Timeout.list()
-    if (!active.length) {
+    const activeTimeouts = await Timeout.list()
+    if (!activeTimeouts.length) {
       await interaction.editReply('There are no active timeouts.')
       return
     }
-    const responseMap = active.map((timeoutDoc) => {
+    // Fetch all users to be available in cache
+    for (let i = 0; i < activeTimeouts.length; i++) {
+      await interaction.client.users.fetch(activeTimeouts[i].user_id)
+    }
+    const response = activeTimeouts.map((timeoutDoc) => {
       const user = interaction.client.users.cache.get(timeoutDoc.user_id)
       return `${user} - Expires at: ${getExpiry(timeoutDoc.expires_at)}.`
     })
-    await interaction.editReply(responseMap.join('\n'))
+    await interaction.editReply(response.join('\n'))
     return
   } else {
     // Make sure the client can update roles in the guild
     const clientUserId = interaction.client.user?.id
     if (!clientUserId) throw new Error('Unable to get the client user id.')
-    const clientMember = interaction.guild?.members.cache.get(clientUserId)
+    const clientMember = await interaction.guild?.members.fetch(clientUserId)
     if (!clientMember) throw new Error('Unable to get the client member.')
     const botPerms = clientMember.permissions
 
@@ -145,10 +126,7 @@ export const run: CmdRun = async (interaction): Promise<void> => {
 
     if (subCommand === 'add') {
       const duration = interaction.options.getNumber('duration', true)
-      const unit = interaction.options.getString('unit', true) as
-        | 'minutes'
-        | 'hours'
-        | 'days'
+      const unit = interaction.options.getString('unit', true) as 'minutes' | 'hours' | 'days'
       const reason = interaction.options.getString('reason')
 
       if (existing) {
@@ -160,34 +138,28 @@ export const run: CmdRun = async (interaction): Promise<void> => {
         return
       }
 
-      const ms = Duration.fromObject({ [unit]: duration }).toMillis()
-      await timeouts.add(target.id, guildId, ms, targetString)
-      await member.roles.add(muteRole)
-
       const unitString = duration === 1 ? unit.slice(0, -1) : unit
-      let reply = `${member} (${member.id}) has been timed out for **${duration}** ${unitString}.`
+      let reply = `${member} has been timed out for **${duration}** ${unitString}.`
       if (reason) reply += `\nReason: ${reason}`
+      const ms = Duration.fromObject({ [unit]: duration }).toMillis()
+      const auditReason = `Timed out by ${interaction.user.username} for ${duration} ${unitString} for: ${reason}`
+
+      await timeouts.add(member, guildId, interaction.channelId, ms, targetString, auditReason)
       await interaction.editReply(reply)
     } else if (subCommand === 'remove') {
       if (!existing) {
-        await interaction.editReply(
-          `${target} is not currently under a timeout.`,
-        )
+        await interaction.editReply(`${target} is not currently under a timeout.`)
         return
       }
 
       await timeouts.remove(target.id, true)
-      await interaction.editReply(
-        `Manually removed timeout on ${target} (${target.id}).`,
-      )
+      await interaction.editReply(`Manually removed timeout on ${target} (${target.id}).`)
     }
   }
 }
 
 function getExpiry(date: Date): string {
   const iso = new Date(date).toISOString()
-  const duration = Duration.fromMillis(
-    new Date(date).valueOf() - new Date().valueOf(),
-  )
+  const duration = Duration.fromMillis(new Date(date).valueOf() - new Date().valueOf())
   return `\`\`${iso}\`\` - ${humanizeDuration(duration.toMillis())}`
 }

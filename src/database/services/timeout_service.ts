@@ -1,5 +1,5 @@
 import { Snowflake } from 'discord.js'
-import { muteRole } from '../../config'
+import { getId } from '../../config'
 import Timeout, { TimeoutsDoc } from '../models/timeout_model'
 
 async function list(): Promise<TimeoutsDoc[]> {
@@ -13,15 +13,17 @@ async function get(userId: Snowflake): Promise<TimeoutsDoc | null> {
 async function add(
   userId: Snowflake,
   guildId: Snowflake,
+  channelId: Snowflake,
   ms: number,
   username: string,
 ): Promise<void> {
   await new Timeout({
     user_id: userId,
     guild_id: guildId,
+    channel_id: channelId,
     expires_at: new Date(new Date().valueOf() + ms).toISOString(),
     username,
-    roles: [muteRole],
+    roles: [getId(guildId, 'muteRole')],
   }).save()
 }
 

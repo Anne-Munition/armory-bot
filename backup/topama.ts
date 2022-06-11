@@ -22,13 +22,9 @@ export const structure: CmdStructure = {
 }
 
 const commandChannelId =
-  process.env.NODE_ENV === 'production'
-    ? '85090217551204352'
-    : '924727427865903114'
+  process.env.NODE_ENV === 'production' ? '85090217551204352' : '924727427865903114'
 const amaChannelId =
-  process.env.NODE_ENV === 'production'
-    ? '957806150080938107'
-    : '957826492304343050'
+  process.env.NODE_ENV === 'production' ? '957806150080938107' : '957826492304343050'
 
 export const run: CmdRun = async (interaction): Promise<void> => {
   const channelId = interaction.channelId
@@ -43,12 +39,9 @@ export const run: CmdRun = async (interaction): Promise<void> => {
   const count = interaction.options.getNumber('count', false) || 10
   const guild = await interaction.guild
   if (!guild) return
-  const amaChannel = (await guild.channels.fetch(
-    amaChannelId,
-  )) as Discord.TextChannel
+  const amaChannel = (await guild.channels.fetch(amaChannelId)) as Discord.TextChannel
   if (!amaChannel) return
-  let messages: Discord.Collection<string, Discord.Message> =
-    new Discord.Collection()
+  let messages: Discord.Collection<string, Discord.Message> = new Discord.Collection()
 
   async function fetchMessages(before?: string) {
     const m = await amaChannel.messages.fetch({ limit: 100, before })

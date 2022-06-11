@@ -22,9 +22,7 @@ export const structure: CmdStructure = {
 }
 
 const amaChannelId =
-  process.env.NODE_ENV === 'production'
-    ? '957806150080938107'
-    : '957826492304343050'
+  process.env.NODE_ENV === 'production' ? '957806150080938107' : '957826492304343050'
 
 export const run: CmdRun = async (interaction): Promise<void> => {
   const channelId = interaction.channelId

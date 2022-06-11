@@ -1,11 +1,11 @@
 import axios from 'axios'
 import Discord from 'discord.js'
-import { guildIds } from '../config'
+import { ids } from '../config'
 import { displayName } from '../utilities'
 
 export const info: CmdInfo = {
   global: false,
-  guilds: [guildIds.armory, guildIds.dev],
+  guilds: [ids.armory.guild, ids.dev.guild],
 }
 
 export const structure: CmdStructure = {
@@ -40,11 +40,9 @@ export const run: CmdRun = async (interaction): Promise<void> => {
       return 0
     })
     .map((x) => {
-      const status =
-        x.title.length > 30 ? `${x.title.slice(0, 30)}...` : x.title
-      return `[${displayName(x.user)}](<https://twitch.tv/${
-        x.user_login
-      }>): __${x.game.name}__ - ${status}`
+      const status = x.title.length > 30 ? `${x.title.slice(0, 30)}...` : x.title
+      const url = `https://twitch.tv/${x.user_login}`
+      return `[${displayName(x.user)}](<${url}>): __${x.game.name}__ - ${status}`
     })
 
   const split = Discord.Util.splitMessage(

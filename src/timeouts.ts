@@ -12,8 +12,7 @@ export async function init(): Promise<void> {
   const timeouts = await Timeout.list()
   log.debug(`${timeouts.length} existing timeouts`)
   timeouts.forEach((timeout) => {
-    const duration =
-      new Date(timeout.expires_at).valueOf() - new Date().valueOf()
+    const duration = new Date(timeout.expires_at).valueOf() - new Date().valueOf()
     startTimeoutTimer(timeout.user_id, duration)
   })
 }

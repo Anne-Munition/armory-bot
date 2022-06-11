@@ -1,10 +1,10 @@
 import * as app from '../app'
-import { guildIds } from '../config'
+import { ids } from '../config'
 import { ownerOnlyCommand } from '../utilities'
 
 export const info: CmdInfo = {
   global: false,
-  guilds: [guildIds.dev],
+  guilds: [ids.dev.guild],
 }
 
 export const structure: CmdStructure = {

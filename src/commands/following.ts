@@ -36,14 +36,10 @@ export const run: CmdRun = async (interaction): Promise<void> => {
   const channelData = usersData.find((x) => x.login === channel)
 
   if (!userData) {
-    await interaction.editReply({
-      content: `**${user}** is not a registered Twitch user.`,
-    })
+    await interaction.editReply(`**${user}** is not a registered Twitch user.`)
     return
   } else if (!channelData) {
-    await interaction.editReply({
-      content: `**${channel}** is not a registered Twitch channel.`,
-    })
+    await interaction.editReply(`**${channel}** is not a registered Twitch channel.`)
     return
   }
 
@@ -56,16 +52,12 @@ export const run: CmdRun = async (interaction): Promise<void> => {
 
   // Not Following
   if (!followData) {
-    await interaction.editReply(
-      `**${userName}** does not follow **${channelName}**`,
-    )
+    await interaction.editReply(`**${userName}** does not follow **${channelName}**`)
     return
   }
   // Is Following
   await interaction.editReply(
     `**${userName}** has been following **${channelName}** since: ` +
-      `\`\`${followData.followed_at}\`\`\n${formatTimeDiff(
-        followData.followed_at,
-      )}`,
+      `\`\`${followData.followed_at}\`\`\n${formatTimeDiff(followData.followed_at)}`,
   )
 }

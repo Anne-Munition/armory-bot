@@ -45,10 +45,7 @@ export function getStreams(identities: string[]): Promise<HelixStream[]> {
   return axios.get(url, options).then(({ data }) => data.data)
 }
 
-export function getFollows(
-  userId: string,
-  channelId: string,
-): Promise<HelixFollow[]> {
+export function getFollows(userId: string, channelId: string): Promise<HelixFollow[]> {
   const url = 'https://api.twitch.tv/helix/users/follows'
   const options = {
     headers: helixHeaders(),

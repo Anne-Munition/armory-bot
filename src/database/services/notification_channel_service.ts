@@ -1,23 +1,15 @@
 import { Snowflake } from 'discord.js'
-import NotificationChannel, {
-  NotificationChannelDoc,
-} from '../models/notification_channel_model'
+import NotificationChannel, { NotificationChannelDoc } from '../models/notification_channel_model'
 
-async function search(filter: {
-  [key: string]: any
-}): Promise<NotificationChannelDoc[]> {
+async function search(filter: { [key: string]: any }): Promise<NotificationChannelDoc[]> {
   return NotificationChannel.find(filter)
 }
 
-async function getByGuild(
-  guildId: Snowflake,
-): Promise<NotificationChannelDoc[]> {
+async function getByGuild(guildId: Snowflake): Promise<NotificationChannelDoc[]> {
   return NotificationChannel.find({ guild_id: guildId })
 }
 
-async function getByChannel(
-  channelId: Snowflake,
-): Promise<NotificationChannelDoc | null> {
+async function getByChannel(channelId: Snowflake): Promise<NotificationChannelDoc | null> {
   return NotificationChannel.findOne({ channel_id: channelId })
 }
 

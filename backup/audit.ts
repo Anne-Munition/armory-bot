@@ -49,8 +49,7 @@ export const structure: CmdStructure = {
         {
           name: 'channel',
           type: 'CHANNEL',
-          description:
-            'Optional Discord channel to post to. Defaults the this channel.',
+          description: 'Optional Discord channel to post to. Defaults the this channel.',
         },
       ],
     },
@@ -78,8 +77,7 @@ async function list(interaction: Discord.CommandInteraction): Promise<void> {
   if (!guildId) throw new Error('Unable to get guild id.')
 
   const listAll =
-    interaction.options.getBoolean('all') &&
-    interaction.user.id === process.env.OWNER_ID
+    interaction.options.getBoolean('all') && interaction.user.id === process.env.OWNER_ID
 
   const filter = listAll ? {} : { guild_id: guildId }
 
@@ -121,9 +119,7 @@ async function list(interaction: Discord.CommandInteraction): Promise<void> {
         .sort((a, b) => a.position - b.position)
         .map((x) => `${x.guild.name} - **#${x.name}**`)
       if (channels.length > 0) {
-        str += `Audit messages in ${guild.name} post to:\n${channels.join(
-          '\n',
-        )}\n\n`
+        str += `Audit messages in ${guild.name} post to:\n${channels.join('\n')}\n\n`
       }
     }
   } else {
@@ -161,16 +157,13 @@ function getTarget(interaction: Discord.CommandInteraction): {
   targetChannelId: string
   targetChannel: Discord.AnyChannel
 } {
-  const targetChannelId =
-    interaction.options.getChannel('channel')?.id || interaction.channelId
+  const targetChannelId = interaction.options.getChannel('channel')?.id || interaction.channelId
   const targetChannel = interaction.client.channels.cache.get(targetChannelId)
   if (!targetChannel) throw new Error('Unable to get target channel.')
   return { targetChannelId, targetChannel }
 }
 
-async function addChannel(
-  interaction: Discord.CommandInteraction,
-): Promise<void> {
+async function addChannel(interaction: Discord.CommandInteraction): Promise<void> {
   const guildId = interaction.guildId
   if (!guildId) throw new Error('Unable to get guild id.')
 
@@ -185,26 +178,18 @@ async function addChannel(
       await interaction.editReply('Database error, please try again.')
       return
     }
-    await interaction.editReply(
-      `${targetChannel} will now post audit messages.`,
-    )
+    await interaction.editReply(`${targetChannel} will now post audit messages.`)
   } else {
-    await interaction.editReply(
-      `${targetChannel} already posts audit messages.`,
-    )
+    await interaction.editReply(`${targetChannel} already posts audit messages.`)
   }
 }
 
-async function removeChannel(
-  interaction: Discord.CommandInteraction,
-): Promise<void> {
+async function removeChannel(interaction: Discord.CommandInteraction): Promise<void> {
   const { targetChannelId, targetChannel } = getTarget(interaction)
 
   const channel = await getAuditChannel(interaction, targetChannelId)
   if (!channel) {
-    await interaction.editReply(
-      `${targetChannel} doesn't currently post audit messages.`,
-    )
+    await interaction.editReply(`${targetChannel} doesn't currently post audit messages.`)
   } else {
     try {
       await AuditChannel.remove(channel.id)
@@ -213,8 +198,6 @@ async function removeChannel(
       await interaction.editReply('Database error, please try again.')
       return
     }
-    await interaction.editReply(
-      `${targetChannel} will no longer post audit messages.`,
-    )
+    await interaction.editReply(`${targetChannel} will no longer post audit messages.`)
   }
 }

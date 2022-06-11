@@ -1,14 +1,10 @@
 import AuditChannel, { AuditChannelDoc } from '../models/audit_channel_model'
 
-async function search(filter: {
-  [key: string]: any
-}): Promise<AuditChannelDoc[]> {
+async function search(filter: { [key: string]: any }): Promise<AuditChannelDoc[]> {
   return AuditChannel.find(filter)
 }
 
-async function getByChannel(
-  channelId: string,
-): Promise<AuditChannelDoc | null> {
+async function getByChannel(channelId: string): Promise<AuditChannelDoc | null> {
   return AuditChannel.findOne({ channel_id: channelId })
 }
 

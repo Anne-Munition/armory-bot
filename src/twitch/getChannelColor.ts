@@ -4,9 +4,7 @@ import rgb2hex from 'rgb2hex'
 import log from '../logger'
 import { palette } from '../utilities'
 
-export default async function (
-  user: HelixUser,
-): Promise<HexColorString | undefined> {
+export default async function (user: HelixUser): Promise<HexColorString | undefined> {
   log.debug(`getting channel color for: ${user.login}`)
 
   try {

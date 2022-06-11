@@ -28,10 +28,7 @@ export const run: CmdRun = async (interaction): Promise<void> => {
     await interaction.reply('Unable to get channel.')
     return
   }
-  if (
-    targetChannel.type !== 'GUILD_PUBLIC_THREAD' &&
-    targetChannel.type !== 'GUILD_TEXT'
-  ) {
+  if (targetChannel.type !== 'GUILD_PUBLIC_THREAD' && targetChannel.type !== 'GUILD_TEXT') {
     await interaction.reply({
       content: 'Cannot ``/say`` in the specified channel.',
       ephemeral: true,

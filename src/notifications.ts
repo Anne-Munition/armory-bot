@@ -8,13 +8,9 @@ import log from './logger'
 async function guildCreate(guild: Discord.Guild): Promise<void> {
   log.debug(`guildCreate event: ${guild.name}`)
   const guildOwner = await guild.fetchOwner()
-  const botOwner = await guild.client.users.fetch(
-    <Discord.Snowflake>process.env.OWNER_ID,
-  )
+  const botOwner = await guild.client.users.fetch(<Discord.Snowflake>process.env.OWNER_ID)
   if (!guildOwner || !botOwner) return
-  log.info(
-    `Joined the guild: '${guild.name}' - Owner: '${guildOwner.user.tag}'`,
-  )
+  log.info(`Joined the guild: '${guild.name}' - Owner: '${guildOwner.user.tag}'`)
   const str = `Joined the guild: **${guild.name}** - Owner: **${guildOwner.user.tag}**`
   await botOwner.send(str)
   await JoinedGuild.add(guild.id, guildOwner.user.tag)
@@ -23,9 +19,7 @@ async function guildCreate(guild: Discord.Guild): Promise<void> {
 // DM the bot owner that the client has left a guild
 async function guildDelete(guild: Discord.Guild): Promise<void> {
   log.debug(`guildDelete event: ${guild.name}`)
-  const botOwner = await guild.client.users.fetch(
-    <Discord.Snowflake>process.env.OWNER_ID,
-  )
+  const botOwner = await guild.client.users.fetch(<Discord.Snowflake>process.env.OWNER_ID)
   if (!botOwner) return
   const joinedDoc = await JoinedGuild.get(guild.id)
   const guildOwnerTag = joinedDoc ? joinedDoc.owner_tag : 'Unknown'
@@ -130,9 +124,7 @@ function sendMessages(
   guild: Discord.Guild,
 ) {
   channelDocs.forEach((channelDoc) => {
-    const channel = guild.channels.cache.get(
-      <Discord.Snowflake>channelDoc.channel_id,
-    )
+    const channel = guild.channels.cache.get(<Discord.Snowflake>channelDoc.channel_id)
     if (!channel || channel.type !== 'GUILD_TEXT') return
     const textChannel = channel as Discord.TextChannel
     const clientUser = guild.client.user

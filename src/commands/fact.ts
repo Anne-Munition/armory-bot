@@ -17,6 +17,6 @@ export const run: CmdRun = async (interaction): Promise<void> => {
   const fact = $('#facts .bottlecap .fact').text().replace(/\n/g, '').trim()
   const number = $('#facts .bottlecap .number').text().replace(/\n/g, '').trim()
   if (!fact || !number) throw new Error('Unable to extract fact.')
-  const becky1 = interaction.client.emojis.cache.get('454917053069918209')
+  const becky1 = await interaction.client.emojis.cache.find((x) => x.name === 'becky1')
   await interaction.editReply(`**Fact ${number}** - ${fact} ${becky1 || ''}`)
 }

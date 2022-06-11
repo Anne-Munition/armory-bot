@@ -77,17 +77,11 @@ export const run: CmdRun = async (interaction): Promise<void> => {
   const avatarSize = await getSize(avatarBuffer)
 
   const hatScale = avatarSize.width / hatSize.width
-  const pixels = Math.floor(
-    ((scale === 0 ? 100 : scale) / 100) * (hatSize.width * hatScale),
-  )
+  const pixels = Math.floor(((scale === 0 ? 100 : scale) / 100) * (hatSize.width * hatScale))
 
   const alteredHat = await alterHat(hatBuffer, pixels, rot)
   const alteredHatSize = await getSize(alteredHat)
-  const alteredHatFile = await saveAlteredHat(
-    alteredHat,
-    interaction.user.id,
-    hat,
-  )
+  const alteredHatFile = await saveAlteredHat(alteredHat, interaction.user.id, hat)
 
   const shiftX = (pixels - alteredHatSize.width) / 2
   const shiftY = (pixels - alteredHatSize.height) / 2
@@ -111,10 +105,7 @@ export const run: CmdRun = async (interaction): Promise<void> => {
   })
 
   log.debug('responding to the user with their hatted avatar')
-  const file = new Discord.MessageAttachment(
-    compositeBuffer,
-    `${interaction.user.id}_${hat}.png`,
-  )
+  const file = new Discord.MessageAttachment(compositeBuffer, `${interaction.user.id}_${hat}.png`)
   await interaction.editReply(':mailbox:')
   await interaction.user.send({ files: [file] })
 
@@ -165,11 +156,7 @@ function downloadAvatar(avatarUri: string): Promise<Buffer> {
   })
 }
 
-function alterHat(
-  hatBuffer: Buffer,
-  pixels: number,
-  rotation: number,
-): Promise<Buffer> {
+function alterHat(hatBuffer: Buffer, pixels: number, rotation: number): Promise<Buffer> {
   log.debug('modifying (scale and rotate) the hat buffer')
   return new Promise((resolve, reject) => {
     gm(hatBuffer)
@@ -187,11 +174,7 @@ function alterHat(
   })
 }
 
-function saveAlteredHat(
-  modifiedHatBuffer: Buffer,
-  authorId: string,
-  hat: string,
-): Promise<string> {
+function saveAlteredHat(modifiedHatBuffer: Buffer, authorId: string, hat: string): Promise<string> {
   log.debug('saving the modified hat image to temp file')
   return new Promise((resolve, reject) => {
     const tempHatPath = path.join(tempDir, `hat_${authorId}_${hat}.png`)

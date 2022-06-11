@@ -132,9 +132,7 @@ async function postStats(msg: Message): Promise<void> {
   // Fetch the user or use the name from the database
   const results = []
   for (let i = 0; i < top10.length; i++) {
-    const user = await msg.client.users
-      .fetch(top10[i].discord_id)
-      .catch(() => null)
+    const user = await msg.client.users.fetch(top10[i].discord_id).catch(() => null)
     if (user)
       results.push({
         name: user.toString(),
@@ -168,10 +166,7 @@ async function postStats(msg: Message): Promise<void> {
     .catch(ignore)
 }
 
-async function updateRoles(
-  msg: Message,
-  top10: NumberUserDoc[],
-): Promise<void> {
+async function updateRoles(msg: Message, top10: NumberUserDoc[]): Promise<void> {
   const guild = msg.guild
   if (guild) {
     const role = await guild.roles.fetch(numberRole).catch(() => null)
@@ -183,17 +178,13 @@ async function updateRoles(
       // Get the members that should now have the role
       const membersToGetRole = []
       for (let i = 0; i < flairCount; i++) {
-        const topCounter = await guild.members
-          .fetch(top10[i].discord_id)
-          .catch(() => null)
+        const topCounter = await guild.members.fetch(top10[i].discord_id).catch(() => null)
         if (topCounter) membersToGetRole.push(topCounter)
       }
 
       // Remove the role from members
       for (let i = 0; i < membersWithRole.length; i++) {
-        const index = membersToGetRole.findIndex(
-          (x) => x.id === membersWithRole[i].id,
-        )
+        const index = membersToGetRole.findIndex((x) => x.id === membersWithRole[i].id)
         // Remove role from members that are not in the next batch of top counters
         if (index === -1) {
           await membersWithRole[i].roles.remove(numberRole).catch(ignore)
@@ -224,9 +215,7 @@ function deleteMsg(msg: Message): void {
   }
 }
 
-export async function numbersDeleted(
-  msg: Message | PartialMessage,
-): Promise<void> {
+export async function numbersDeleted(msg: Message | PartialMessage): Promise<void> {
   if (botDeletedMessages.includes(msg.id)) return
   if (msg.content) {
     const count = Count.get().toString()
@@ -236,9 +225,7 @@ export async function numbersDeleted(
   }
 }
 
-export async function numbersEdited(
-  prev: Message | PartialMessage,
-): Promise<void> {
+export async function numbersEdited(prev: Message | PartialMessage): Promise<void> {
   if (prev.content) {
     const count = Count.get().toString()
     if (count === prev.content) {

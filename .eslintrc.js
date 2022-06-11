@@ -16,11 +16,9 @@ module.exports = {
   ignorePatterns: ['dist'],
   // add your custom rules here
   rules: {
+    'max-len': 0,
     'no-console': process.env.NODE_ENV !== 'production' ? 'warn' : 'error',
-    '@typescript-eslint/no-unused-vars': [
-      'warn',
-      { argsIgnorePattern: 'next' },
-    ],
+    '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: 'next' }],
     'import/order': [
       'error',
       {

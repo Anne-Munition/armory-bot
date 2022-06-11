@@ -53,8 +53,7 @@ async function del(msg: Message) {
   await msg.delete()
   const author = msg.author
   try {
-    if (msg.content)
-      await author.send(`\`\`\`Removed from spoiler-zone\`\`\`${msg.content}`)
+    if (msg.content) await author.send(`\`\`\`Removed from spoiler-zone\`\`\`${msg.content}`)
   } catch (e) {
     // Do Nothing
   }

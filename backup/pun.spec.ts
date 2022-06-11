@@ -36,8 +36,6 @@ describe('pun command', () => {
     nock('https://pun.me').get('/random/').reply(200, '<html></html>')
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    await expect(run(mockInteraction)).rejects.toThrowError(
-      'Unable to extract pun.',
-    )
+    await expect(run(mockInteraction)).rejects.toThrowError('Unable to extract pun.')
   })
 })

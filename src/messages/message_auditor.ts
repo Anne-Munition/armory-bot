@@ -14,9 +14,7 @@ async function messageDelete(msg: Message | PartialMessage) {
   if (!msg.channel.isText()) return
   const channel = msg.channel as Discord.TextChannel
   const deletedAt = Date.now()
-  const deletedAfterDuration = Duration.fromMillis(
-    deletedAt - msg.createdTimestamp,
-  )
+  const deletedAfterDuration = Duration.fromMillis(deletedAt - msg.createdTimestamp)
   const clientGuildMember = await msg.guild.members.fetch(msg.client.user.id)
   if (!clientGuildMember) return
   if (!clientGuildMember.permissions.has(['VIEW_AUDIT_LOG'])) return
@@ -45,12 +43,9 @@ async function messageDelete(msg: Message | PartialMessage) {
     self = true
   }
 
-  if (self === true && (executor.bot || executor.id === msg.client.user.id))
-    return
+  if (self === true && (executor.bot || executor.id === msg.client.user.id)) return
 
-  logger.debug(
-    `Posting deletion audit messages in (${channels.length}) registered channels`,
-  )
+  logger.debug(`Posting deletion audit messages in (${channels.length}) registered channels`)
 
   const embed = new MessageEmbed()
     .setAuthor({
@@ -60,9 +55,9 @@ async function messageDelete(msg: Message | PartialMessage) {
     .setTitle(`#${channel.name}`)
     .setURL(`https://discordapp.com/channels/${msg.guild.id}/${channel.id}`)
     .setFooter({
-      text: `Deleted by ${
-        self ? 'SELF' : executor.tag
-      } after ${humanizeDuration(deletedAfterDuration.toMillis())}`,
+      text: `Deleted by ${self ? 'SELF' : executor.tag} after ${humanizeDuration(
+        deletedAfterDuration.toMillis(),
+      )}`,
     })
     .setTimestamp()
   if (!self) embed.setColor('#d76db7')
@@ -81,10 +76,7 @@ async function messageDelete(msg: Message | PartialMessage) {
   })
 }
 
-function messageUpdate(
-  prev: Message | PartialMessage,
-  next: Message | PartialMessage,
-) {
+function messageUpdate(prev: Message | PartialMessage, next: Message | PartialMessage) {
   if (prev && next) {
     // TODO
   }

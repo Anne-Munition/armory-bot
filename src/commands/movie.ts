@@ -52,9 +52,7 @@ export const run: CmdRun = async (interaction): Promise<void> => {
     return
   }
 
-  const sorted = searchResults.results.sort(
-    (a, b) => b.popularity - a.popularity,
-  )
+  const sorted = searchResults.results.sort((a, b) => b.popularity - a.popularity)
 
   const movie: Movie = await axios
     .get(`https://api.themoviedb.org/3/movie/${sorted[0].id}`, {
@@ -63,7 +61,7 @@ export const run: CmdRun = async (interaction): Promise<void> => {
     .then(({ data }) => data)
 
   if (!movie) {
-    await interaction.editReply(`Error getting movie results for: ${query}`)
+    await interaction.editReply(`Error getting movie results for: ${queryStr}`)
     return
   }
 

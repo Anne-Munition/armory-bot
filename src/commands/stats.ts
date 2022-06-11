@@ -4,13 +4,13 @@ import Discord from 'discord.js'
 import getos from 'getos'
 import { Duration } from 'luxon'
 import pidusage from 'pidusage'
-import { guildIds } from '../config'
+import { ids } from '../config'
 import counts from '../counts'
 import { capitalize, formatDuration, ownerOnlyCommand } from '../utilities'
 
 export const info: CmdInfo = {
   global: false,
-  guilds: [guildIds.dev],
+  guilds: [ids.dev.guild],
 }
 
 export const structure: CmdStructure = {
@@ -54,10 +54,7 @@ export const run: CmdRun = async (interaction): Promise<void> => {
     twitchPm = twitchCount
   }
 
-  const totalMembers = client.guilds.cache.reduce(
-    (a, b) => a + b.members.cache.size,
-    0,
-  )
+  const totalMembers = client.guilds.cache.reduce((a, b) => a + b.members.cache.size, 0)
   const uniqueMembers = new Discord.Collection()
   client.guilds.cache.forEach((guild) => {
     guild.members.cache.forEach((member) => {
@@ -76,12 +73,8 @@ export const run: CmdRun = async (interaction): Promise<void> => {
   str += `RAM: ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)}MB\n`
   str += `CPU: ${cpu}%\n`
   str += `Guilds: ${client.guilds.cache.size}\n`
-  str += `Channels: ${
-    client.channels.cache.filter((c) => c.type === 'GUILD_TEXT').size
-  } text`
-  str += ` / ${
-    client.channels.cache.filter((c) => c.type === 'GUILD_VOICE').size
-  } voice\n`
+  str += `Channels: ${client.channels.cache.filter((c) => c.type === 'GUILD_TEXT').size} text`
+  str += ` / ${client.channels.cache.filter((c) => c.type === 'GUILD_VOICE').size} voice\n`
   str += `Members: ${uniqueMembers.size} unique / ${totalMembers} total\n`
   str += `Discord.js: '${Discord.version}'\n`
 
@@ -93,10 +86,7 @@ export const run: CmdRun = async (interaction): Promise<void> => {
   str += "'\n"
   str += `Core: '${cpuData[0].model}' (${cpuData.length}x)\n`
   str += `Uptime: ${formatDuration(osUp)}\n`
-  str += `RAM: ${usedRam}MB/${totalMem}MB (${(
-    (usedRam / totalMem) *
-    100
-  ).toFixed(2)}%)\n`
+  str += `RAM: ${usedRam}MB/${totalMem}MB (${((usedRam / totalMem) * 100).toFixed(2)}%)\n`
   str += `CPU: ${load[0]}%\n`
 
   str += '\n--Twitch Stats--\n'

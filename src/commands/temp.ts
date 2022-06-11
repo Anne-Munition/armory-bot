@@ -54,7 +54,5 @@ export const run: CmdRun = async (interaction): Promise<void> => {
   const converted = tuc[`${from}2${to}`](degrees)
   const trimmed = Math.floor(converted * 10) / 10
 
-  await interaction.reply(
-    `${degrees}*${from.toUpperCase()}* = **${trimmed}*${to.toUpperCase()}***`,
-  )
+  await interaction.reply(`${degrees}*${from.toUpperCase()}* = **${trimmed}*${to.toUpperCase()}***`)
 }

@@ -1,10 +1,10 @@
 import path from 'path'
-import { guildIds } from '../config'
+import { ids } from '../config'
 import { assetsDir } from '../directories'
 
 export const info: CmdInfo = {
   global: false,
-  guilds: [guildIds.armory, guildIds.dev],
+  guilds: [ids.armory.guild, ids.dev.guild],
 }
 
 export const structure: CmdStructure = {

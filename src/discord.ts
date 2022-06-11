@@ -102,9 +102,7 @@ client.once('ready', async () => {
   if (process.env.NODE_ENV === 'production') {
     const owner = client.users.cache.get(<Snowflake>process.env.OWNER_ID)
     if (owner) {
-      await owner.send(
-        `I just started running. Did I crash? :worried:\nPID:\`\`${process.pid}\`\``,
-      )
+      await owner.send(`I just started running. Did I crash? :worried:\nPID:\`\`${process.pid}\`\``)
     }
   }
 })

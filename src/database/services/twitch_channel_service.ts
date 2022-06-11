@@ -6,9 +6,7 @@ async function list(): Promise<TwitchChannelDoc[]> {
   return TwitchChannel.find({})
 }
 
-async function search(filter: {
-  [key: string]: any
-}): Promise<TwitchChannelDoc[]> {
+async function search(filter: { [key: string]: any }): Promise<TwitchChannelDoc[]> {
   return TwitchChannel.find(filter)
 }
 

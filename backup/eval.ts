@@ -59,19 +59,13 @@ export const run: CmdRun = async (interaction): Promise<void> => {
       })
     resultStr = `\`\`\`js\n${resultStr}\`\`\``
     embed.addField('RESULT:', resultStr).setColor('#00ba25')
-    embed.setFooter(
-      duration,
-      'https://nodejs.org/static/images/logo-hexagon.png',
-    )
+    embed.setFooter(duration, 'https://nodejs.org/static/images/logo-hexagon.png')
     await interaction.editReply({ content: expression, embeds: [embed] })
   } catch (err) {
     await interaction.deleteReply()
     duration = getDuration(start)
     embed.addField('ERROR:', `\`\`\`js\n${err}\n\`\`\``).setColor('#bb3631')
-    embed.setFooter(
-      duration,
-      'https://nodejs.org/static/images/logo-hexagon.png',
-    )
+    embed.setFooter(duration, 'https://nodejs.org/static/images/logo-hexagon.png')
     await interaction.followUp({
       content: expression,
       embeds: [embed],
@@ -83,7 +77,6 @@ export const run: CmdRun = async (interaction): Promise<void> => {
 function getDuration(start: number): string {
   const microseconds = (now() - start) * 1000
   if (microseconds < 1000) return Math.floor(microseconds * 1000) / 1000 + ' μs'
-  else if (microseconds < 1000000)
-    return Math.floor(microseconds) / 1000 + ' ms'
+  else if (microseconds < 1000000) return Math.floor(microseconds) / 1000 + ' ms'
   return Math.floor(microseconds / 1000) / 1000 + ' s'
 }

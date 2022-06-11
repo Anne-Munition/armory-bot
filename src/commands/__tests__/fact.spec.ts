@@ -21,9 +21,7 @@ const mockInteraction = {
 
 describe('fact command', () => {
   test('run', async () => {
-    nock('https://snapple.com')
-      .get('/real-facts')
-      .reply(200, fs.readFileSync(slug))
+    nock('https://snapple.com').get('/real-facts').reply(200, fs.readFileSync(slug))
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     await run(mockInteraction)
@@ -38,8 +36,6 @@ describe('fact command', () => {
     nock('https://snapple.com').get('/real-facts').reply(200, '<html></html>')
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    await expect(run(mockInteraction)).rejects.toThrowError(
-      'Unable to extract fact.',
-    )
+    await expect(run(mockInteraction)).rejects.toThrowError('Unable to extract fact.')
   })
 })

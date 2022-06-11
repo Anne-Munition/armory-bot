@@ -11,8 +11,7 @@ export default async function (client: Client): Promise<void> {
     )
     globalCmdsAdded?.forEach((globalCmd) => {
       const command = commands.get(globalCmd.name)
-      if (command)
-        commands.set(globalCmd.name, { cmd: command.cmd, id: globalCmd.id })
+      if (command) commands.set(globalCmd.name, { cmd: command.cmd, id: globalCmd.id })
     })
   }
 
@@ -33,8 +32,7 @@ export default async function (client: Client): Promise<void> {
 
       guildCommandsAdded?.forEach((guildCmd) => {
         const command = commands.get(guildCmd.name)
-        if (command)
-          commands.set(guildCmd.name, { cmd: command.cmd, id: guildCmd.id })
+        if (command) commands.set(guildCmd.name, { cmd: command.cmd, id: guildCmd.id })
       })
 
       // Set any permissions for those that have them

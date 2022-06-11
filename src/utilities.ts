@@ -64,21 +64,13 @@ export async function ownerError(
   let errStr = ''
   if (err) {
     errStr = '```js\n'
-    errStr += err.stack
-      ? err.stack.split('\n').slice(0, 8).join('\n')
-      : err.message || err
+    errStr += err.stack ? err.stack.split('\n').slice(0, 8).join('\n') : err.message || err
     errStr += '```'
   }
   owner
-    .send(
-      `${title} \`\`${new Date().toISOString()}\`\`\n${
-        msg ? details : ''
-      }${errStr}`,
-    )
+    .send(`${title} \`\`${new Date().toISOString()}\`\`\n${msg ? details : ''}${errStr}`)
     .catch(() => {
-      log.error(
-        'Unable to send message to bot owner. May be blocked or DMs are disabled.',
-      )
+      log.error('Unable to send message to bot owner. May be blocked or DMs are disabled.')
     })
 }
 
@@ -90,9 +82,7 @@ export function formatTimeDiff(time: string): string {
 
 // Get a long form string representation of a duration
 export function formatDuration(duration: Duration): string {
-  const time = duration
-    .shiftTo('years', 'months', 'days', 'hours', 'minutes', 'seconds')
-    .toObject()
+  const time = duration.shiftTo('years', 'months', 'days', 'hours', 'minutes', 'seconds').toObject()
   let str = ''
   const years = time.years || 0
   const months = time.months || 0
@@ -110,12 +100,8 @@ export function formatDuration(duration: Duration): string {
 }
 
 // Get the prominent color from an image url
-export async function palette(
-  image: string,
-): Promise<[number, number, number] | null> {
-  const buffer = await axios
-    .get(image, { responseType: 'arraybuffer' })
-    .then(({ data }) => data)
+export async function palette(image: string): Promise<[number, number, number] | null> {
+  const buffer = await axios.get(image, { responseType: 'arraybuffer' }).then(({ data }) => data)
 
   const palette = await Vibrant.from(buffer).getPalette()
 
@@ -144,18 +130,14 @@ export async function getRandomDecimals(count: number): Promise<number[]> {
     },
     id: id,
   }
-  return axios
-    .post(url, body)
-    .then(({ data }: { data: SignedDecimalFraction }) => {
-      if (data.id !== id) throw new Error('Random.org ID mismatch')
-      return data.result.random.data
-    })
+  return axios.post(url, body).then(({ data }: { data: SignedDecimalFraction }) => {
+    if (data.id !== id) throw new Error('Random.org ID mismatch')
+    return data.result.random.data
+  })
 }
 
 // Check if interaction was made from bot owner
-export async function ownerOnlyCommand(
-  interaction: CommandInteraction,
-): Promise<boolean> {
+export async function ownerOnlyCommand(interaction: CommandInteraction): Promise<boolean> {
   if (interaction.user.id !== process.env.OWNER_ID) {
     await interaction.reply({
       content: 'Only the bot owner has permissions to use this command.',

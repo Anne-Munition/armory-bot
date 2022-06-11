@@ -14,9 +14,7 @@ export default async function (interaction: Interaction): Promise<void> {
       } catch (err: any) {
         log.error(err.stack || err.message || err)
         if (interaction.deferred) {
-          await interaction.editReply(
-            'There was an error while executing this command.',
-          )
+          await interaction.editReply('There was an error while executing this command.')
         } else {
           await interaction.reply({
             content: 'There was an error while executing this command.',

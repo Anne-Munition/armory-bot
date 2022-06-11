@@ -164,22 +164,16 @@ async function post(
   if (!doc) return
 
   const logo =
-    doc.image_url ||
-    'https://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_70x70.png'
+    doc.image_url || 'https://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_70x70.png'
 
   const embed = new MessageEmbed()
     .setColor(doc.hex)
     .setThumbnail(logo)
-    .addField(
-      'Channel:',
-      `[${doc.display_name}](https://www.twitch.tv/${doc.login})`,
-      true,
-    )
+    .addField('Channel:', `[${doc.display_name}](https://www.twitch.tv/${doc.login})`, true)
     .addField('Status:', last ? 'Changed Games' : 'Started Streaming', true)
     .setFooter({
       text: 'twitch.tv',
-      iconURL:
-        'https://www.shareicon.net/data/2016/10/18/844051_media_512x512.png',
+      iconURL: 'https://www.shareicon.net/data/2016/10/18/844051_media_512x512.png',
     })
   if (last) {
     embed

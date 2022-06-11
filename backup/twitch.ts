@@ -58,8 +58,7 @@ export const structure: CmdStructure = {
         {
           name: 'discord_channel',
           type: 'CHANNEL',
-          description:
-            'Optional Discord channel to post to. Defaults the this channel.',
+          description: 'Optional Discord channel to post to. Defaults the this channel.',
         },
       ],
     },
@@ -87,8 +86,7 @@ async function list(interaction: Discord.CommandInteraction): Promise<void> {
   if (!guildId) throw new Error('Unable to get guild id.')
 
   const listAll =
-    interaction.options.getBoolean('all') &&
-    interaction.user.id === process.env.OWNER_ID
+    interaction.options.getBoolean('all') && interaction.user.id === process.env.OWNER_ID
 
   const filter = listAll ? {} : { ['discord_channels.guild_id']: guildId }
 
@@ -102,9 +100,7 @@ async function list(interaction: Discord.CommandInteraction): Promise<void> {
   }
   log.debug(`twitch list results: ${results.length}`)
   if (!results.length) {
-    await interaction.editReply(
-      'No Twitch channels are currently posting when they go live.',
-    )
+    await interaction.editReply('No Twitch channels are currently posting when they go live.')
     return
   }
 
@@ -124,9 +120,7 @@ async function list(interaction: Discord.CommandInteraction): Promise<void> {
         .sort((a, b) => a.position - b.position)
         .map((x) => `${x.guild.name} - **#${x.name}**`)
       if (channels.length > 0) {
-        str += `**${makePossessive(
-          result.display_name,
-        )}** Twitch streams post to:\n`
+        str += `**${makePossessive(result.display_name)}** Twitch streams post to:\n`
         str += `${channels.join('\n')}\n\n`
       }
     })
@@ -146,9 +140,7 @@ async function list(interaction: Discord.CommandInteraction): Promise<void> {
         })
       channels.sort((a, b) => a.position - b.position).map((x) => x.toString())
       if (channels.length > 0) {
-        str += `**${makePossessive(
-          result.display_name,
-        )}** Twitch streams post to:\n`
+        str += `**${makePossessive(result.display_name)}** Twitch streams post to:\n`
         str += `${channels.join('\n')}\n\n`
       }
     })
@@ -177,16 +169,13 @@ function getTarget(interaction: Discord.CommandInteraction): {
   targetChannel: Discord.AnyChannel
 } {
   const targetChannelId =
-    interaction.options.getChannel('discord_channel')?.id ||
-    interaction.channelId
+    interaction.options.getChannel('discord_channel')?.id || interaction.channelId
   const targetChannel = interaction.client.channels.cache.get(targetChannelId)
   if (!targetChannel) throw new Error('Unable to get target channel.')
   return { targetChannelId, targetChannel }
 }
 
-async function addChannel(
-  interaction: Discord.CommandInteraction,
-): Promise<void> {
+async function addChannel(interaction: Discord.CommandInteraction): Promise<void> {
   const guildId = interaction.guildId
   if (!guildId) throw new Error('Unable to get guild id.')
 
@@ -223,9 +212,7 @@ async function addChannel(
     const twitchChannel = interaction.options.getString('twitch_channel', true)
     const [user] = await getUsers([twitchChannel])
     if (!user) {
-      await interaction.editReply(
-        `**${twitchChannel}** is not a known Twitch channel.`,
-      )
+      await interaction.editReply(`**${twitchChannel}** is not a known Twitch channel.`)
       return
     }
     let color
@@ -254,9 +241,7 @@ async function addChannel(
   }
 }
 
-async function removeChannel(
-  interaction: Discord.CommandInteraction,
-): Promise<void> {
+async function removeChannel(interaction: Discord.CommandInteraction): Promise<void> {
   const { targetChannelId, targetChannel } = getTarget(interaction)
 
   const result = await getDocument(interaction)
@@ -301,15 +286,12 @@ async function removeChannel(
     const twitchChannel = interaction.options.getString('twitch_channel', true)
     const [user] = await getUsers([twitchChannel])
     if (!user) {
-      await interaction.editReply(
-        `**${twitchChannel}** is not a known Twitch channel.`,
-      )
+      await interaction.editReply(`**${twitchChannel}** is not a known Twitch channel.`)
       return
     }
     const name = displayName(user)
     await interaction.editReply(
-      `No channels are set to be notified when **${name}** ` +
-        `goes live on Twitch.`,
+      `No channels are set to be notified when **${name}** ` + `goes live on Twitch.`,
     )
   }
 }

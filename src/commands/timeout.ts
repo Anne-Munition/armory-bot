@@ -140,9 +140,12 @@ export const run: CmdRun = async (interaction): Promise<void> => {
 
       const unitString = duration === 1 ? unit.slice(0, -1) : unit
       let reply = `${member} has been timed out for **${duration}** ${unitString}.`
-      if (reason) reply += `\nReason: ${reason}`
+      let auditReason = `Timed out by ${interaction.user.username} for ${duration} ${unitString}`
+      if (reason) {
+        reply += `\nReason: ${reason}`
+        auditReason += ` for: ${reason}`
+      }
       const ms = Duration.fromObject({ [unit]: duration }).toMillis()
-      const auditReason = `Timed out by ${interaction.user.username} for ${duration} ${unitString} for: ${reason}`
 
       await timeouts.add(member, guildId, interaction.channelId, ms, targetString, auditReason)
       await interaction.editReply(reply)

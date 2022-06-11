@@ -59,10 +59,11 @@ export async function remove(userId: Snowflake, manual = false): Promise<void> {
   const member = await guild.members.fetch(timeoutDoc.user_id)
   let response: string
   if (member) {
-    response = `The timeout has ended for ${member}.`
-    await removeRole(member, timeoutDoc.roles, 'The timeout has ended.')
+    response = `The timeout has expired for ${member}.`
+    const reason = manual ? 'Timeout manually removed' : 'The timeout has expired.'
+    await removeRole(member, timeoutDoc.roles, reason)
   } else {
-    response = `The timeout has ended for ${timeoutDoc.username}.\nThough they seem to no longer be a member of this guild.`
+    response = `The timeout has expired for ${timeoutDoc.username}.\nThough they seem to no longer be a member of this guild.`
   }
 
   if (!manual) await textChannel.send(response)

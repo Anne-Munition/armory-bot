@@ -42,12 +42,12 @@ const shutdown = (signal: NodeJS.Signals) => {
 
 if (process.env.NODE_ENV === 'production') {
   // Message the bot owner on any unhandled errors
-  process.on('unhandledRejection', () => {
-    ownerError('Unhandled', new Error()).catch()
+  process.on('unhandledRejection', (err: Error) => {
+    ownerError('Unhandled', err).catch()
   })
 
   // Message the bot owner on any uncaught errors
-  process.on('uncaughtException', (err) => {
+  process.on('uncaughtException', (err: Error) => {
     ownerError('Uncaught', err).catch()
   })
 }

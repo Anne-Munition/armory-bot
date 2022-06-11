@@ -4,17 +4,12 @@ import Timeout from './database/services/timeout_service'
 import client from './discord'
 import log from './logger'
 
-const activeTimeouts: { [key: string]: NodeJS.Timeout } = {}
-
 // Get the timeout docs from the database and start timers to remove the timeout
 export async function init(): Promise<void> {
   log.debug('init timeouts module')
   const timeouts = await Timeout.list()
   log.debug(`${timeouts.length} existing timeouts`)
-  timeouts.forEach((timeout) => {
-    const duration = new Date(timeout.expires_at).valueOf() - new Date().valueOf()
-    startTimeoutTimer(timeout.user_id, duration)
-  })
+  setInterval(checkTimeouts, 1000 * 60)
 }
 
 // Add a timeout to the database and start a timeout removal timer
@@ -28,23 +23,19 @@ export async function add(
 ): Promise<void> {
   await addRole(member, getId(guildId, 'muteRole'), reason)
   await Timeout.add(member.id, guildId, channelId, ms, username)
-  startTimeoutTimer(member.id, ms)
 }
 
-// Timer to remove the timeout at a later time
-function startTimeoutTimer(userId: Snowflake, ms: number): void {
-  activeTimeouts[userId] = setTimeout(() => {
-    remove(userId).catch()
-  }, ms)
+// Check for expired timeouts
+async function checkTimeouts(): Promise<void> {
+  const timeouts = await Timeout.list()
+  timeouts.forEach((timeout) => {
+    if (Date.now() >= new Date(timeout.expires_at).valueOf()) remove(timeout.user_id)
+  })
 }
 
 // Remove the timeout either manually or from the timer
 export async function remove(userId: Snowflake, manual = false): Promise<void> {
   log.debug(`removing timeout on: ${userId}`)
-  if (activeTimeouts[userId]) {
-    clearTimeout(activeTimeouts[userId])
-    delete activeTimeouts[userId]
-  }
   const timeoutDoc = await Timeout.get(userId)
   if (!timeoutDoc) return
   await Timeout.remove(timeoutDoc.id)

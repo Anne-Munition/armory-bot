@@ -153,7 +153,7 @@ export const run: CmdRun = async (interaction): Promise<void> => {
       }
 
       await timeouts.remove(target.id, true)
-      await interaction.editReply(`Manually removed timeout on ${target} (${target.id}).`)
+      await interaction.editReply(`Manually removed timeout on ${target}.`)
     }
   }
 }

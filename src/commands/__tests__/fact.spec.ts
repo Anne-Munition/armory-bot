@@ -14,6 +14,9 @@ const mockInteraction = {
         get(id: string) {
           return id
         },
+        find(fn: any) {
+          return '0000'
+        },
       },
     },
   },
@@ -28,7 +31,7 @@ describe('fact command', () => {
     expect(mockInteraction.deferReply).toHaveBeenCalled()
     expect(mockInteraction.editReply).toHaveBeenCalled()
     expect(mockInteraction.editReply).toHaveBeenCalledWith(
-      '**Fact #694** - Spiny lobsters migrate in groups of 50 or more, forming a conga line on the ocean floor. 454917053069918209',
+      '**Fact #694** - Spiny lobsters migrate in groups of 50 or more, forming a conga line on the ocean floor. 0000',
     )
   })
 

@@ -17,8 +17,9 @@ export default async function (client: Client): Promise<void> {
 
   for (const [, guild] of client.guilds.cache) {
     let guildCommandsToAdd = guildCmds.filter((x) => {
-      if (!x.cmd.info.guilds) return false
-      return x.cmd.info.guilds.includes(guild.id)
+      const info = x.cmd.info as GuildCmdInfo
+      if (!info.guilds) return false
+      return info.guilds.includes(guild.id)
     })
     // Add global configs to guild configs in development
     if (process.env.NODE_ENV !== 'production') {
@@ -34,13 +35,6 @@ export default async function (client: Client): Promise<void> {
         const command = commands.get(guildCmd.name)
         if (command) commands.set(guildCmd.name, { cmd: command.cmd, id: guildCmd.id })
       })
-
-      // Set any permissions for those that have them
-      for (const [, command] of guildCommandsAdded) {
-        const cmd = commands.get(command.name)
-        if (!cmd || !cmd.cmd.permissions) continue
-        await command.permissions.set({ permissions: cmd.cmd.permissions })
-      }
     }
   }
 }

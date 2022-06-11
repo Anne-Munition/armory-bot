@@ -26,5 +26,4 @@ interface Cmd {
   info: CmdInfo
   structure: CmdStructure
   run: CmdRun
-  permissions?: CmdPerms
 }

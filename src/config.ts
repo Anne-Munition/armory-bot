@@ -9,8 +9,6 @@ export const ids: Ids = {
     scheduleChannel: '362349719663542272',
     spoilerChannel: '148124154602717193',
     muteRole: '706906565784895509',
-    numberChannel: '888689437029068810',
-    numberRole: '888946210944217109',
     legacyReactionWebhookId: '901235965216051210',
   },
   // DBKynd
@@ -19,8 +17,6 @@ export const ids: Ids = {
     scheduleChannel: '872986945788211231',
     spoilerChannel: '872987015677898813',
     muteRole: '835696708657872906',
-    numberChannel: '888655212204666881',
-    numberRole: '888943005975851049',
     legacyReactionWebhookId: '887447915440779284',
   },
 }
@@ -43,6 +39,4 @@ type IdNames =
   | 'scheduleChannel'
   | 'spoilerChannel'
   | 'muteRole'
-  | 'numberChannel'
-  | 'numberRole'
   | 'legacyReactionWebhookId'

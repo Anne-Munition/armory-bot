@@ -1,11 +1,9 @@
 import { Client, Intents, Snowflake } from 'discord.js'
-import { numberChannel } from './config'
 import interactionHandler from './interactions/interaction_handler'
 import interactionLoader from './interactions/interaction_loader'
 import log from './logger'
 import auditor from './messages/message_auditor'
 import messageHandler from './messages/message_handler'
-import { numbersDeleted, numbersEdited } from './messages/numbers'
 import notify from './notifications'
 
 const client = new Client({
@@ -67,11 +65,6 @@ client.on('messageCreate', messageHandler)
 
 // Emitted whenever a message is deleted.
 client.on('messageDelete', (msg) => {
-  if (msg.channel.id === numberChannel) {
-    numbersDeleted(msg).catch(() => {
-      // Do Nothing
-    })
-  }
   auditor.messageDelete(msg).catch(() => {
     // Do Nothing
   })
@@ -79,11 +72,6 @@ client.on('messageDelete', (msg) => {
 
 // Emitted whenever a message is updated - e.g. embed or content change.
 client.on('messageUpdate', (prev, next) => {
-  if (prev.channel.id === numberChannel) {
-    numbersEdited(prev).catch(() => {
-      // Do Nothing
-    })
-  }
   auditor.messageUpdate(prev, next)
 })
 

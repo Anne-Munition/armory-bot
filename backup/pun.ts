@@ -1,5 +1,5 @@
-import puns from '../../assets/puns.json'
-import { getRandomInt } from '../utilities'
+import puns from '../assets/puns.json'
+import { getRandomInt } from '../src/utilities'
 
 export const info: CmdInfo = {
   global: true,

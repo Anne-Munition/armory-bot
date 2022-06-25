@@ -1,10 +1,9 @@
 import Discord from 'discord.js'
-import { ids } from '../config'
 import { TwitchChannelDoc } from '../database/models/twitch_channel_model'
 import TwitchChannel from '../database/services/twitch_channel_service'
 import log from '../logger'
 import getChannelColor from '../twitch/getChannelColor'
-import { getUsers } from '../twitch/twitch_api'
+import { getChannelColors, getUsers } from '../twitch/twitch_api'
 import { displayName, makePossessive } from '../utilities'
 
 export const info: CmdInfo = {
@@ -185,7 +184,8 @@ async function addChannel(interaction: Discord.CommandInteraction): Promise<void
     }
     let color
     try {
-      color = await getChannelColor(user)
+      const [channelColor] = await getChannelColors([user.id])
+      color = await getChannelColor(user, channelColor)
     } catch (err) {
       log.error(err)
     }

@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { ignore, ownerError } from '../utilities'
 import * as token from './twitch_token'
 
 function helixHeaders(): { [key: string]: string } {
@@ -55,4 +56,37 @@ export function getFollows(userId: string, channelId: string): Promise<HelixFoll
     },
   }
   return axios.get(url, options).then(({ data }) => data.data)
+}
+
+export function getChannelColors(userIds: string[]): Promise<string | null[]> {
+  const url = 'https://gql.twitch.tv/gql'
+  const options = {
+    headers: {
+      'Client-ID': 'kimne78kx3ncx6brgo4mv6wki5h1ko',
+    },
+  }
+  const body = {
+    query: `
+      query PrimaryColor {
+        users(ids: ${userIds}) {
+          primaryColorHex
+        }
+      }
+    `,
+  }
+  return axios
+    .post(url, body, options)
+    .then(({ data }) => {
+      if (data.errors) {
+        ownerError('GQL Error - Channel Colors', undefined, data.errors[0].message).catch(ignore)
+        return
+      }
+      return data.data.users.map((x: null | { primaryColorHex: string }) => {
+        if (x) return x.primaryColorHex
+        return null
+      })
+    })
+    .catch((err) => {
+      ownerError('GQL Error - Channel Colors', err).catch(ignore)
+    })
 }

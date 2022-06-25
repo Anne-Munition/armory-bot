@@ -5,7 +5,7 @@ import TwitchChannel from '../database/services/twitch_channel_service'
 import client from '../discord'
 import log from '../logger'
 import getChannelColor from './getChannelColor'
-import { getStreams, getUsers } from './twitch_api'
+import { getChannelColors, getStreams, getUsers } from './twitch_api'
 
 let firstCheck = true
 let lastState: { [key: string]: HelixStream } = {}
@@ -220,14 +220,17 @@ async function updateUserData(): Promise<void> {
   const promiseArray = idsArray.map((i) => getUsers(i))
   const userArrays = await Promise.all(promiseArray)
   const users = userArrays.reduce((a, b) => a.concat(...b), [])
+  const userIds = users.map((x) => x.id)
+  const colors = await getChannelColors(userIds)
 
   // Loop through all the mongo results
   for (let i = 0; i < docs.length; i++) {
     const doc = docs[i]
     // Get the matching twitch results
-    const user = users.find((x) => x.id === doc.twitch_id)
-    if (!user) return
-    const color = await getChannelColor(user)
+    const userIndex = users.findIndex((x) => x.id === doc.twitch_id)
+    if (userIndex === -1) return
+    const user = users[userIndex]
+    const color = await getChannelColor(user, colors[userIndex])
 
     // Save record if data is different from twitch
     // display_name or profile_image_url or login

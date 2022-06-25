@@ -3,8 +3,6 @@ import { NotificationChannelDoc } from '../database/models/notification_channel_
 import NotificationChannel from '../database/services/notification_channel_service'
 import log from '../logger'
 
-// TODO Merge with other managers?
-
 export const info: CmdInfo = {
   global: true,
 }
@@ -12,18 +10,12 @@ export const info: CmdInfo = {
 export const structure: CmdStructure = {
   name: 'notify',
   description: 'Discord notification channel manager.',
+  defaultPermission: false,
   options: [
     {
       name: 'list',
       type: 'SUB_COMMAND',
       description: 'List the channels which post Discord notifications.',
-      options: [
-        {
-          name: 'all',
-          type: 'BOOLEAN',
-          description: 'Bot Owner Only.',
-        },
-      ],
     },
     {
       name: 'post',
@@ -76,14 +68,9 @@ async function list(interaction: Discord.CommandInteraction) {
   const guildId = interaction.guildId
   if (!guildId) throw new Error('Unable to get guild id.')
 
-  const listAll =
-    interaction.options.getBoolean('all') && interaction.user.id === process.env.OWNER_ID
-
-  const filter = listAll ? {} : { guild_id: guildId }
-
   let results
   try {
-    results = await NotificationChannel.search(filter)
+    results = await NotificationChannel.search({ guild_id: guildId })
   } catch (err) {
     log.error(err)
     await interaction.editReply('Database error, please try again.')
@@ -96,43 +83,15 @@ async function list(interaction: Discord.CommandInteraction) {
   }
 
   let str = ''
-  if (listAll) {
-    log.debug('list all guilds')
-    const mapped: { [key: string]: string[] } = {}
-    results.forEach((result) => {
-      if (mapped[result.guild_id]) {
-        mapped[result.guild_id].push(result.channel_id)
-      } else {
-        mapped[result.guild_id] = [result.channel_id]
-      }
-    })
-
-    for (const id in mapped) {
-      const channels: Discord.GuildChannel[] = []
-      const guild = interaction.client.guilds.cache.get(id)
-      if (!guild) continue
-      mapped[id].forEach((channelId) => {
-        const channel = guild.channels.cache.get(channelId)
-        if (channel && channel.type === 'GUILD_TEXT') channels.push(channel)
-      })
-      channels
-        .sort((a, b) => a.position - b.position)
-        .map((x) => `${x.guild.name} - **#${x.name}**`)
-      if (channels.length > 0) {
-        str += `Notifications in ${guild.name} post to:\n${channels.join('\n')}\n\n`
-      }
-    }
-  } else {
-    log.debug('list this guild')
-    const channels: Discord.GuildChannel[] = []
-    results.forEach((result) => {
-      const channel = interaction.guild?.channels.cache.get(result.channel_id)
-      if (channel && channel.type === 'GUILD_TEXT') channels.push(channel)
-    })
-    channels.sort((a, b) => a.position - b.position).map((x) => x.toString())
-    if (channels.length > 0) {
-      str += `Notifications post to:\n${channels.join('\n')}\n\n`
-    }
+  log.debug('list this guild')
+  const channels: Discord.GuildChannel[] = []
+  results.forEach((result) => {
+    const channel = interaction.guild?.channels.cache.get(result.channel_id)
+    if (channel && channel.type === 'GUILD_TEXT') channels.push(channel)
+  })
+  channels.sort((a, b) => a.position - b.position).map((x) => x.toString())
+  if (channels.length > 0) {
+    str += `Notifications post to:\n${channels.join('\n')}\n\n`
   }
   const split = Discord.Util.splitMessage(str, { maxLength: 1800 })
   for (let i = 0; i < split.length; i++) {

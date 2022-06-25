@@ -27,4 +27,4 @@ export interface TwitchChannelDoc extends Document {
   hex: import('discord.js').HexColorString
 }
 
-export default model<TwitchChannelDoc>('twitch_channels_new', schema)
+export default model<TwitchChannelDoc>('twitch_channels', schema)

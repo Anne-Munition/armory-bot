@@ -13,9 +13,9 @@ RUN yarn --production=false
 
 FROM dev_dependencies AS builder
 COPY . .
-RUN yarn prettier && \
-    yarn lint && \
-    yarn test && \
+RUN yarn prettier --loglevel silent && \
+    yarn lint --quiet && \
+    yarn test --silent && \
     yarn build
 
 FROM base

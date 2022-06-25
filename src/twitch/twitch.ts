@@ -10,8 +10,6 @@ import { getStreams, getUsers } from './twitch_api'
 let firstCheck = true
 let lastState: { [key: string]: HelixStream } = {}
 
-// TODO Owner Errors
-
 export function startTimers(): void {
   // Check once shortly after startup
   setTimeout(async () => {
@@ -22,7 +20,7 @@ export function startTimers(): void {
     } catch (err: any) {
       log.error(err.stack || err.message || err)
     }
-  }, 1000 * 5)
+  }, 1000 * 10)
 
   // Check repeatedly on a schedule
   setInterval(async () => {
@@ -56,9 +54,9 @@ async function checkLive(): Promise<void> {
   // Filter for twitch ids that have an available Discord channel with at least one registered channel with send permissions
   const ids = docs
     .filter((doc) => {
-      for (let i = 0; i < doc.discord_channels.length; i++) {
+      for (let i = 0; i < doc.channels.length; i++) {
         if (!client || !client.user) continue
-        const discordChannel = doc.discord_channels[i]
+        const discordChannel = doc.channels[i]
         const guild = client.guilds.cache.get(discordChannel.guild_id)
         if (!guild) continue
         const channel = guild.channels.cache.get(discordChannel.channel_id)
@@ -78,7 +76,7 @@ async function checkLive(): Promise<void> {
   const allowedChannels = docs
     .filter((doc) => ids.includes(doc.twitch_id))
     .reduce((a, b) => {
-      const channels = b.discord_channels
+      const channels = b.channels
         .map((channel) => {
           const guild = client.guilds.cache.get(channel.guild_id)
           if (!guild) return null
@@ -185,7 +183,7 @@ async function post(
   if (stream.title) embed.addField('Title:', stream.title)
 
   const channels: GuildChannel[] = []
-  doc.discord_channels.forEach((c) => {
+  doc.channels.forEach((c) => {
     if (!client.user) return
     const guild = client.guilds.cache.get(c.guild_id)
     if (!guild) return

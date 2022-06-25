@@ -11,7 +11,7 @@ export async function start(): Promise<void> {
   await commandLoader.loadAllCommands()
   await discord.connect()
   await timeouts.init()
-  // twitch.startTimers()
+  twitch.startTimers()
 }
 
 export async function stop(): Promise<void> {

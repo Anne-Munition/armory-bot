@@ -2,7 +2,7 @@ import { Snowflake } from 'discord.js'
 import { Document, Schema, model } from 'mongoose'
 
 const schema = new Schema({
-  discord_channels: [
+  channels: [
     {
       guild_id: String,
       channel_id: String,
@@ -16,7 +16,7 @@ const schema = new Schema({
 })
 
 export interface TwitchChannelDoc extends Document {
-  discord_channels: {
+  channels: {
     guild_id: Snowflake
     channel_id: Snowflake
   }[]
@@ -27,4 +27,4 @@ export interface TwitchChannelDoc extends Document {
   hex: import('discord.js').HexColorString
 }
 
-export default model<TwitchChannelDoc>('twitch_channels', schema)
+export default model<TwitchChannelDoc>('twitch_channels_new', schema)

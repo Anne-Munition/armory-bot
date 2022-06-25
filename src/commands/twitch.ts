@@ -1,4 +1,5 @@
 import Discord from 'discord.js'
+import { ids } from '../config'
 import { TwitchChannelDoc } from '../database/models/twitch_channel_model'
 import TwitchChannel from '../database/services/twitch_channel_service'
 import log from '../logger'
@@ -6,27 +7,20 @@ import getChannelColor from '../twitch/getChannelColor'
 import { getUsers } from '../twitch/twitch_api'
 import { displayName, makePossessive } from '../utilities'
 
-// TODO Merge with other managers?
-
 export const info: CmdInfo = {
-  global: true,
+  global: false,
+  guilds: [ids.dev.guild],
 }
 
 export const structure: CmdStructure = {
   name: 'twitch',
   description: 'Twitch live feed channel manager.',
+  defaultPermission: false,
   options: [
     {
       name: 'list',
       type: 'SUB_COMMAND',
       description: 'List the channels which post Twitch feeds.',
-      options: [
-        {
-          name: 'all',
-          type: 'BOOLEAN',
-          description: 'Bot Owner Only.',
-        },
-      ],
     },
     {
       name: 'post',
@@ -85,14 +79,9 @@ async function list(interaction: Discord.CommandInteraction): Promise<void> {
   const guildId = interaction.guildId
   if (!guildId) throw new Error('Unable to get guild id.')
 
-  const listAll =
-    interaction.options.getBoolean('all') && interaction.user.id === process.env.OWNER_ID
-
-  const filter = listAll ? {} : { ['discord_channels.guild_id']: guildId }
-
   let results
   try {
-    results = await TwitchChannel.search(filter)
+    results = await TwitchChannel.search({ ['channels.guild_id']: guildId })
   } catch (err) {
     log.error(err)
     await interaction.editReply('Database error, please try again.')
@@ -105,46 +94,25 @@ async function list(interaction: Discord.CommandInteraction): Promise<void> {
   }
 
   let str = ''
-  if (listAll) {
-    log.debug('list all guilds')
-    results.forEach((result) => {
-      const channels: Discord.GuildChannel[] = []
-      result.discord_channels.forEach((x) => {
-        const channel = interaction.client.guilds.cache
-          .get(x.guild_id)
-          ?.channels.cache.get(x.channel_id)
+  log.debug('list this guild')
+  const thisGuildOnlyResults = results.filter((result) => {
+    const s = result.channels.filter((x) => x.guild_id === guildId)
+    return !(s === null)
+  })
+  thisGuildOnlyResults.forEach((result) => {
+    const channels: Discord.GuildChannel[] = []
+    result.channels
+      .filter((x) => x.guild_id === guildId)
+      .forEach((x) => {
+        const channel = interaction.guild?.channels.cache.get(x.channel_id)
         if (channel && channel.type === 'GUILD_TEXT') channels.push(channel)
       })
-
-      channels
-        .sort((a, b) => a.position - b.position)
-        .map((x) => `${x.guild.name} - **#${x.name}**`)
-      if (channels.length > 0) {
-        str += `**${makePossessive(result.display_name)}** Twitch streams post to:\n`
-        str += `${channels.join('\n')}\n\n`
-      }
-    })
-  } else {
-    log.debug('list this guild')
-    const thisGuildOnlyResults = results.filter((result) => {
-      const s = result.discord_channels.filter((x) => x.guild_id === guildId)
-      return !(s === null)
-    })
-    thisGuildOnlyResults.forEach((result) => {
-      const channels: Discord.GuildChannel[] = []
-      result.discord_channels
-        .filter((x) => x.guild_id === guildId)
-        .forEach((x) => {
-          const channel = interaction.guild?.channels.cache.get(x.channel_id)
-          if (channel && channel.type === 'GUILD_TEXT') channels.push(channel)
-        })
-      channels.sort((a, b) => a.position - b.position).map((x) => x.toString())
-      if (channels.length > 0) {
-        str += `**${makePossessive(result.display_name)}** Twitch streams post to:\n`
-        str += `${channels.join('\n')}\n\n`
-      }
-    })
-  }
+    channels.sort((a, b) => a.position - b.position).map((x) => x.toString())
+    if (channels.length > 0) {
+      str += `**${makePossessive(result.display_name)}** Twitch streams post to:\n`
+      str += `${channels.join('\n')}\n\n`
+    }
+  })
   const split = Discord.Util.splitMessage(str, { maxLength: 1800 })
   for (let i = 0; i < split.length; i++) {
     if (i === 0) await interaction.editReply(split[i])
@@ -183,11 +151,11 @@ async function addChannel(interaction: Discord.CommandInteraction): Promise<void
 
   const result = await getDocument(interaction)
   if (result) {
-    const channels = result.discord_channels.filter(
+    const channels = result.channels.filter(
       (x) => x.guild_id === guildId && x.channel_id === targetChannelId,
     )
     if (!channels.length) {
-      result.discord_channels.push({
+      result.channels.push({
         guild_id: guildId,
         channel_id: targetChannelId,
       })
@@ -207,6 +175,7 @@ async function addChannel(interaction: Discord.CommandInteraction): Promise<void
         `${targetChannel} already gets notified when ` +
           `**${result.display_name}** goes live on Twitch.`,
       )
+      return
     }
   } else {
     const twitchChannel = interaction.options.getString('twitch_channel', true)
@@ -247,8 +216,8 @@ async function removeChannel(interaction: Discord.CommandInteraction): Promise<v
   const result = await getDocument(interaction)
   if (result) {
     let index = -1
-    for (let i = 0; i < result.discord_channels.length; i++) {
-      if (result.discord_channels[i].channel_id === targetChannelId) {
+    for (let i = 0; i < result.channels.length; i++) {
+      if (result.channels[i].channel_id === targetChannelId) {
         index = i
       }
     }
@@ -258,8 +227,8 @@ async function removeChannel(interaction: Discord.CommandInteraction): Promise<v
       )
       return
     }
-    result.discord_channels.splice(index, 1)
-    if (result.discord_channels.length === 0) {
+    result.channels.splice(index, 1)
+    if (result.channels.length === 0) {
       try {
         await TwitchChannel.remove(result.id)
         await interaction.editReply(

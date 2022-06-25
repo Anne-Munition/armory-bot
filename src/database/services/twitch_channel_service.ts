@@ -25,7 +25,7 @@ async function add(
     login: user.login,
     image_url: user.profile_image_url,
     twitch_id: user.id,
-    discord_channels: [discordData],
+    channels: [discordData],
     hex: color,
   }).save()
 }

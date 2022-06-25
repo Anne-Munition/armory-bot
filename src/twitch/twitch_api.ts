@@ -82,7 +82,7 @@ export function getChannelColors(userIds: string[]): Promise<string | null[]> {
         return []
       }
       return data.data.users.map((x: null | { primaryColorHex: string }) => {
-        if (x && x.primaryColorHex) return x.primaryColorHex
+        if (x && x.primaryColorHex) return x.primaryColorHex.toLowerCase()
         return null
       })
     })

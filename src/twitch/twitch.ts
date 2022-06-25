@@ -175,10 +175,10 @@ async function post(
     })
   if (last) {
     embed
-      .addField('New Game:', stream.game_name || 'UNKNOWN')
-      .addField('Old Game:', last.game_name || 'UNKNOWN')
+      .addField('Old Game:', last.game_name || 'UNKNOWN', false)
+      .addField('New Game:', stream.game_name || 'UNKNOWN', false)
   } else {
-    embed.addField('Game:', stream.game_name || 'UNKNOWN')
+    embed.addField('Game:', stream.game_name || 'UNKNOWN', false)
   }
   if (stream.title) embed.addField('Title:', stream.title)
 

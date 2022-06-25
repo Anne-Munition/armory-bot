@@ -44,6 +44,7 @@ export const run: CmdRun = async (interaction): Promise<void> => {
   const question = interaction.options.getString('question', true)
 
   let answer = responses[getRandomInt(0, responses.length)]
+  if (question.toLowerCase().includes('bed')) answer = 'No bed... cheater'
   if (interaction.user.id === process.env.OWNER_ID && question.endsWith('?')) answer = 'Of course!'
 
   await interaction.reply(`**Q:** *${question}*\n**A:** ${answer}`)

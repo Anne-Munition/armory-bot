@@ -8,8 +8,7 @@ import { getUsers } from '../twitch/twitch_api'
 import { displayName, makePossessive } from '../utilities'
 
 export const info: CmdInfo = {
-  global: false,
-  guilds: [ids.dev.guild],
+  global: true,
 }
 
 export const structure: CmdStructure = {

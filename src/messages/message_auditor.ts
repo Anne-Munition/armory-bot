@@ -79,6 +79,43 @@ async function messageDelete(msg: Message | PartialMessage) {
 function messageUpdate(prev: Message | PartialMessage, next: Message | PartialMessage) {
   if (prev && next) {
     // TODO
+    /*
+    * messageUpdated: async (client, oldMessage, newMessage) => {
+    return
+    if (oldMessage.author.id === client.user.id) return
+    const channels = await client.mongo.auditChannels.find({
+      server_id: oldMessage.guild.id,
+    })
+    if (!channels) return
+    const embed = new client.Discord.MessageEmbed()
+      .setAuthor(
+        `${oldMessage.author.tag} (${oldMessage.author.id})`,
+        oldMessage.author.displayAvatarURL(),
+      )
+      .setFooter(`Updated: (${oldMessage.id})`)
+      .setTimestamp()
+    if (oldMessage.content) embed.addField('Original', oldMessage.cleanContent)
+    if (newMessage.content) embed.addField('Updated', newMessage.cleanContent)
+    channels.forEach((c) => {
+      const channel = oldMessage.guild.channels.cache.get(c.channel_id)
+      if (channel) {
+        if (
+          !channel
+            .permissionsFor(client.user)
+            .has(['SEND_MESSAGES', 'EMBED_LINKS'])
+        ) {
+          client.utils.ownerError(
+            'messageUpdate',
+            client,
+            `Channel Permission Error for channel: ${channel.id}`,
+          )
+          return
+        }
+        channel.send({ embed }).catch(logger.error)
+      }
+    })
+  },
+  */
   }
 }
 

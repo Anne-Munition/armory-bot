@@ -68,7 +68,7 @@ export function getChannelColors(userIds: string[]): Promise<string | null[]> {
   const body = {
     query: `
       query PrimaryColor {
-        users(ids: ${userIds}) {
+        users(ids: ${JSON.stringify(userIds)}) {
           primaryColorHex
         }
       }
@@ -79,7 +79,7 @@ export function getChannelColors(userIds: string[]): Promise<string | null[]> {
     .then(({ data }) => {
       if (data.errors) {
         ownerError('GQL Error - Channel Colors', undefined, data.errors[0].message).catch(ignore)
-        return
+        return []
       }
       return data.data.users.map((x: null | { primaryColorHex: string }) => {
         if (x && x.primaryColorHex) return x.primaryColorHex
@@ -88,5 +88,6 @@ export function getChannelColors(userIds: string[]): Promise<string | null[]> {
     })
     .catch((err) => {
       ownerError('GQL Error - Channel Colors', err).catch(ignore)
+      return []
     })
 }

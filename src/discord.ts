@@ -1,5 +1,4 @@
-import { Client, Intents, Snowflake, Guild } from 'discord.js'
-import databaseCleanup from './database/cleanup'
+import { Client, Intents, Snowflake } from 'discord.js'
 import interactionHandler from './interactions/interaction_handler'
 import interactionLoader from './interactions/interaction_loader'
 import log from './logger'
@@ -79,8 +78,6 @@ client.on('messageUpdate', (prev, next) => {
 /***** INTERACTION EVENTS *****/
 
 client.on('interactionCreate', interactionHandler)
-
-client.once('ready', async () => {})
 
 export async function connect(): Promise<void> {
   return new Promise((resolve, reject) => {

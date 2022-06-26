@@ -43,7 +43,7 @@ export async function remove(userId: Snowflake, manual = false): Promise<void> {
   const guild = client.guilds.cache.get(timeoutDoc.guild_id)
   if (!guild) return
 
-  const channel = await guild.channels.fetch(timeoutDoc.channel_id)
+  const channel = guild.channels.cache.get(timeoutDoc.channel_id)
   if (!channel || channel.type !== 'GUILD_TEXT') return
   const textChannel = channel as TextChannel
 

@@ -1,4 +1,5 @@
 import { Client, Intents, Snowflake } from 'discord.js'
+import databaseCleanup from './database/cleanup'
 import interactionHandler from './interactions/interaction_handler'
 import interactionLoader from './interactions/interaction_loader'
 import log from './logger'
@@ -83,8 +84,10 @@ client.once('ready', async () => {
   // Fetch all members from all guilds so we are aware of guild member parts after a bot restart
   client.guilds.cache.forEach((guild) => {
     guild.members.fetch()
+    guild.channels.fetch()
   })
   await interactionLoader(client)
+  databaseCleanup.init()
 
   // DM the owner that the client has (re)started if in production
   if (process.env.NODE_ENV === 'production') {

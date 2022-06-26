@@ -20,7 +20,7 @@ export function startTimers(): void {
     } catch (err: any) {
       log.error(err.stack || err.message || err)
     }
-  }, 1000 * 10)
+  }, 1000 * 30)
 
   // Check repeatedly on a schedule
   setInterval(async () => {

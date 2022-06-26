@@ -8,8 +8,8 @@ import NotificationChannel from './services/notification_channel_service'
 import TwitchChannel from './services/twitch_channel_service'
 
 function init() {
+  setTimeout(cleanup, 1000 * 15)
   setInterval(cleanup, 1000 * 60 * 60 * 12)
-  cleanup().catch(ignore)
 }
 
 async function cleanup() {

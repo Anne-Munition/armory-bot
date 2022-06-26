@@ -1,4 +1,4 @@
-import { Client, Intents, Snowflake } from 'discord.js'
+import { Client, Intents, Snowflake, Guild } from 'discord.js'
 import databaseCleanup from './database/cleanup'
 import interactionHandler from './interactions/interaction_handler'
 import interactionLoader from './interactions/interaction_loader'
@@ -80,23 +80,7 @@ client.on('messageUpdate', (prev, next) => {
 
 client.on('interactionCreate', interactionHandler)
 
-client.once('ready', async () => {
-  // Fetch all members from all guilds so we are aware of guild member parts after a bot restart
-  client.guilds.cache.forEach((guild) => {
-    guild.members.fetch()
-    guild.channels.fetch()
-  })
-  await interactionLoader(client)
-  databaseCleanup.init()
-
-  // DM the owner that the client has (re)started if in production
-  if (process.env.NODE_ENV === 'production') {
-    const owner = client.users.cache.get(<Snowflake>process.env.OWNER_ID)
-    if (owner) {
-      await owner.send(`I just started running. Did I crash? :worried:\nPID:\`\`${process.pid}\`\``)
-    }
-  }
-})
+client.once('ready', async () => {})
 
 export async function connect(): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -105,9 +89,28 @@ export async function connect(): Promise<void> {
     const timer = setTimeout(() => {
       reject(new Error('Took longer than 60 seconds to connect to Discord.'))
     }, 1000 * 60)
-    client.once('ready', () => {
+    client.once('ready', async () => {
       clearTimeout(timer)
       log.info(`Connected to Discord as '${client?.user?.tag}'`)
+
+      // Fetch all members from all guilds so we are aware of guild member parts after a bot restart
+
+      for (const guild of client.guilds.cache) {
+        await guild[1].members.fetch()
+        await guild[1].channels.fetch()
+      }
+      await interactionLoader(client)
+
+      // DM the owner that the client has (re)started if in production
+      if (process.env.NODE_ENV === 'production') {
+        const owner = client.users.cache.get(<Snowflake>process.env.OWNER_ID)
+        if (owner) {
+          await owner.send(
+            `I just started running. Did I crash? :worried:\nPID:\`\`${process.pid}\`\``,
+          )
+        }
+      }
+
       resolve()
     })
   })

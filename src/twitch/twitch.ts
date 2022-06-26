@@ -11,16 +11,16 @@ let firstCheck = true
 let lastState: { [key: string]: HelixStream } = {}
 
 export function startTimers(): void {
-  // Check once shortly after startup
-  setTimeout(async () => {
-    try {
-      await updateUserData()
-      await checkLive()
-      log.debug('twitch - initial check complete')
-    } catch (err: any) {
-      log.error(err.stack || err.message || err)
-    }
-  }, 1000 * 30)
+  // Check once on startup
+  try {
+    updateUserData()
+      .then(checkLive)
+      .then(() => {
+        log.debug('twitch - initial check complete')
+      })
+  } catch (err: any) {
+    log.error(err.stack || err.message || err)
+  }
 
   // Check repeatedly on a schedule
   setInterval(async () => {

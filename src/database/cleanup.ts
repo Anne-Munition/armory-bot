@@ -7,9 +7,10 @@ import AuditChannel from './services/audit_channel_service'
 import NotificationChannel from './services/notification_channel_service'
 import TwitchChannel from './services/twitch_channel_service'
 
-function init() {
-  setTimeout(cleanup, 1000 * 15)
+async function init() {
   setInterval(cleanup, 1000 * 60 * 60 * 12)
+  await cleanup()
+  logger.debug('Done with initial database cleanup')
 }
 
 async function cleanup() {

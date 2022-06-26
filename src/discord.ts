@@ -1,4 +1,4 @@
-import { Client, Intents, Snowflake } from 'discord.js'
+import { Client, Intents } from 'discord.js'
 import interactionHandler from './interactions/interaction_handler'
 import interactionLoader from './interactions/interaction_loader'
 import log from './logger'
@@ -97,17 +97,6 @@ export async function connect(): Promise<void> {
         await guild[1].channels.fetch()
       }
       await interactionLoader(client)
-
-      // DM the owner that the client has (re)started if in production
-      if (process.env.NODE_ENV === 'production') {
-        const owner = client.users.cache.get(<Snowflake>process.env.OWNER_ID)
-        if (owner) {
-          await owner.send(
-            `I just started running. Did I crash? :worried:\nPID:\`\`${process.pid}\`\``,
-          )
-        }
-      }
-
       resolve()
     })
   })

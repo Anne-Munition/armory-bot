@@ -41,7 +41,7 @@ export const structure: CmdStructure = {
         {
           name: 'channel',
           type: 'CHANNEL',
-          description: 'Optional Discord channel to post to. Defaults the this channel.',
+          description: 'Optional Discord channel to post to. Defaults to this channel.',
         },
       ],
     },

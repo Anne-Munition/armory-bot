@@ -41,7 +41,7 @@ export const structure: CmdStructure = {
         {
           name: 'channel',
           type: 'CHANNEL',
-          description: 'Optional Discord channel to post to. Defaults the this channel.',
+          description: 'Optional Discord channel to post to. Defaults to this channel.',
         },
       ],
     },
@@ -83,7 +83,6 @@ async function list(interaction: Discord.CommandInteraction) {
   }
 
   let str = ''
-  log.debug('list this guild')
   const channels: Discord.GuildChannel[] = []
   results.forEach((result) => {
     const channel = interaction.guild?.channels.cache.get(result.channel_id)

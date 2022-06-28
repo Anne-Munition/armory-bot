@@ -50,7 +50,7 @@ export const structure: CmdStructure = {
         {
           name: 'discord_channel',
           type: 'CHANNEL',
-          description: 'Optional Discord channel to post to. Defaults the this channel.',
+          description: 'Optional Discord channel to post to. Defaults to this channel.',
         },
       ],
     },
@@ -92,7 +92,6 @@ async function list(interaction: Discord.CommandInteraction): Promise<void> {
   }
 
   let str = ''
-  log.debug('list this guild')
   const thisGuildOnlyResults = results.filter((result) => {
     const s = result.channels.filter((x) => x.guild_id === guildId)
     return !(s === null)

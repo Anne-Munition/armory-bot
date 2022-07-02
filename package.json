@@ -22,6 +22,7 @@
     "erlpack": "discord/erlpack",
     "getos": "^3.2.1",
     "gm": "^1.23.1",
+    "html-entities": "^2.3.3",
     "humanize-duration": "^3.27.2",
     "lodash": "^4.17.21",
     "luxon": "^2.4.0",
@@ -34,6 +35,7 @@
     "rgb2hex": "^0.2.5",
     "rimraf": "^3.0.2",
     "temp-units-conv": "^1.0.2",
+    "twitter-v2": "^1.1.0",
     "utf-8-validate": "^5.0.9",
     "winston": "^3.7.2",
     "zlib-sync": "^0.1.7"

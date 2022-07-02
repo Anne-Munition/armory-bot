@@ -52,6 +52,7 @@ export async function connect(): Promise<void> {
   if (connectedTimer) clearTimeout(connectedTimer)
   connectedTimer = setTimeout(() => {
     logger.info('Connected to Twitter stream')
+    ownerError('Connected to Twitter Stream').catch(ignore)
   }, 3000)
 
   try {

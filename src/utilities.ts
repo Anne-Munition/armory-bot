@@ -26,6 +26,16 @@ export function displayName(user: HelixUser): string {
   }
 }
 
+// Send a message to the bot owner
+export async function ownerSend(message: string) {
+  try {
+    const owner = await client.users.fetch(<Snowflake>process.env.OWNER_ID)
+    if (owner) await owner.send(message)
+  } catch (err) {
+    log.error(err)
+  }
+}
+
 // Send a DM error message to the bot owner
 export async function ownerError(
   title: string,

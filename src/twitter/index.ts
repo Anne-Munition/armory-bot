@@ -4,7 +4,7 @@ import TwitterStream from 'twitter-v2/build/TwitterStream'
 import logger from '../logger'
 import * as se from '../streamelements'
 import * as twitchApi from '../twitch/twitch_api'
-import { ignore, ownerError } from '../utilities'
+import { ignore, ownerError, ownerSend } from '../utilities'
 
 let stream: TwitterStream | null
 let reconnectInterval: number
@@ -53,7 +53,7 @@ export async function connect(): Promise<void> {
   connectedTimer = setTimeout(() => {
     logger.info('Connected to Twitter stream')
     if (process.env.NODE_ENV === 'production')
-      ownerError('Connected to Twitter Stream').catch(ignore)
+      ownerSend('Connected to Twitter Stream').catch(ignore)
   }, 3000)
 
   try {

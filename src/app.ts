@@ -3,13 +3,12 @@ import commandLoader from './command_loader'
 import * as database from './database'
 import databaseCleanup from './database/cleanup'
 import * as discord from './discord'
-import client from './discord'
 import * as se from './streamelements'
 import * as timeouts from './timeouts'
 import * as twitch from './twitch/twitch'
 import * as token from './twitch/twitch_token'
 import * as twitter from './twitter'
-import { ignore } from './utilities'
+import { ignore, ownerSend } from './utilities'
 
 export async function start(): Promise<void> {
   await token.fetchToken()
@@ -25,8 +24,7 @@ export async function start(): Promise<void> {
 
   // DM the owner that the client has (re)started if in production
   if (process.env.NODE_ENV === 'production') {
-    const owner = await client.users.fetch(<Snowflake>process.env.OWNER_ID)
-    if (owner) await owner.send('Startup complete.')
+    ownerSend('Startup complete.').catch(ignore)
   }
 }
 

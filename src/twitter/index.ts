@@ -95,8 +95,9 @@ async function dataConsumer(data: Tweet) {
   if (oldTweetIds.includes(data.id)) return
   oldTweetIds.push(data.id)
   if (oldTweetIds.length >= 10) oldTweetIds.shift()
+  const isGoingLiveTweet = data.text.includes('https://t.co/UEDLazk7gU')
   const [stream] = await twitchApi.getStreams([name])
-  if (!stream) return
+  if (!stream && !isGoingLiveTweet) return
   const url = `https://twitter.com/${name}/status/${data.id}`
   const text = `/announce New tweet from ${name}: "${decode(data.text)}" (${url})`
   se.say(text).catch(ignore)

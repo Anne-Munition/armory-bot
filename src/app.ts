@@ -9,6 +9,7 @@ import * as timeouts from './timeouts'
 import * as twitch from './twitch/twitch'
 import * as token from './twitch/twitch_token'
 import * as twitter from './twitter'
+import { ignore } from './utilities'
 
 export async function start(): Promise<void> {
   await token.fetchToken()
@@ -20,7 +21,7 @@ export async function start(): Promise<void> {
   twitch.startTimers()
   await se.init()
   await twitter.init()
-  await twitter.connect()
+  twitter.connect().catch(ignore)
 
   // DM the owner that the client has (re)started if in production
   if (process.env.NODE_ENV === 'production') {

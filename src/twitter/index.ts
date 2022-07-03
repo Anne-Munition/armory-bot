@@ -1,10 +1,9 @@
-import { decode } from 'html-entities'
 import Twitter from 'twitter-v2'
 import TwitterStream from 'twitter-v2/build/TwitterStream'
 import logger from '../logger'
-import { announce } from '../streamelements'
-import * as twitchApi from '../twitch/twitch_api'
 import { ignore, ownerError, ownerSend } from '../utilities'
+import { name } from './config'
+import tweetHandler from './tweetHandler'
 
 let stream: TwitterStream | null
 let reconnectInterval: number
@@ -13,9 +12,6 @@ let backfill: number | null
 let closing: boolean
 let reconnecting = false
 let connectedTimer: NodeJS.Timer
-const oldTweetIds: string[] = []
-
-const name = 'AnneMunition'
 
 const client = new Twitter({
   bearer_token: process.env.TWITTER_BEARER_TOKEN,
@@ -64,7 +60,7 @@ export async function connect(): Promise<void> {
 
     for await (const { data } of stream) {
       if (reconnecting) reset()
-      dataConsumer(data).catch(ignore)
+      tweetHandler(data).catch(ignore)
     }
     reconnect()
   } catch (err) {
@@ -87,29 +83,6 @@ function reconnect() {
   logger.warn(`Twitter stream disconnected. Retrying in ${reconnectInterval} seconds`)
   setTimeout(connect, 1000 * reconnectInterval)
   reconnectInterval *= 2
-}
-
-async function dataConsumer(data: Tweet) {
-  logger.debug(JSON.stringify(data, null, 2))
-  if (data.in_reply_to_user_id) return
-  if (oldTweetIds.includes(data.id)) return
-  oldTweetIds.push(data.id)
-  if (oldTweetIds.length >= 10) oldTweetIds.shift()
-  const isGoingLiveTweet = data.text.includes('https://t.co/UEDLazk7gU')
-  const [stream] = await twitchApi.getStreams([name])
-  if (!stream && !isGoingLiveTweet) return
-  const urls = data.entities?.urls?.map((x) => x.url) || []
-  let text = decode(data.text)
-  urls.forEach((x) => {
-    text = text.replace(x, '')
-  })
-  text = text.replace(/(\\n)+/g, ' ').trim()
-  const link = `https://twitter.com/${name}/status/${data.id}`
-
-  const message = text.length
-    ? `New tweet from ${name}: "${text}" ${link}`
-    : `New tweet from ${name} ${link}`
-  announce(message).catch(ignore)
 }
 
 export function disconnect(): void {

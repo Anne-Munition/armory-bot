@@ -24,7 +24,7 @@ export async function start(): Promise<void> {
 
   // DM the owner that the client has (re)started if in production
   if (process.env.NODE_ENV === 'production') {
-    ownerSend('Startup complete.').catch(ignore)
+    ownerSend('Startup complete').catch(ignore)
   }
 }
 

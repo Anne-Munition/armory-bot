@@ -2,7 +2,7 @@ import { decode } from 'html-entities'
 import Twitter from 'twitter-v2'
 import TwitterStream from 'twitter-v2/build/TwitterStream'
 import logger from '../logger'
-import * as se from '../streamelements'
+import { announce } from '../streamelements'
 import * as twitchApi from '../twitch/twitch_api'
 import { ignore, ownerError, ownerSend } from '../utilities'
 
@@ -59,7 +59,7 @@ export async function connect(): Promise<void> {
   try {
     stream = client.stream('tweets/search/stream', {
       backfill_minutes: minutes.toString(),
-      'tweet.fields': ['in_reply_to_user_id'],
+      'tweet.fields': ['in_reply_to_user_id', 'entities'],
     })
 
     for await (const { data } of stream) {
@@ -98,9 +98,18 @@ async function dataConsumer(data: Tweet) {
   const isGoingLiveTweet = data.text.includes('https://t.co/UEDLazk7gU')
   const [stream] = await twitchApi.getStreams([name])
   if (!stream && !isGoingLiveTweet) return
-  const url = `https://twitter.com/${name}/status/${data.id}`
-  const text = `/announce New tweet from ${name}: "${decode(data.text)}" (${url})`
-  se.say(text).catch(ignore)
+  const urls = data.entities?.urls?.map((x) => x.url) || []
+  let text = decode(data.text)
+  urls.forEach((x) => {
+    text = text.replace(x, '')
+  })
+  text = text.replace(/(\\n)+/g, ' ').trim()
+  const link = `https://twitter.com/${name}/status/${data.id}`
+
+  const message = text.length
+    ? `New tweet from ${name}: "${text}" ${link}`
+    : `New tweet from ${name} ${link}`
+  announce(message).catch(ignore)
 }
 
 export function disconnect(): void {

@@ -15,9 +15,13 @@ export async function init(): Promise<void> {
   channelId = _id
 }
 
-export async function say(text: string): Promise<void> {
+async function say(message: string): Promise<void> {
   const url = `https://api.streamelements.com/kappa/v2/bot/${channelId}/say`
   const options = { headers: headers() }
-  const body = { message: text }
+  const body = { message }
   return axios.post(url, body, options)
+}
+
+export async function announce(message: string): Promise<void> {
+  await say(`/announce ${message}`)
 }

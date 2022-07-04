@@ -1,5 +1,6 @@
 import * as se from '../../streamelements/index'
 import * as twitchApi from '../../twitch/twitch_api'
+import * as fixtures from '../__fixtures__/tweets'
 import { goingLiveUrl, name } from '../config'
 import tweetHandler from '../tweetHandler'
 
@@ -147,5 +148,18 @@ describe('dataConsumer', () => {
     await tweetHandler(tweet)
 
     expect(announceSpy).toHaveBeenCalledTimes(1)
+  })
+
+  test('sample tweet 1', async () => {
+    const tweet: Tweet = fixtures.tweet1
+    jest.spyOn(twitchApi, 'getStreams').mockImplementation(() => {
+      return Promise.resolve([{} as HelixStream])
+    })
+
+    await tweetHandler(tweet)
+
+    expect(announceSpy).toHaveBeenCalledWith(
+      `New tweet from ${name}: "Finishing up Life is Strange: True Colors today!" https://twitter.com/${name}/status/1543644163488432129`,
+    )
   })
 })

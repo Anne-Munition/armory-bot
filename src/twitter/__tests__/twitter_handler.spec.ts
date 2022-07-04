@@ -1,7 +1,7 @@
 import * as se from '../../streamelements/index'
 import * as twitchApi from '../../twitch/twitch_api'
 import * as fixtures from '../__fixtures__/tweets'
-import { goingLiveUrl, name } from '../config'
+import { goingLiveUrl } from '../config'
 import tweetHandler from '../tweetHandler'
 
 const announceSpy = jest.spyOn(se, 'announce').mockImplementation(() => {
@@ -30,7 +30,7 @@ describe('dataConsumer', () => {
     await tweetHandler(tweet)
 
     expect(announceSpy).toHaveBeenCalledWith(
-      `New tweet from ${name}: "Tweet body." https://twitter.com/${name}/status/1`,
+      'New tweet from AnneMunition: "Tweet body." https://twitter.com/AnneMunition/status/1',
     )
   })
 
@@ -46,7 +46,7 @@ describe('dataConsumer', () => {
     await tweetHandler(tweet)
 
     expect(announceSpy).toHaveBeenCalledWith(
-      `New tweet from ${name}: "Tweet body." https://twitter.com/${name}/status/2`,
+      'New tweet from AnneMunition: "Tweet body." https://twitter.com/AnneMunition/status/2',
     )
   })
 
@@ -62,7 +62,7 @@ describe('dataConsumer', () => {
     await tweetHandler(tweet)
 
     expect(announceSpy).toHaveBeenCalledWith(
-      `New tweet from ${name}: https://twitter.com/${name}/status/3`,
+      'New tweet from AnneMunition: https://twitter.com/AnneMunition/status/3',
     )
   })
 
@@ -88,7 +88,7 @@ describe('dataConsumer', () => {
     await tweetHandler(tweet)
 
     expect(announceSpy).toHaveBeenCalledWith(
-      `New tweet from ${name}: "Tweet body." https://twitter.com/${name}/status/4`,
+      'New tweet from AnneMunition: "Tweet body." https://twitter.com/AnneMunition/status/4',
     )
   })
 
@@ -159,7 +159,7 @@ describe('dataConsumer', () => {
     await tweetHandler(tweet)
 
     expect(announceSpy).toHaveBeenCalledWith(
-      `New tweet from ${name}: "Finishing up Life is Strange: True Colors today!" https://twitter.com/${name}/status/1543644163488432129`,
+      'New tweet from AnneMunition: "Finishing up Life is Strange: True Colors today!" https://twitter.com/AnneMunition/status/1543644163488432129',
     )
   })
 })

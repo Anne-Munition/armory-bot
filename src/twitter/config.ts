@@ -1,2 +1,2 @@
-export const name = 'AnneMunition'
-export const goingLiveUrl = 'https://t.co/UEDLazk7gU'
+export const name = process.env.NODE_ENV !== 'production' ? 'DBK_Test' : 'AnneMunition'
+export const goingLiveUrl = /https?:\/\/twitch.tv\/annemunition/i

@@ -7,16 +7,18 @@ import { goingLiveUrl, name } from './config'
 const oldTweetIds: string[] = []
 
 export default async function dataConsumer(data: Tweet) {
+  logger.info(`Processing Tweet: ${data.id}`)
   logger.debug(JSON.stringify(data, null, 2))
   if (data.in_reply_to_user_id) return
   if (oldTweetIds.includes(data.id)) return
   oldTweetIds.push(data.id)
   if (oldTweetIds.length >= 10) oldTweetIds.shift()
-  const isGoingLiveTweet = data.text.includes(goingLiveUrl)
+  const urls = data.entities?.urls?.map((x) => x.url) || []
+  const expandedUrls = data.entities?.urls?.map((x) => x.expanded_url) || []
+  const isGoingLiveTweet = expandedUrls.find((x) => goingLiveUrl.test(x))
   const [stream] = await twitchApi.getStreams([name])
   if (!stream && !isGoingLiveTweet) return
   let text = decode(data.text)
-  const urls = data.entities?.urls?.map((x) => x.url) || []
   urls.forEach((x) => {
     text = text.replace(x, '')
   })

@@ -71,6 +71,7 @@ export async function connect(): Promise<void> {
 function reconnect() {
   if (connectedTimer) clearTimeout(connectedTimer)
   if (closing) return
+  if (reconnectAttempts === 1) ownerSend('Disconnected from Twitter stream.').catch(ignore)
   reconnecting = true
   reconnectAttempts++
   if (!backfill) backfill = Date.now()

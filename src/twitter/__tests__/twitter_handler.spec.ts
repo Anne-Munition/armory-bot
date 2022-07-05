@@ -1,7 +1,5 @@
 import * as se from '../../streamelements/index'
 import * as twitchApi from '../../twitch/twitch_api'
-import * as fixtures from '../__fixtures__/tweets'
-import { goingLiveUrl } from '../config'
 import tweetHandler from '../tweetHandler'
 
 const announceSpy = jest.spyOn(se, 'announce').mockImplementation(() => {
@@ -30,7 +28,7 @@ describe('dataConsumer', () => {
     await tweetHandler(tweet)
 
     expect(announceSpy).toHaveBeenCalledWith(
-      'New tweet from AnneMunition: "Tweet body." https://twitter.com/AnneMunition/status/1',
+      'New tweet from DBK_Test: "Tweet body." https://twitter.com/DBK_Test/status/1',
     )
   })
 
@@ -46,7 +44,7 @@ describe('dataConsumer', () => {
     await tweetHandler(tweet)
 
     expect(announceSpy).toHaveBeenCalledWith(
-      'New tweet from AnneMunition: "Tweet body." https://twitter.com/AnneMunition/status/2',
+      'New tweet from DBK_Test: "Tweet body." https://twitter.com/DBK_Test/status/2',
     )
   })
 
@@ -62,20 +60,20 @@ describe('dataConsumer', () => {
     await tweetHandler(tweet)
 
     expect(announceSpy).toHaveBeenCalledWith(
-      'New tweet from AnneMunition: https://twitter.com/AnneMunition/status/3',
+      'New tweet from DBK_Test: https://twitter.com/DBK_Test/status/3',
     )
   })
 
   it('removes url entities', async () => {
     const tweet: Tweet = {
       id: '4',
-      text: `Tweet body.\n\n${goingLiveUrl}`,
+      text: `Tweet body.\n\nhttps://t.co/fY6jRa5Hrc`,
       entities: {
         urls: [
           {
             start: 17,
             end: 39,
-            url: goingLiveUrl,
+            url: 'https://t.co/fY6jRa5Hrc',
             expanded_url: 'http://twitch.tv/annemunition',
           },
         ],
@@ -88,7 +86,7 @@ describe('dataConsumer', () => {
     await tweetHandler(tweet)
 
     expect(announceSpy).toHaveBeenCalledWith(
-      'New tweet from AnneMunition: "Tweet body." https://twitter.com/AnneMunition/status/4',
+      'New tweet from DBK_Test: "Tweet body." https://twitter.com/DBK_Test/status/4',
     )
   })
 
@@ -106,10 +104,20 @@ describe('dataConsumer', () => {
     expect(announceSpy).not.toHaveBeenCalled()
   })
 
-  it('does announce if stream is not live, but twitch stream link is in text', async () => {
+  it('does announce if stream is not live, but twitch stream link is in entity urls', async () => {
     const tweet: Tweet = {
       id: '6',
-      text: 'Tweet body.\n\nhttps://t.co/UEDLazk7gU',
+      text: `Tweet body.\n\nhttps://t.co/fY6jRa5Hrc`,
+      entities: {
+        urls: [
+          {
+            start: 17,
+            end: 39,
+            url: 'https://t.co/fY6jRa5Hrc',
+            expanded_url: 'http://twitch.tv/annemunition',
+          },
+        ],
+      },
     }
     jest.spyOn(twitchApi, 'getStreams').mockImplementation(() => {
       return Promise.resolve([])
@@ -135,7 +143,7 @@ describe('dataConsumer', () => {
     expect(announceSpy).not.toHaveBeenCalled()
   })
 
-  it('handles duplicate tweets up to 10', async () => {
+  it('handles duplicate tweets', async () => {
     const tweet: Tweet = {
       id: '8',
       text: 'Tweet body.',
@@ -148,18 +156,5 @@ describe('dataConsumer', () => {
     await tweetHandler(tweet)
 
     expect(announceSpy).toHaveBeenCalledTimes(1)
-  })
-
-  test('sample tweet 1', async () => {
-    const tweet: Tweet = fixtures.tweet1
-    jest.spyOn(twitchApi, 'getStreams').mockImplementation(() => {
-      return Promise.resolve([{} as HelixStream])
-    })
-
-    await tweetHandler(tweet)
-
-    expect(announceSpy).toHaveBeenCalledWith(
-      'New tweet from AnneMunition: "Finishing up Life is Strange: True Colors today!" https://twitter.com/AnneMunition/status/1543644163488432129',
-    )
   })
 })

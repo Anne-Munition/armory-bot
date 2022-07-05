@@ -13,7 +13,7 @@ export default async function (
   try {
     const rgb = await palette(user.profile_image_url)
     if (!rgb) return
-    const { hex } = rgb2hex(`rgb(${rgb.map((x) => Math.floor(x)).join(',')})`)
+    const { hex } = rgb2hex(`rgb(${rgb.map((x) => Math.round(x)).join(',')})`)
     log.debug(`got channel color from profile image: ${hex}`)
     return hex as HexColorString
   } catch (err: any) {

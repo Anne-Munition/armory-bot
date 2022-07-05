@@ -49,7 +49,7 @@ export async function connect(): Promise<void> {
   connectedTimer = setTimeout(() => {
     logger.info('Connected to Twitter stream')
     if (process.env.NODE_ENV === 'production')
-      ownerSend('Connected to Twitter Stream').catch(ignore)
+      ownerSend(`Connected to Twitter stream: ${name}`).catch(ignore)
   }, 3000)
 
   try {

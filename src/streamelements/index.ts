@@ -1,4 +1,5 @@
 import axios from 'axios'
+import logger from '../logger'
 
 let channelId: string
 
@@ -11,7 +12,8 @@ function headers() {
 export async function init(): Promise<void> {
   const url = 'https://api.streamelements.com/kappa/v2/channels/me'
   const options = { headers: headers() }
-  const { _id } = await axios.get(url, options).then(({ data }) => data)
+  const { _id, displayName } = await axios.get(url, options).then(({ data }) => data)
+  logger.info(`Streamelements connected to channel: ${displayName}`)
   channelId = _id
 }
 

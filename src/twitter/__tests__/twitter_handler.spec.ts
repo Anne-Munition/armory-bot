@@ -1,3 +1,4 @@
+import { TweetV2 } from 'twitter-api-v2'
 import * as se from '../../streamelements/index'
 import * as twitchApi from '../../twitch/twitch_api'
 import tweetHandler from '../tweetHandler'
@@ -17,7 +18,7 @@ describe('dataConsumer', () => {
   })
 
   it('announces tweet', async () => {
-    const tweet: Tweet = {
+    const tweet: TweetV2 = {
       id: '1',
       text: 'Tweet body.',
     }
@@ -33,7 +34,7 @@ describe('dataConsumer', () => {
   })
 
   it('removes extra newlines and spaces', async () => {
-    const tweet: Tweet = {
+    const tweet: TweetV2 = {
       id: '2',
       text: 'Tweet \n\n     body.     ',
     }
@@ -49,7 +50,7 @@ describe('dataConsumer', () => {
   })
 
   it('formats differently if no text body remains', async () => {
-    const tweet: Tweet = {
+    const tweet: TweetV2 = {
       id: '3',
       text: '    ',
     }
@@ -65,7 +66,7 @@ describe('dataConsumer', () => {
   })
 
   it('removes url entities', async () => {
-    const tweet: Tweet = {
+    const tweet: TweetV2 = {
       id: '4',
       text: `Tweet body.\n\nhttps://t.co/fY6jRa5Hrc`,
       entities: {
@@ -75,8 +76,14 @@ describe('dataConsumer', () => {
             end: 39,
             url: 'https://t.co/fY6jRa5Hrc',
             expanded_url: 'http://twitch.tv/annemunition',
+            display_url: '',
+            unwound_url: '',
           },
         ],
+        annotations: [],
+        hashtags: [],
+        cashtags: [],
+        mentions: [],
       },
     }
     jest.spyOn(twitchApi, 'getStreams').mockImplementation(() => {
@@ -91,7 +98,7 @@ describe('dataConsumer', () => {
   })
 
   it('does not announce if stream is not live', async () => {
-    const tweet: Tweet = {
+    const tweet: TweetV2 = {
       id: '5',
       text: 'Tweet body.',
     }
@@ -105,7 +112,7 @@ describe('dataConsumer', () => {
   })
 
   it('does announce if stream is not live, but twitch stream link is in entity urls', async () => {
-    const tweet: Tweet = {
+    const tweet: TweetV2 = {
       id: '6',
       text: `Tweet body.\n\nhttps://t.co/fY6jRa5Hrc`,
       entities: {
@@ -115,8 +122,14 @@ describe('dataConsumer', () => {
             end: 39,
             url: 'https://t.co/fY6jRa5Hrc',
             expanded_url: 'http://twitch.tv/annemunition',
+            display_url: '',
+            unwound_url: '',
           },
         ],
+        annotations: [],
+        hashtags: [],
+        cashtags: [],
+        mentions: [],
       },
     }
     jest.spyOn(twitchApi, 'getStreams').mockImplementation(() => {
@@ -129,7 +142,7 @@ describe('dataConsumer', () => {
   })
 
   it('does not announce if tweet is a reply', async () => {
-    const tweet: Tweet = {
+    const tweet: TweetV2 = {
       id: '7',
       text: 'Tweet body.',
       in_reply_to_user_id: '654321',
@@ -144,7 +157,7 @@ describe('dataConsumer', () => {
   })
 
   it('handles duplicate tweets', async () => {
-    const tweet: Tweet = {
+    const tweet: TweetV2 = {
       id: '8',
       text: 'Tweet body.',
     }
@@ -156,5 +169,21 @@ describe('dataConsumer', () => {
     await tweetHandler(tweet)
 
     expect(announceSpy).toHaveBeenCalledTimes(1)
+  })
+
+  it('remove double quotes from the start and end of text body', async () => {
+    const tweet: TweetV2 = {
+      id: '9',
+      text: '"Tweet body."',
+    }
+    jest.spyOn(twitchApi, 'getStreams').mockImplementation(() => {
+      return Promise.resolve([{} as HelixStream])
+    })
+
+    await tweetHandler(tweet)
+
+    expect(announceSpy).toHaveBeenCalledWith(
+      'New tweet from DBK_Test: "Tweet body." https://twitter.com/DBK_Test/status/9',
+    )
   })
 })

@@ -1,4 +1,3 @@
-import { Snowflake } from 'discord.js'
 import commandLoader from './command_loader'
 import * as database from './database'
 import databaseCleanup from './database/cleanup'
@@ -8,7 +7,7 @@ import * as timeouts from './timeouts'
 import * as twitch from './twitch/twitch'
 import * as token from './twitch/twitch_token'
 import * as twitter from './twitter'
-import { ignore, ownerSend } from './utilities'
+import { ownerSend } from './utilities'
 
 export async function start(): Promise<void> {
   await token.fetchToken()
@@ -20,11 +19,10 @@ export async function start(): Promise<void> {
   twitch.startTimers()
   await se.init()
   await twitter.init()
-  twitter.connect().catch(ignore)
 
   // DM the owner that the client has (re)started if in production
   if (process.env.NODE_ENV === 'production') {
-    ownerSend('Startup complete').catch(ignore)
+    ownerSend('Startup complete')
   }
 }
 

@@ -1,4 +1,5 @@
 import { decode } from 'html-entities'
+import { TweetV2 } from 'twitter-api-v2'
 import logger from '../logger'
 import { announce } from '../streamelements'
 import * as twitchApi from '../twitch/twitch_api'
@@ -6,7 +7,7 @@ import { goingLiveUrl, name } from './config'
 
 const oldTweetIds: string[] = []
 
-export default async function dataConsumer(data: Tweet) {
+export default async function tweetHandler(data: TweetV2) {
   logger.info(`Processing Tweet: ${data.id}`)
   logger.debug(JSON.stringify(data, null, 2))
   if (data.in_reply_to_user_id) return
@@ -24,6 +25,7 @@ export default async function dataConsumer(data: Tweet) {
   })
   text = text.replace(/\n+/g, ' ')
   text = text.replace(/\s+/g, ' ')
+  text = text.replace(/^"|"$/g, '')
   text = text.trim()
   const link = `https://twitter.com/${name}/status/${data.id}`
 

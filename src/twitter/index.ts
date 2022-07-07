@@ -61,6 +61,9 @@ async function connect(): Promise<void> {
       logger.debug('Attempting reconnect')
       if (process.env.NODE_ENV === 'production') {
         const retries = stream.autoReconnectRetries
+        if (retries === 1) {
+          ownerSend(`Disconnected from the Twitter stream API. Attempting reconnection.`)
+        }
         if (retries % 10 === 0) {
           ownerSend(`${retries} reconnect attempts have been made to the Twitter stream API`)
         }

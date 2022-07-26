@@ -1,8 +1,8 @@
 import { MongoMemoryServer } from 'mongodb-memory-server'
-import * as database from '../../database'
-import BirthdayModel from '../../database/models/birthday_model'
-import BirthdayService from '../../database/services/birthday_service'
-import { run } from '../birthday'
+import * as database from '../src/database'
+import BirthdayModel from '../src/database/models/birthday_model'
+import BirthdayService from '../src/database/services/birthday_service'
+import { run } from '../src/commands/birthday'
 
 describe('birthday command module', () => {
   let mongoServer: MongoMemoryServer

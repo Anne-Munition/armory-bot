@@ -22,7 +22,7 @@ export const structure: CmdStructure = {
       description: 'Add yourself to the birthday announcements.',
       options: [
         {
-          name: 'locale',
+          name: 'format',
           type: 'STRING',
           description: 'Month',
           required: true,
@@ -52,7 +52,7 @@ export const run: CmdRun = async (interaction): Promise<void> => {
   const subCommand = interaction.options.getSubcommand()
   const doc = await Birthday.find(interaction.user.id)
   if (subCommand === 'add') {
-    const locale = interaction.options.getString('locale', true) as 'en-us' | 'en-gb'
+    const locale = interaction.options.getString('format', true) as 'en-us' | 'en-gb'
     let birthdate = interaction.options.getString('birthdate', true)
     if (!birthdate.match(/^\d{1,2}[\/\\-]\d{1,2}$/)) {
       await interaction.editReply('Invalid date.')

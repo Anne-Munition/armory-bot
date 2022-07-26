@@ -14,9 +14,10 @@ mongoose.connection.on('error', (err) => {
   ownerError('Mongoose', err).catch()
 })
 
-export async function connect(): Promise<void> {
-  const { hostname } = new URL(mongoUrl)
-  await mongoose.connect(mongoUrl, options).then(() => {
+export async function connect(uri?: string): Promise<void> {
+  const url = uri || mongoUrl
+  const { hostname } = new URL(url)
+  await mongoose.connect(url, options).then(() => {
     log.info(`Connected to MongoDB: '${hostname}'`)
   })
 }

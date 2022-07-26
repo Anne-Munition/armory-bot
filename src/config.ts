@@ -10,6 +10,8 @@ export const ids: Ids = {
     spoilerChannel: '148124154602717193',
     muteRole: '706906565784895509',
     legacyReactionWebhookId: '901235965216051210',
+    birthdayRoleId: '1001341919277879376',
+    birthdayAnnouncementChannelId: '84764735832068096',
   },
   // DBKynd
   dev: {
@@ -18,6 +20,8 @@ export const ids: Ids = {
     spoilerChannel: '872987015677898813',
     muteRole: '835696708657872906',
     legacyReactionWebhookId: '887447915440779284',
+    birthdayRoleId: '1001279262352998411',
+    birthdayAnnouncementChannelId: '872690822942982175',
   },
 }
 
@@ -26,6 +30,10 @@ export function getId(guildId: Snowflake, property: IdNames): Snowflake | null {
     if (ids[set].guild === guildId) return ids[set]?.[property]
   }
   return null
+}
+
+export function getGuildId(): Snowflake {
+  return process.env.NODE_ENV === 'production' ? ids.armory.guild : ids.dev.guild
 }
 
 interface Ids {
@@ -40,3 +48,5 @@ type IdNames =
   | 'spoilerChannel'
   | 'muteRole'
   | 'legacyReactionWebhookId'
+  | 'birthdayRoleId'
+  | 'birthdayAnnouncementChannelId'

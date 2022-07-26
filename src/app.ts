@@ -1,3 +1,4 @@
+import birthdays from './birthdays'
 import commandLoader from './command_loader'
 import * as database from './database'
 import databaseCleanup from './database/cleanup'
@@ -19,6 +20,7 @@ export async function start(): Promise<void> {
   twitch.startTimers()
   await se.init()
   await twitter.init()
+  birthdays()
 
   // DM the owner that the client has (re)started if in production
   if (process.env.NODE_ENV === 'production') {

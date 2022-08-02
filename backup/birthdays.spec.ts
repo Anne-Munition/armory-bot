@@ -106,7 +106,7 @@ describe('birthday command module', () => {
       describe('date format checks', () => {
         it('returns invalid date if not dd/dd', async () => {
           options = {
-            locale: 'en-us',
+            format: 'en-us',
             birthdate: '1/ab',
           }
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -118,7 +118,7 @@ describe('birthday command module', () => {
 
         it('returns invalid date if not a valid date', async () => {
           options = {
-            locale: 'en-us',
+            format: 'en-us',
             birthdate: '99/99',
           }
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -132,7 +132,7 @@ describe('birthday command module', () => {
       describe('no doc present', () => {
         it('creates a doc if one is not present', async () => {
           options = {
-            locale: 'en-us',
+            format: 'en-us',
             birthdate: '1/11',
           }
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -148,7 +148,7 @@ describe('birthday command module', () => {
 
         it('formats the response differently if different region', async () => {
           options = {
-            locale: 'en-gb',
+            format: 'en-gb',
             birthdate: '1/11',
           }
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -168,7 +168,7 @@ describe('birthday command module', () => {
           await BirthdayService.add('9999', '01/01', 'January 1')
 
           options = {
-            locale: 'en-us',
+            format: 'en-us',
             birthdate: '1/1',
           }
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -188,7 +188,7 @@ describe('birthday command module', () => {
           expect(doc?.active).toBe(false)
 
           options = {
-            locale: 'en-us',
+            format: 'en-us',
             birthdate: '1/22',
           }
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -207,7 +207,7 @@ describe('birthday command module', () => {
           await BirthdayService.add('9999', '05/01', 'January 1')
           for (let i = 1; i <= 5; i++) {
             options = {
-              locale: 'en-us',
+              format: 'en-us',
               birthdate: `1/${i}`,
             }
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -220,7 +220,7 @@ describe('birthday command module', () => {
           }
 
           options = {
-            locale: 'en-us',
+            format: 'en-us',
             birthdate: '2/15',
           }
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -233,6 +233,21 @@ describe('birthday command module', () => {
           const doc = await BirthdayService.find('9999')
           expect(doc?.active).toBe(false)
         })
+      })
+
+      it('reactivates on update', async () => {
+        await BirthdayService.add('9999', '05/01', 'January 1')
+        await BirthdayService.deactivate('9999')
+
+        options = {
+          format: 'en-us',
+          birthdate: '2/15',
+        }
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        await run(interaction)
+        const doc = await BirthdayService.find('9999')
+        expect(doc?.active).toBe(true)
       })
     })
   })

@@ -14,10 +14,6 @@ const client = new Client({
     Intents.FLAGS.GUILD_MEMBERS,
     Intents.FLAGS.DIRECT_MESSAGES,
   ],
-  allowedMentions: {
-    roles: [],
-    repliedUser: true,
-  },
   partials: ['CHANNEL'],
 })
 

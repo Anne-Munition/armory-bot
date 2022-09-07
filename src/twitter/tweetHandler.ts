@@ -3,7 +3,7 @@ import { TweetV2 } from 'twitter-api-v2'
 import logger from '../logger'
 import { announce } from '../streamelements'
 import * as twitchApi from '../twitch/twitch_api'
-import { goingLiveUrl, name } from './config'
+import { name } from './config'
 
 const oldTweetIds: string[] = []
 
@@ -16,7 +16,7 @@ export default async function tweetHandler(data: TweetV2) {
   if (oldTweetIds.length >= 10) oldTweetIds.shift()
   const urls = data.entities?.urls?.map((x) => x.url) || []
   const expandedUrls = data.entities?.urls?.map((x) => x.expanded_url) || []
-  const isGoingLiveTweet = expandedUrls.find((x) => goingLiveUrl.test(x))
+  const isGoingLiveTweet = expandedUrls.find((x) => x.includes('twitch.tv/annemunition'))
   const [stream] = await twitchApi.getStreams([name])
   if (!stream && !isGoingLiveTweet) return
   let text = decode(data.text)

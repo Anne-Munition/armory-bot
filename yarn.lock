@@ -3642,7 +3642,7 @@ erlpack@discord/erlpack:
 
 "fsevents@patch:fsevents@^2.3.2#~builtin<compat/fsevents>, fsevents@patch:fsevents@~2.3.2#~builtin<compat/fsevents>":
   version: 2.3.2
-  resolution: "fsevents@patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=df0bf1"
+  resolution: "fsevents@patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=18f3a7"
   dependencies:
     node-gyp: latest
   conditions: os=darwin
@@ -5308,16 +5308,7 @@ erlpack@discord/erlpack:
   languageName: node
   linkType: hard
 
-"minimatch@npm:^3.0.4":
-  version: 3.0.4
-  resolution: "minimatch@npm:3.0.4"
-  dependencies:
-    brace-expansion: ^1.1.7
-  checksum: 66ac295f8a7b59788000ea3749938b0970344c841750abd96694f80269b926ebcafad3deeb3f1da2522978b119e6ae3a5869b63b13a7859a456b3408bd18a078
-  languageName: node
-  linkType: hard
-
-"minimatch@npm:^3.1.2":
+"minimatch@npm:^3.0.4, minimatch@npm:^3.1.2":
   version: 3.1.2
   resolution: "minimatch@npm:3.1.2"
   dependencies:
@@ -6354,7 +6345,7 @@ erlpack@discord/erlpack:
 
 "resolve@patch:resolve@^1.0.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.20.0#~builtin<compat/resolve>":
   version: 1.20.0
-  resolution: "resolve@patch:resolve@npm%3A1.20.0#~builtin<compat/resolve>::version=1.20.0&hash=c3c19d"
+  resolution: "resolve@patch:resolve@npm%3A1.20.0#~builtin<compat/resolve>::version=1.20.0&hash=07638b"
   dependencies:
     is-core-module: ^2.2.0
     path-parse: ^1.0.6
@@ -6364,7 +6355,7 @@ erlpack@discord/erlpack:
 
 "resolve@patch:resolve@^1.22.0#~builtin<compat/resolve>":
   version: 1.22.0
-  resolution: "resolve@patch:resolve@npm%3A1.22.0#~builtin<compat/resolve>::version=1.22.0&hash=c3c19d"
+  resolution: "resolve@patch:resolve@npm%3A1.22.0#~builtin<compat/resolve>::version=1.22.0&hash=07638b"
   dependencies:
     is-core-module: ^2.8.1
     path-parse: ^1.0.7
@@ -7230,7 +7221,7 @@ erlpack@discord/erlpack:
 
 "typescript@patch:typescript@^4.7.3#~builtin<compat/typescript>":
   version: 4.7.3
-  resolution: "typescript@patch:typescript@npm%3A4.7.3#~builtin<compat/typescript>::version=4.7.3&hash=65a307"
+  resolution: "typescript@patch:typescript@npm%3A4.7.3#~builtin<compat/typescript>::version=4.7.3&hash=a1c5e5"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver

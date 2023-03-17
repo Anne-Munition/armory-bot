@@ -2,7 +2,7 @@ FROM node:16.15.1-alpine3.14 as base
 WORKDIR /app
 
 FROM base as system_dependencies
-RUN apk add --no-cache python3 make g++
+RUN apk add --no-cache python3 make g++ git
 
 FROM system_dependencies AS prod_dependencies
 COPY package.json yarn.lock ./

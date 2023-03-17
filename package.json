@@ -36,7 +36,6 @@
     "rgb2hex": "^0.2.5",
     "rimraf": "^3.0.2",
     "temp-units-conv": "^1.0.2",
-    "twitter-api-v2": "^1.12.3",
     "utf-8-validate": "^5.0.9",
     "winston": "^3.7.2",
     "zlib-sync": "^0.1.7"

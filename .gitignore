@@ -8,3 +8,5 @@ tweets
 .env
 *.log
 docker-compose.yml
+.yarn
+.yarnrc.yml

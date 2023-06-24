@@ -1,3 +1,4 @@
+import { ApplicationCommandOptionType } from 'discord.js'
 import { ids } from '../config'
 import * as twitch from '../twitch/twitch_api'
 import { capitalize, displayName } from '../utilities'
@@ -13,14 +14,14 @@ export const structure: CmdStructure = {
   options: [
     {
       name: 'viewer',
-      type: 'STRING',
+      type: ApplicationCommandOptionType.String,
       description: 'Twitch user login or ID.',
       required: true,
     },
   ],
 }
 
-export const run: CmdRun = async (interaction): Promise<void> => {
+export const run: ChatCmdRun = async (interaction): Promise<void> => {
   await interaction.deferReply()
   const viewer = interaction.options.getString('viewer', true)
   const [user] = await twitch.getUsers([viewer])

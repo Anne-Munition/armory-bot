@@ -1,0 +1,62 @@
+name: Deploy to Digital Ocean
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  REGISTRY: "registry.digitalocean.com/dbkynd"
+  IMAGE_NAME: "armory-bot"
+
+jobs:
+  build_push_pull_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - uses: satackey/action-docker-layer-caching@v0.0.11
+        # Ignore the failure of a step and avoid terminating the job.
+        continue-on-error: true
+
+      - name: Docker Build
+        run: docker build -t $(echo $REGISTRY)/$(echo $IMAGE_NAME):latest .
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Log in to DigitalOcean Container Registry with short-lived credentials
+        run: doctl registry login --expiry-seconds 600
+
+      - name: Push new image
+        run: docker push $(echo $REGISTRY)/$(echo $IMAGE_NAME):latest
+
+      - name: Deploy to Digital Ocean droplet via SSH action
+        uses: appleboy/ssh-action@master
+        with:
+          HOST: ${{ secrets.DIGITALOCEAN_HOST }}
+          USERNAME: ${{ secrets.DIGITALOCEAN_USERNAME }}
+          KEY: ${{ secrets.DIGITALOCEAN_SSHKEY }}
+          envs: IMAGE_NAME,REGISTRY,GITHUB_SHA
+          script: |
+            # Login to the Digital Ocean Registry
+            docker login -u ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -p ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} registry.digitalocean.com
+
+            # Stop running container
+            docker stop $(echo $IMAGE_NAME)
+
+            # Remove old container
+            docker rm $(echo $IMAGE_NAME)
+
+            # Pull latest image
+            docker pull $(echo $REGISTRY)/$(echo $IMAGE_NAME):latest
+
+            # Run container
+            docker run -d \
+            --restart always \
+            --volume ./logs:/app/logs:rw \
+            --env-file /root/$(echo $IMAGE_NAME)/.env \
+            --name $(echo $IMAGE_NAME) \
+            $(echo $REGISTRY)/$(echo $IMAGE_NAME):latest

@@ -1,3 +1,4 @@
+import { ApplicationCommandOptionType } from 'discord.js'
 import { getFollows, getUsers } from '../twitch/twitch_api'
 import { displayName, formatTimeDiff } from '../utilities'
 
@@ -11,20 +12,20 @@ export const structure: CmdStructure = {
   options: [
     {
       name: 'user',
-      type: 'STRING',
+      type: ApplicationCommandOptionType.String,
       description: 'Twitch user / viewer name.',
       required: true,
     },
     {
       name: 'channel',
-      type: 'STRING',
+      type: ApplicationCommandOptionType.String,
       description: 'Twitch channel / stream name.',
       required: true,
     },
   ],
 }
 
-export const run: CmdRun = async (interaction): Promise<void> => {
+export const run: ChatCmdRun = async (interaction): Promise<void> => {
   await interaction.deferReply()
 
   const user = interaction.options.getString('user', true).toLowerCase()

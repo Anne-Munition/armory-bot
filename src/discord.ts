@@ -1,4 +1,4 @@
-import { Client, Intents } from 'discord.js'
+import { Client, GatewayIntentBits, Partials } from 'discord.js'
 import interactionHandler from './interactions/interaction_handler'
 import interactionLoader from './interactions/interaction_loader'
 import log from './logger'
@@ -8,13 +8,15 @@ import notify from './notifications'
 
 const client = new Client({
   intents: [
-    Intents.FLAGS.GUILDS,
-    Intents.FLAGS.GUILD_BANS,
-    Intents.FLAGS.GUILD_MESSAGES,
-    Intents.FLAGS.GUILD_MEMBERS,
-    Intents.FLAGS.DIRECT_MESSAGES,
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildBans,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.GuildEmojisAndStickers,
+    GatewayIntentBits.MessageContent,
   ],
-  partials: ['CHANNEL'],
+  partials: [Partials.Channel],
 })
 
 /***** GENERAL EVENTS *****/

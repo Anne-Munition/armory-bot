@@ -1,13 +1,3 @@
-/*require('pmx').init({
-  http: true,
-  ignore_routes: [/socket\.io/],
-  errors: true,
-  custom_probes: true,
-  network: true,
-  ports: true,
-})*/
-// TODO: Use PMX? Check for ES6 rules
-
 import * as app from './app'
 import log from './logger'
 import { ownerError } from './utilities'

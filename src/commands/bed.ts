@@ -23,10 +23,10 @@ function getDecimals() {
 
 getDecimals()
 
-export const run: CmdRun = async (interaction): Promise<void> => {
+export const run: ChatCmdRun = async (interaction): Promise<void> => {
   const number = randoms.shift()
   if (randoms.length <= 5) getDecimals()
-  const odds = 1 / 10000
+  const odds = 1 / 1000
   const isWinner = number && number <= odds
   if (isWinner) {
     await interaction.reply('You know what... Yes!')

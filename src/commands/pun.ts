@@ -9,7 +9,7 @@ export const structure: CmdStructure = {
   description: 'Post a random pun.',
 }
 
-export const run: CmdRun = async (interaction): Promise<void> => {
+export const run: ChatCmdRun = async (interaction): Promise<void> => {
   const answer = puns[getRandomInt(0, puns.length)]
   const becky2 = interaction.client.emojis.cache.find((x) => x.name === 'becky2')
   await interaction.reply(`${answer} ${becky2 || ''}`)

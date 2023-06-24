@@ -14,7 +14,7 @@ const mockInteraction = {
         get(id: string) {
           return id
         },
-        find(fn: any) {
+        find() {
           return '0000'
         },
       },

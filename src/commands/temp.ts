@@ -1,3 +1,4 @@
+import { ApplicationCommandOptionType } from 'discord.js'
 import tuc from 'temp-units-conv'
 
 export const info: CmdInfo = {
@@ -25,20 +26,20 @@ export const structure: CmdStructure = {
   options: [
     {
       name: 'degrees',
-      type: 'NUMBER',
+      type: ApplicationCommandOptionType.Number,
       description: 'Temperature value to convert',
       required: true,
     },
     {
       name: 'from',
-      type: 'STRING',
+      type: ApplicationCommandOptionType.String,
       description: 'Temperature unit to convert FROM.',
       required: true,
       choices: tempChoices,
     },
     {
       name: 'to',
-      type: 'STRING',
+      type: ApplicationCommandOptionType.String,
       description: 'Temperature unit to convert TO.',
       required: true,
       choices: tempChoices,
@@ -46,7 +47,7 @@ export const structure: CmdStructure = {
   ],
 }
 
-export const run: CmdRun = async (interaction): Promise<void> => {
+export const run: ChatCmdRun = async (interaction): Promise<void> => {
   const degrees = interaction.options.getNumber('degrees', true)
   const from = interaction.options.getString('from', true)
   const to = interaction.options.getString('to', true)

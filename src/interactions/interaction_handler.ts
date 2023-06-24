@@ -7,7 +7,7 @@ export default async function (interaction: Interaction): Promise<void> {
   log.debug(`received interaction: ${interaction.id}`)
   if (interaction.isCommand()) {
     const command = commands.get(interaction.commandName)
-    if (command) {
+    if (command && interaction.isChatInputCommand()) {
       try {
         await command.cmd.run(interaction)
         counts.increment('commandsRan')

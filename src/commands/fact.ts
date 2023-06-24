@@ -10,7 +10,7 @@ export const structure: CmdStructure = {
   description: 'Post a Snapple fact.',
 }
 
-export const run: CmdRun = async (interaction): Promise<void> => {
+export const run: ChatCmdRun = async (interaction): Promise<void> => {
   await interaction.deferReply()
   const { data: html } = await axios.get('https://snapple.com/real-facts')
   const $ = cheerio.load(html)

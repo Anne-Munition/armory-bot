@@ -1,3 +1,4 @@
+import { ApplicationCommandOptionType } from 'discord.js'
 import { getRandomInt } from '../utilities'
 
 export const info: CmdInfo = {
@@ -10,7 +11,7 @@ export const structure: CmdStructure = {
   options: [
     {
       name: 'question',
-      type: 'STRING',
+      type: ApplicationCommandOptionType.String,
       description: 'Your question for the 8ball.',
       required: true,
     },
@@ -40,7 +41,7 @@ const responses = [
   'Very doubtful.',
 ]
 
-export const run: CmdRun = async (interaction): Promise<void> => {
+export const run: ChatCmdRun = async (interaction): Promise<void> => {
   const question = interaction.options.getString('question', true)
 
   let answer = responses[getRandomInt(0, responses.length)]

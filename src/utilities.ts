@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { CommandInteraction, Message, Snowflake } from 'discord.js'
+import { ChannelType, CommandInteraction, Message, Snowflake } from 'discord.js'
 import { DateTime, Duration } from 'luxon'
 import Vibrant from 'node-vibrant'
 import client from './discord'
@@ -51,7 +51,7 @@ export async function ownerError(
 
   let details = '```qml\n'
   if (msg) {
-    if (msg.channel.type === 'DM') {
+    if (msg.channel.type === ChannelType.DM) {
       const author = msg.author
       const user = msg.author.username
       details += `DM: ${user} (${author.id})\n`

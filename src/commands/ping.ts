@@ -9,7 +9,7 @@ export const structure: CmdStructure = {
   description: 'Get bot latency and heartbeat.',
 }
 
-export const run: CmdRun = async (interaction): Promise<void> => {
+export const run: ChatCmdRun = async (interaction): Promise<void> => {
   const msg = (await interaction.reply({
     content: 'Ping...',
     fetchReply: true,

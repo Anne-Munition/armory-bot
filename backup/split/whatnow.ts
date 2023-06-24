@@ -1,7 +1,7 @@
 import axios from 'axios'
 import Discord from 'discord.js'
-import { ids } from '../config'
-import { displayName } from '../utilities'
+import { ids } from '../../src/config'
+import { displayName } from '../../src/utilities'
 
 export const info: CmdInfo = {
   global: false,
@@ -13,7 +13,7 @@ export const structure: CmdStructure = {
   description: "List Anne's subscribers who are currently live.",
 }
 
-export const run: CmdRun = async (interaction): Promise<void> => {
+export const run: ChatCmdRun = async (interaction): Promise<void> => {
   await interaction.deferReply({ ephemeral: true })
 
   const liveSubs: LiveSubs = await axios

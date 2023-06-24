@@ -17,7 +17,7 @@ type GuildCmdInfo = {
 
 type CmdInfo = GlobalCmdInfo | GuildCmdInfo
 
-type CmdRun = (interaction: import('discord.js').CommandInteraction) => Promise<void>
+type ChatCmdRun = (interaction: import('discord.js').ChatInputCommandInteraction) => Promise<void>
 
 type CmdStructure = import('discord.js').ApplicationCommandData
 type CmdPerms = import('discord.js').ApplicationCommandPermissionData[]
@@ -25,5 +25,5 @@ type CmdPerms = import('discord.js').ApplicationCommandPermissionData[]
 interface Cmd {
   info: CmdInfo
   structure: CmdStructure
-  run: CmdRun
+  run: ChatCmdRun
 }

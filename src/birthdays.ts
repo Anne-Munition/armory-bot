@@ -1,5 +1,5 @@
 import { CronJob } from 'cron'
-import Discord from 'discord.js'
+import Discord, { ChannelType } from 'discord.js'
 import { DateTime } from 'luxon'
 import * as config from './config'
 import Birthday from './database/services/birthday_service'
@@ -22,7 +22,7 @@ async function run() {
   if (!guild) return
   const channel = guild.channels.cache.get(channelId)
   const birthdayRole = guild.roles.cache.get(birthdayRoleId)
-  if (!channel || !channel.isText() || !birthdayRole) return
+  if (!channel || channel.type !== ChannelType.GuildText || !birthdayRole) return
 
   // Remove any pinned birthday messages
   const pinnedMessages = await channel.messages.fetchPinned()

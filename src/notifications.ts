@@ -1,4 +1,4 @@
-import Discord from 'discord.js'
+import Discord, { ChannelType, PermissionFlagsBits } from 'discord.js'
 import { NotificationChannelDoc } from './database/models/notification_channel_model'
 import JoinedGuild from './database/services/joined_guild_service'
 import NotificationChannel from './database/services/notification_channel_service'
@@ -34,7 +34,7 @@ async function guildMemberAdd(member: Discord.GuildMember): Promise<void> {
   const channelDocs = await NotificationChannel.getByGuild(member.guild.id)
   if (!channelDocs) return
   log.debug(`posting guildMemberAdd in (${channelDocs.length}) channels`)
-  const embed = new Discord.MessageEmbed()
+  const embed = new Discord.EmbedBuilder()
     .setColor('#1ed21e')
     .setAuthor({
       name: member.user.tag,
@@ -58,7 +58,7 @@ async function guildMemberRemove(
   const channelDocs = await NotificationChannel.getByGuild(guildMember.guild.id)
   if (!channelDocs) return
   log.debug(`posting guildMemberRemove in (${channelDocs.length}) channels`)
-  const embed = new Discord.MessageEmbed()
+  const embed = new Discord.EmbedBuilder()
     .setColor('#d7d71e')
     .setAuthor({
       name: guildMember.user.tag,
@@ -80,7 +80,7 @@ async function guildBanAdd(ban: Discord.GuildBan): Promise<void> {
   if (!channelDocs) return
   log.debug(`posting guildBanAdd in (${channelDocs.length}) channels`)
 
-  const embed = new Discord.MessageEmbed()
+  const embed = new Discord.EmbedBuilder()
     .setColor('#b42326')
     .setAuthor({
       name: ban.user.tag,
@@ -103,7 +103,7 @@ async function guildBanRemove(ban: Discord.GuildBan): Promise<void> {
   if (!channelDocs) return
   log.debug(`posting guildBanRemove in (${channelDocs.length}) channels`)
 
-  const embed = new Discord.MessageEmbed()
+  const embed = new Discord.EmbedBuilder()
     .setColor('#236cb4')
     .setAuthor({
       name: ban.user.tag,
@@ -120,17 +120,17 @@ async function guildBanRemove(ban: Discord.GuildBan): Promise<void> {
 
 function sendMessages(
   channelDocs: NotificationChannelDoc[],
-  embed: Discord.MessageEmbed,
+  embed: Discord.EmbedBuilder,
   guild: Discord.Guild,
 ) {
   channelDocs.forEach((channelDoc) => {
     const channel = guild.channels.cache.get(<Discord.Snowflake>channelDoc.channel_id)
-    if (!channel || channel.type !== 'GUILD_TEXT') return
+    if (!channel || channel.type !== ChannelType.GuildText) return
     const textChannel = channel as Discord.TextChannel
     const clientUser = guild.client.user
     if (!clientUser) return
     const permissions = textChannel.permissionsFor(clientUser.id)
-    if (permissions && !permissions.has(['SEND_MESSAGES'])) return
+    if (permissions && !permissions.has([PermissionFlagsBits.SendMessages])) return
     textChannel.send({ embeds: [embed] }).catch()
   })
 }

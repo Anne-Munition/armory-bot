@@ -12,7 +12,7 @@ export const structure: CmdStructure = {
   description: 'Restart the bot client.',
 }
 
-export const run: CmdRun = async (interaction): Promise<void> => {
+export const run: ChatCmdRun = async (interaction): Promise<void> => {
   if (await ownerOnlyCommand(interaction)) return
 
   await interaction.reply({ content: ':ok_hand:', ephemeral: true })

@@ -1,4 +1,11 @@
-import Discord, { Message, MessageEmbed, PartialMessage } from 'discord.js'
+import Discord, {
+  AuditLogEvent,
+  ChannelType,
+  EmbedBuilder,
+  Message,
+  PartialMessage,
+  PermissionFlagsBits,
+} from 'discord.js'
 import humanizeDuration from 'humanize-duration'
 import { Duration } from 'luxon'
 import AuditChannelService from '../database/services/audit_channel_service'
@@ -11,19 +18,19 @@ async function messageDelete(msg: Message | PartialMessage) {
   if (!msg.content) return
   if (!msg.guild) return
   if (!msg.author) return
-  if (!msg.channel.isText()) return
+  if (msg.channel.type !== ChannelType.GuildText) return
   const channel = msg.channel as Discord.TextChannel
   const deletedAt = Date.now()
   const deletedAfterDuration = Duration.fromMillis(deletedAt - msg.createdTimestamp)
   const clientGuildMember = await msg.guild.members.fetch(msg.client.user.id)
   if (!clientGuildMember) return
-  if (!clientGuildMember.permissions.has(['VIEW_AUDIT_LOG'])) return
+  if (!clientGuildMember.permissions.has([PermissionFlagsBits.ViewAuditLog])) return
   const channels = await AuditChannelService.search({
     server_id: msg.guild.id,
   })
   if (!channels || !channels.length) return
   const entry = await msg.guild
-    .fetchAuditLogs({ type: 'MESSAGE_DELETE' })
+    .fetchAuditLogs({ type: AuditLogEvent.MessageDelete })
     .then((audit) => audit.entries.first())
 
   let executor
@@ -47,7 +54,7 @@ async function messageDelete(msg: Message | PartialMessage) {
 
   logger.debug(`Posting deletion audit messages in (${channels.length}) registered channels`)
 
-  const embed = new MessageEmbed()
+  const embed = new EmbedBuilder()
     .setAuthor({
       name: `${msg.author.tag} (${msg.author.id})`,
       url: msg.author.displayAvatarURL(),
@@ -68,10 +75,10 @@ async function messageDelete(msg: Message | PartialMessage) {
     if (!guild) return
     if (!msg.client?.user) return
     const channel = guild.channels.cache.get(c.channel_id)
-    if (!channel || !channel.isText()) return
+    if (!channel || channel.type !== ChannelType.GuildText) return
     const permissions = channel.permissionsFor(msg.client?.user)
     if (!permissions) return
-    if (!permissions.has(['SEND_MESSAGES', 'EMBED_LINKS'])) return
+    if (!permissions.has([PermissionFlagsBits.SendMessages, PermissionFlagsBits.EmbedLinks])) return
     channel.send({ embeds: [embed] }).catch(logger.error)
   })
 }

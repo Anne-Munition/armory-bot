@@ -7,6 +7,6 @@ export const structure: CmdStructure = {
   description: 'Pong',
 }
 
-export const run: CmdRun = async (interaction): Promise<void> => {
+export const run: ChatCmdRun = async (interaction): Promise<void> => {
   await interaction.reply(':ping_pong:')
 }

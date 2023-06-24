@@ -12,7 +12,7 @@ export const structure: CmdStructure = {
   description: "Post the Kery's fault image.",
 }
 
-export const run: CmdRun = async (interaction): Promise<void> => {
+export const run: ChatCmdRun = async (interaction): Promise<void> => {
   await interaction.reply({
     files: [
       {

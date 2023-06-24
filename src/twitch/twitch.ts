@@ -1,4 +1,4 @@
-import { GuildChannel, MessageEmbed } from 'discord.js'
+import { ChannelType, EmbedBuilder, GuildChannel, PermissionFlagsBits } from 'discord.js'
 import counts from '../counts'
 import { TwitchChannelDoc } from '../database/models/twitch_channel_model'
 import TwitchChannel from '../database/services/twitch_channel_service'
@@ -60,10 +60,10 @@ async function checkLive(): Promise<void> {
         const guild = client.guilds.cache.get(discordChannel.guild_id)
         if (!guild) continue
         const channel = guild.channels.cache.get(discordChannel.channel_id)
-        if (!channel || channel.type !== 'GUILD_TEXT') continue
+        if (!channel || channel.type !== ChannelType.GuildText) continue
         const perms = channel.permissionsFor(client.user)
         if (!perms) continue
-        return perms.has(['SEND_MESSAGES'])
+        return perms.has([PermissionFlagsBits.SendMessages])
       }
       return false
     })
@@ -87,7 +87,7 @@ async function checkLive(): Promise<void> {
           if (!client || !client.user) return false
           const perms = c.permissionsFor(client.user)
           if (!perms) return false
-          return perms.has(['SEND_MESSAGES'])
+          return perms.has([PermissionFlagsBits.SendMessages])
         })
       return a + channels.length
     }, 0)
@@ -164,23 +164,30 @@ async function post(
   const logo =
     doc.image_url || 'https://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_70x70.png'
 
-  const embed = new MessageEmbed()
+  const embed = new EmbedBuilder()
     .setColor(doc.hex)
     .setThumbnail(logo)
-    .addField('Channel:', `[${doc.display_name}](https://www.twitch.tv/${doc.login})`, true)
-    .addField('Status:', last ? 'Changed Games' : 'Started Streaming', true)
+    .addFields([
+      {
+        name: 'Channel:',
+        value: `[${doc.display_name}](https://www.twitch.tv/${doc.login})`,
+        inline: true,
+      },
+      { name: 'Status:', value: last ? 'Changed Games' : 'Started Streaming', inline: true },
+    ])
     .setFooter({
       text: 'twitch.tv',
       iconURL: 'https://www.shareicon.net/data/2016/10/18/844051_media_512x512.png',
     })
   if (last) {
-    embed
-      .addField('Old Game:', last.game_name || 'UNKNOWN', false)
-      .addField('New Game:', stream.game_name || 'UNKNOWN', false)
+    embed.addFields([
+      { name: 'Old Game:', value: last.game_name || 'UNKNOWN', inline: false },
+      { name: 'New Game:', value: stream.game_name || 'UNKNOWN', inline: false },
+    ])
   } else {
-    embed.addField('Game:', stream.game_name || 'UNKNOWN', false)
+    embed.addFields([{ name: 'Game:', value: stream.game_name || 'UNKNOWN', inline: false }])
   }
-  if (stream.title) embed.addField('Title:', stream.title)
+  if (stream.title) embed.addFields([{ name: 'Title:', value: stream.title }])
 
   const channels: GuildChannel[] = []
   doc.channels.forEach((c) => {
@@ -188,14 +195,13 @@ async function post(
     const guild = client.guilds.cache.get(c.guild_id)
     if (!guild) return
     const channel = guild.channels.cache.get(c.channel_id)
-    if (!channel || channel.type !== 'GUILD_TEXT') return
+    if (!channel || channel.type !== ChannelType.GuildText) return
     const perms = channel.permissionsFor(client.user)
-    if (!perms || !perms.has(['SEND_MESSAGES'])) return
+    if (!perms || !perms.has([PermissionFlagsBits.SendMessages])) return
     channels.push(channel)
   })
   channels.forEach((channel) => {
-    if (!channel.isText()) return
-    channel.send({ embeds: [embed] })
+    if (channel.isTextBased()) channel.send({ embeds: [embed] })
   })
 }
 

@@ -23,7 +23,7 @@ export const structure: CmdStructure = {
   ],
 }
 
-export const run: CmdRun = async (interaction): Promise<void> => {
+export const run: ChatCmdRun = async (interaction): Promise<void> => {
   if (interaction.user.id !== process.env.OWNER_ID) {
     await interaction.reply({
       content: 'Only the bot owner has permissions to /eval.',

@@ -1,10 +1,10 @@
-import Discord from 'discord.js'
-import { TwitchChannelDoc } from '../database/models/twitch_channel_model'
-import TwitchChannel from '../database/services/twitch_channel_service'
-import log from '../logger'
-import getChannelColor from '../twitch/getChannelColor'
-import { getChannelColors, getUsers } from '../twitch/twitch_api'
-import { displayName, makePossessive } from '../utilities'
+import Discord, { ApplicationCommandOptionType, ChannelType } from 'discord.js'
+import { TwitchChannelDoc } from '../../src/database/models/twitch_channel_model'
+import TwitchChannel from '../../src/database/services/twitch_channel_service'
+import log from '../../src/logger'
+import getChannelColor from '../../src/twitch/getChannelColor'
+import { getChannelColors, getUsers } from '../../src/twitch/twitch_api'
+import { displayName, makePossessive } from '../../src/utilities'
 
 export const info: CmdInfo = {
   global: true,
@@ -13,21 +13,20 @@ export const info: CmdInfo = {
 export const structure: CmdStructure = {
   name: 'twitch',
   description: 'Twitch live feed channel manager.',
-  defaultPermission: false,
   options: [
     {
       name: 'list',
-      type: 'SUB_COMMAND',
+      type: ApplicationCommandOptionType.Subcommand,
       description: 'List the channels which post Twitch feeds.',
     },
     {
       name: 'post',
-      type: 'SUB_COMMAND',
+      type: ApplicationCommandOptionType.Subcommand,
       description: 'Add or remove a channel to post Twitch feeds to.',
       options: [
         {
           name: 'action',
-          type: 'STRING',
+          type: ApplicationCommandOptionType.String,
           description: 'Add or Remove',
           required: true,
           choices: [
@@ -43,13 +42,13 @@ export const structure: CmdStructure = {
         },
         {
           name: 'twitch_channel',
-          type: 'STRING',
+          type: ApplicationCommandOptionType.String,
           description: 'The Twitch channel name.',
           required: true,
         },
         {
           name: 'discord_channel',
-          type: 'CHANNEL',
+          type: ApplicationCommandOptionType.Channel,
           description: 'Optional Discord channel to post to. Defaults to this channel.',
         },
       ],
@@ -57,7 +56,7 @@ export const structure: CmdStructure = {
   ],
 }
 
-export const run: CmdRun = async function (interaction): Promise<void> {
+export const run: ChatCmdRun = async function (interaction): Promise<void> {
   await interaction.deferReply({ ephemeral: true })
   const sub = interaction.options.getSubcommand()
 
@@ -102,7 +101,7 @@ async function list(interaction: Discord.CommandInteraction): Promise<void> {
       .filter((x) => x.guild_id === guildId)
       .forEach((x) => {
         const channel = interaction.guild?.channels.cache.get(x.channel_id)
-        if (channel && channel.type === 'GUILD_TEXT') channels.push(channel)
+        if (channel && channel.type === ChannelType.GuildText) channels.push(channel)
       })
     channels.sort((a, b) => a.position - b.position).map((x) => x.toString())
     if (channels.length > 0) {
@@ -118,7 +117,7 @@ async function list(interaction: Discord.CommandInteraction): Promise<void> {
 }
 
 async function getDocument(
-  interaction: Discord.CommandInteraction,
+  interaction: Discord.ChatInputCommandInteraction,
 ): Promise<TwitchChannelDoc | null | undefined> {
   const channel = interaction.options.getString('twitch_channel', true)
   try {
@@ -129,9 +128,9 @@ async function getDocument(
   }
 }
 
-function getTarget(interaction: Discord.CommandInteraction): {
+function getTarget(interaction: Discord.ChatInputCommandInteraction): {
   targetChannelId: string
-  targetChannel: Discord.AnyChannel
+  targetChannel: Discord.Channel
 } {
   const targetChannelId =
     interaction.options.getChannel('discord_channel')?.id || interaction.channelId
@@ -140,7 +139,7 @@ function getTarget(interaction: Discord.CommandInteraction): {
   return { targetChannelId, targetChannel }
 }
 
-async function addChannel(interaction: Discord.CommandInteraction): Promise<void> {
+async function addChannel(interaction: Discord.ChatInputCommandInteraction): Promise<void> {
   const guildId = interaction.guildId
   if (!guildId) throw new Error('Unable to get guild id.')
 
@@ -208,7 +207,7 @@ async function addChannel(interaction: Discord.CommandInteraction): Promise<void
   }
 }
 
-async function removeChannel(interaction: Discord.CommandInteraction): Promise<void> {
+async function removeChannel(interaction: Discord.ChatInputCommandInteraction): Promise<void> {
   const { targetChannelId, targetChannel } = getTarget(interaction)
 
   const result = await getDocument(interaction)

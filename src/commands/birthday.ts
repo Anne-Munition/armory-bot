@@ -1,3 +1,4 @@
+import { ApplicationCommandOptionType } from 'discord.js'
 import { DateTime } from 'luxon'
 import { ids } from '../config'
 import Birthday from '../database/services/birthday_service'
@@ -18,12 +19,12 @@ export const structure: CmdStructure = {
   options: [
     {
       name: 'add',
-      type: 'SUB_COMMAND',
+      type: ApplicationCommandOptionType.Subcommand,
       description: 'Add yourself to the birthday announcements.',
       options: [
         {
           name: 'format',
-          type: 'STRING',
+          type: ApplicationCommandOptionType.String,
           description: 'Month',
           required: true,
           choices: [
@@ -33,7 +34,7 @@ export const structure: CmdStructure = {
         },
         {
           name: 'birthdate',
-          type: 'STRING',
+          type: ApplicationCommandOptionType.String,
           description: 'Your birthdate in the specified format.',
           required: true,
         },
@@ -41,13 +42,13 @@ export const structure: CmdStructure = {
     },
     {
       name: 'remove',
-      type: 'SUB_COMMAND',
+      type: ApplicationCommandOptionType.Subcommand,
       description: 'Remove yourself from the birthday announcements.',
     },
   ],
 }
 
-export const run: CmdRun = async (interaction): Promise<void> => {
+export const run: ChatCmdRun = async (interaction): Promise<void> => {
   await interaction.deferReply({ ephemeral: true })
   const subCommand = interaction.options.getSubcommand()
   const doc = await Birthday.find(interaction.user.id)

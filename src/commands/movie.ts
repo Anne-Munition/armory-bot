@@ -1,5 +1,5 @@
 import axios from 'axios'
-import Discord from 'discord.js'
+import Discord, { ApplicationCommandOptionType } from 'discord.js'
 import log from '../logger'
 import { palette } from '../utilities'
 
@@ -13,19 +13,19 @@ export const structure: CmdStructure = {
   options: [
     {
       name: 'title',
-      type: 'STRING',
+      type: ApplicationCommandOptionType.String,
       description: 'Movie title.',
       required: true,
     },
     {
       name: 'year',
-      type: 'INTEGER',
+      type: ApplicationCommandOptionType.Integer,
       description: 'Release Year',
     },
   ],
 }
 
-export const run: CmdRun = async (interaction): Promise<void> => {
+export const run: ChatCmdRun = async (interaction): Promise<void> => {
   await interaction.deferReply()
 
   const query = interaction.options.getString('title', true)
@@ -75,7 +75,7 @@ Description: "${movie.overview}"
   if (!movie.poster_path) str += '\n\nIMAGE NOT AVAILABLE'
 
   const codeBlock = Discord.Formatters.codeBlock('apache', str)
-  const embed = new Discord.MessageEmbed().setDescription(codeBlock)
+  const embed = new Discord.EmbedBuilder().setDescription(codeBlock)
 
   if (movie.poster_path) {
     const image = `https://image.tmdb.org/t/p/original${movie.poster_path}`

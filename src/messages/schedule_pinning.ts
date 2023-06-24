@@ -6,7 +6,9 @@ export default async function (msg: Message): Promise<boolean> {
     if (contentHasScheduleTerms(msg)) {
       const pinnedMessages = await msg.channel.messages.fetchPinned()
       if (pinnedMessages.size)
-        pinnedMessages.filter((x) => contentHasScheduleTerms(x)).forEach((x) => x.unpin())
+        pinnedMessages.forEach((x) => {
+          if (contentHasScheduleTerms(x)) x.unpin()
+        })
       await msg.pin()
       return true
     }

@@ -1,3 +1,4 @@
+import { ApplicationCommandOptionType } from 'discord.js'
 import * as math from 'mathjs'
 import logger from '../logger'
 
@@ -11,14 +12,14 @@ export const structure: CmdStructure = {
   options: [
     {
       name: 'expression',
-      type: 'STRING',
+      type: ApplicationCommandOptionType.String,
       description: 'Expression to evaluate.',
       required: true,
     },
   ],
 }
 
-export const run: CmdRun = async (interaction): Promise<void> => {
+export const run: ChatCmdRun = async (interaction): Promise<void> => {
   const expression = interaction.options.getString('expression', true)
   logger.debug(expression)
 

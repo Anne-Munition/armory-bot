@@ -1,7 +1,7 @@
-import Discord from 'discord.js'
-import { NotificationChannelDoc } from '../database/models/notification_channel_model'
-import NotificationChannel from '../database/services/notification_channel_service'
-import log from '../logger'
+import Discord, { ApplicationCommandOptionType, ChannelType } from 'discord.js'
+import { NotificationChannelDoc } from '../../src/database/models/notification_channel_model'
+import NotificationChannel from '../../src/database/services/notification_channel_service'
+import log from '../../src/logger'
 
 export const info: CmdInfo = {
   global: true,
@@ -10,21 +10,20 @@ export const info: CmdInfo = {
 export const structure: CmdStructure = {
   name: 'notify',
   description: 'Discord notification channel manager.',
-  defaultPermission: false,
   options: [
     {
       name: 'list',
-      type: 'SUB_COMMAND',
+      type: ApplicationCommandOptionType.Subcommand,
       description: 'List the channels which post Discord notifications.',
     },
     {
       name: 'post',
-      type: 'SUB_COMMAND',
+      type: ApplicationCommandOptionType.Subcommand,
       description: 'Add or remove a channel to post Discord notifications to.',
       options: [
         {
           name: 'action',
-          type: 'STRING',
+          type: ApplicationCommandOptionType.String,
           description: 'Add or Remove',
           required: true,
           choices: [
@@ -40,7 +39,7 @@ export const structure: CmdStructure = {
         },
         {
           name: 'channel',
-          type: 'CHANNEL',
+          type: ApplicationCommandOptionType.Channel,
           description: 'Optional Discord channel to post to. Defaults to this channel.',
         },
       ],
@@ -48,7 +47,7 @@ export const structure: CmdStructure = {
   ],
 }
 
-export const run: CmdRun = async function (interaction): Promise<void> {
+export const run: ChatCmdRun = async function (interaction): Promise<void> {
   await interaction.deferReply({ ephemeral: true })
   const sub = interaction.options.getSubcommand()
 
@@ -86,7 +85,7 @@ async function list(interaction: Discord.CommandInteraction) {
   const channels: Discord.GuildChannel[] = []
   results.forEach((result) => {
     const channel = interaction.guild?.channels.cache.get(result.channel_id)
-    if (channel && channel.type === 'GUILD_TEXT') channels.push(channel)
+    if (channel && channel.type === ChannelType.GuildText) channels.push(channel)
   })
   channels.sort((a, b) => a.position - b.position).map((x) => x.toString())
   if (channels.length > 0) {
@@ -100,7 +99,7 @@ async function list(interaction: Discord.CommandInteraction) {
 }
 
 async function getNotificationDoc(
-  interaction: Discord.CommandInteraction,
+  interaction: Discord.ChatInputCommandInteraction,
   targetId: string,
 ): Promise<NotificationChannelDoc | null | undefined> {
   try {
@@ -111,9 +110,9 @@ async function getNotificationDoc(
   }
 }
 
-function getTarget(interaction: Discord.CommandInteraction): {
+function getTarget(interaction: Discord.ChatInputCommandInteraction): {
   targetChannelId: string
-  targetChannel: Discord.AnyChannel
+  targetChannel: Discord.Channel
 } {
   const targetChannelId = interaction.options.getChannel('channel')?.id || interaction.channelId
   const targetChannel = interaction.client.channels.cache.get(targetChannelId)
@@ -121,7 +120,7 @@ function getTarget(interaction: Discord.CommandInteraction): {
   return { targetChannelId, targetChannel }
 }
 
-async function addChannel(interaction: Discord.CommandInteraction): Promise<void> {
+async function addChannel(interaction: Discord.ChatInputCommandInteraction): Promise<void> {
   const guildId = interaction.guildId
   if (!guildId) throw new Error('Unable to get guild id.')
 
@@ -142,7 +141,7 @@ async function addChannel(interaction: Discord.CommandInteraction): Promise<void
   }
 }
 
-async function removeChannel(interaction: Discord.CommandInteraction) {
+async function removeChannel(interaction: Discord.ChatInputCommandInteraction) {
   const { targetChannelId, targetChannel } = getTarget(interaction)
 
   const channel = await getNotificationDoc(interaction, targetChannelId)

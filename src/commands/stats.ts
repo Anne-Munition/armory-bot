@@ -1,6 +1,7 @@
 import os from 'os'
 import util from 'util'
 import Discord from 'discord.js'
+import { ChannelType } from 'discord.js'
 import getos from 'getos'
 import { Duration } from 'luxon'
 import pidusage from 'pidusage'
@@ -20,7 +21,7 @@ export const structure: CmdStructure = {
 
 const getOs = util.promisify(getos)
 
-export const run: CmdRun = async (interaction): Promise<void> => {
+export const run: ChatCmdRun = async (interaction): Promise<void> => {
   if (await ownerOnlyCommand(interaction)) return
 
   const client = interaction.client
@@ -73,8 +74,10 @@ export const run: CmdRun = async (interaction): Promise<void> => {
   str += `RAM: ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)}MB\n`
   str += `CPU: ${cpu}%\n`
   str += `Guilds: ${client.guilds.cache.size}\n`
-  str += `Channels: ${client.channels.cache.filter((c) => c.type === 'GUILD_TEXT').size} text`
-  str += ` / ${client.channels.cache.filter((c) => c.type === 'GUILD_VOICE').size} voice\n`
+  str += `Channels: ${
+    client.channels.cache.filter((c) => c.type === ChannelType.GuildText).size
+  } text`
+  str += ` / ${client.channels.cache.filter((c) => c.type === ChannelType.GuildVoice).size} voice\n`
   str += `Members: ${uniqueMembers.size} unique / ${totalMembers} total\n`
   str += `Discord.js: '${Discord.version}'\n`
 

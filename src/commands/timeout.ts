@@ -1,3 +1,4 @@
+import { ApplicationCommandOptionType, PermissionFlagsBits } from 'discord.js'
 import humanizeDuration from 'humanize-duration'
 import { Duration } from 'luxon'
 import { ids } from '../config'
@@ -15,29 +16,29 @@ export const structure: CmdStructure = {
   options: [
     {
       name: 'list',
-      type: 'SUB_COMMAND',
+      type: ApplicationCommandOptionType.Subcommand,
       description: 'List the active timeouts.',
     },
     {
       name: 'add',
-      type: 'SUB_COMMAND',
+      type: ApplicationCommandOptionType.Subcommand,
       description: 'Add a timeout to a user.',
       options: [
         {
           name: 'user',
-          type: 'USER',
+          type: ApplicationCommandOptionType.User,
           description: 'Who to give the muted role to.',
           required: true,
         },
         {
           name: 'duration',
-          type: 'NUMBER',
+          type: ApplicationCommandOptionType.Number,
           description: 'Duration user will keep the muted role.',
           required: true,
         },
         {
           name: 'unit',
-          type: 'STRING',
+          type: ApplicationCommandOptionType.String,
           description: 'Unit of time.',
           required: true,
           choices: [
@@ -57,19 +58,19 @@ export const structure: CmdStructure = {
         },
         {
           name: 'reason',
-          type: 'STRING',
+          type: ApplicationCommandOptionType.String,
           description: 'Optional reason the user was timed out.',
         },
       ],
     },
     {
       name: 'remove',
-      type: 'SUB_COMMAND',
+      type: ApplicationCommandOptionType.Subcommand,
       description: 'Remove a timeout from a user.',
       options: [
         {
           name: 'user',
-          type: 'USER',
+          type: ApplicationCommandOptionType.User,
           description: 'Who to give the muted role to.',
           required: true,
         },
@@ -78,7 +79,7 @@ export const structure: CmdStructure = {
   ],
 }
 
-export const run: CmdRun = async (interaction): Promise<void> => {
+export const run: ChatCmdRun = async (interaction): Promise<void> => {
   await interaction.deferReply()
   const guildId = interaction.guild?.id
   if (!guildId) throw new Error('Unable to get guild id.')
@@ -109,7 +110,7 @@ export const run: CmdRun = async (interaction): Promise<void> => {
     if (!clientMember) throw new Error('Unable to get the client member.')
     const botPerms = clientMember.permissions
 
-    if (!botPerms.has('MANAGE_ROLES')) {
+    if (!botPerms.has(PermissionFlagsBits.ManageRoles)) {
       await interaction.editReply('Unable to edit roles in this guild.')
       return
     }

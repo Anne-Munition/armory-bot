@@ -7,6 +7,6 @@ export const structure: CmdStructure = {
   description: "Embed the user's avatar.",
 }
 
-export const run: CmdRun = async (interaction): Promise<void> => {
+export const run: ChatCmdRun = async (interaction): Promise<void> => {
   await interaction.reply({ files: [interaction.user.displayAvatarURL()] })
 }

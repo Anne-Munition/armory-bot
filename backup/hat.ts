@@ -55,7 +55,7 @@ export const structure: CmdStructure = {
   ],
 }
 
-export const run: CmdRun = async (interaction): Promise<void> => {
+export const run: ChatCmdRun = async (interaction): Promise<void> => {
   await interaction.deferReply({ ephemeral: true })
 
   const avatarUri = interaction.user.displayAvatarURL({ dynamic: false })

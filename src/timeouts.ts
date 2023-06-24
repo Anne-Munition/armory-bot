@@ -1,4 +1,4 @@
-import Discord, { Snowflake, TextChannel } from 'discord.js'
+import Discord, { ChannelType, Snowflake, TextChannel } from 'discord.js'
 import { getId } from './config'
 import Timeout from './database/services/timeout_service'
 import client from './discord'
@@ -44,7 +44,7 @@ export async function remove(userId: Snowflake, manual = false): Promise<void> {
   if (!guild) return
 
   const channel = guild.channels.cache.get(timeoutDoc.channel_id)
-  if (!channel || channel.type !== 'GUILD_TEXT') return
+  if (!channel || channel.type !== ChannelType.GuildText) return
   const textChannel = channel as TextChannel
 
   const member = await guild.members.fetch(timeoutDoc.user_id)

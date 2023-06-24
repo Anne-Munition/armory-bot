@@ -57,5 +57,4 @@ function removeSlashCommand(name: string) {
 
 export default {
   loadAllCommands,
-  loadCommand,
 }

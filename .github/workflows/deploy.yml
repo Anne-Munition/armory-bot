@@ -56,7 +56,7 @@ jobs:
             # Run container
             docker run -d \
             --restart always \
-            --volume ./logs:/app/logs:rw \
+            --volume /root/$(echo $IMAGE_NAME)/logs:/app/logs:rw \
             --env-file /root/$(echo $IMAGE_NAME)/.env \
             --name $(echo $IMAGE_NAME) \
             $(echo $REGISTRY)/$(echo $IMAGE_NAME):latest

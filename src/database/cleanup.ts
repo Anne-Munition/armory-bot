@@ -3,7 +3,6 @@ import client from '../discord'
 import logger from '../logger'
 import { getUsers } from '../twitch/twitch_api'
 import { ignore, ownerError } from '../utilities'
-import AuditChannel from './services/audit_channel_service'
 import NotificationChannel from './services/notification_channel_service'
 import TwitchChannel from './services/twitch_channel_service'
 
@@ -16,7 +15,6 @@ async function init() {
 async function cleanup() {
   logger.debug('Running cleanup tasks')
   try {
-    await cleanDocs(AuditChannel)
     await cleanDocs(NotificationChannel)
     await cleanTwitchChannels()
   } catch (err: any) {
@@ -28,7 +26,7 @@ async function cleanup() {
   }
 }
 
-async function cleanDocs(service: typeof NotificationChannel | typeof AuditChannel) {
+async function cleanDocs(service: typeof NotificationChannel) {
   const docs = await service.search({})
   for (let i = 0; i < docs.length; i++) {
     const guild = await client.guilds.cache.get(docs[i].guild_id)

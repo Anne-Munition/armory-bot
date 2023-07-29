@@ -6,7 +6,6 @@ import { ownerError } from '../utilities'
 mongoose.Promise = global.Promise
 
 const options: ConnectOptions = {
-  keepAlive: true,
   connectTimeoutMS: 30000,
 }
 

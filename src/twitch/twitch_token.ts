@@ -1,16 +1,16 @@
-import axios from 'axios'
-import log from '../logger'
+import axios from 'axios';
+import log from '../logger';
 
-let token: Token
+let token: Token;
 
 interface Token {
-  client_id: string
-  access_token: string
+  client_id: string;
+  access_token: string;
 }
 
 export async function fetchToken(): Promise<void> {
   return new Promise((resolve) => {
-    log.info('Fetching Twitch Tokens')
+    log.info('Fetching Twitch Tokens');
     axios
       .get(<string>process.env.TOKEN_URL, {
         headers: {
@@ -18,12 +18,12 @@ export async function fetchToken(): Promise<void> {
         },
       })
       .then(({ data }) => {
-        token = data
-        resolve()
-      })
-  })
+        token = data;
+        resolve();
+      });
+  });
 }
 
 export function getToken(): Token {
-  return token
+  return token;
 }

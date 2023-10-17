@@ -1,6 +1,6 @@
-import util from 'util'
-import { MessageEmbed } from 'discord.js'
-import now from 'performance-now'
+import util from 'util';
+import { MessageEmbed } from 'discord.js';
+import now from 'performance-now';
 
 export const info: CmdInfo = {
   global: false,
@@ -8,7 +8,7 @@ export const info: CmdInfo = {
     '84764735832068096', // Armory
     '140025699867164673', // DBKynd
   ],
-}
+};
 
 export const structure: CmdStructure = {
   name: 'eval',
@@ -21,62 +21,62 @@ export const structure: CmdStructure = {
       required: true,
     },
   ],
-}
+};
 
 export const run: ChatCmdRun = async (interaction): Promise<void> => {
   if (interaction.user.id !== process.env.OWNER_ID) {
     await interaction.reply({
       content: 'Only the bot owner has permissions to /eval.',
       ephemeral: true,
-    })
-    return
+    });
+    return;
   }
 
-  await interaction.deferReply()
+  await interaction.deferReply();
 
-  const expression = interaction.options.getString('expression', true)
+  const expression = interaction.options.getString('expression', true);
   const query = expression
     .replace(/\\n/g, '')
     // Emoji code fix
-    .replace(/<:((\D*):(\d*))>/, `$1`)
+    .replace(/<:((\D*):(\d*))>/, `$1`);
 
-  const embed = new MessageEmbed()
-  let duration
-  const start = now()
+  const embed = new MessageEmbed();
+  let duration;
+  const start = now();
 
   try {
-    let result = eval(query)
+    let result = eval(query);
     // Loop through promises and return the last
     while (result && result.then) {
-      result = await result
+      result = await result;
     }
-    duration = getDuration(start)
-    let resultStr
+    duration = getDuration(start);
+    let resultStr;
     if (typeof result !== 'string')
       resultStr = util.inspect(result, {
         showHidden: false,
         depth: 0,
-      })
-    resultStr = `\`\`\`js\n${resultStr}\`\`\``
-    embed.addField('RESULT:', resultStr).setColor('#00ba25')
-    embed.setFooter(duration, 'https://nodejs.org/static/images/logo-hexagon.png')
-    await interaction.editReply({ content: expression, embeds: [embed] })
+      });
+    resultStr = `\`\`\`js\n${resultStr}\`\`\``;
+    embed.addField('RESULT:', resultStr).setColor('#00ba25');
+    embed.setFooter(duration, 'https://nodejs.org/static/images/logo-hexagon.png');
+    await interaction.editReply({ content: expression, embeds: [embed] });
   } catch (err) {
-    await interaction.deleteReply()
-    duration = getDuration(start)
-    embed.addField('ERROR:', `\`\`\`js\n${err}\n\`\`\``).setColor('#bb3631')
-    embed.setFooter(duration, 'https://nodejs.org/static/images/logo-hexagon.png')
+    await interaction.deleteReply();
+    duration = getDuration(start);
+    embed.addField('ERROR:', `\`\`\`js\n${err}\n\`\`\``).setColor('#bb3631');
+    embed.setFooter(duration, 'https://nodejs.org/static/images/logo-hexagon.png');
     await interaction.followUp({
       content: expression,
       embeds: [embed],
       ephemeral: true,
-    })
+    });
   }
-}
+};
 
 function getDuration(start: number): string {
-  const microseconds = (now() - start) * 1000
-  if (microseconds < 1000) return Math.floor(microseconds * 1000) / 1000 + ' μs'
-  else if (microseconds < 1000000) return Math.floor(microseconds) / 1000 + ' ms'
-  return Math.floor(microseconds / 1000) / 1000 + ' s'
+  const microseconds = (now() - start) * 1000;
+  if (microseconds < 1000) return Math.floor(microseconds * 1000) / 1000 + ' μs';
+  else if (microseconds < 1000000) return Math.floor(microseconds) / 1000 + ' ms';
+  return Math.floor(microseconds / 1000) / 1000 + ' s';
 }

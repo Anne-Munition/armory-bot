@@ -1,18 +1,18 @@
-import { Snowflake } from 'discord.js'
-import { HexColorString } from 'discord.js'
-import TwitchChannel, { TwitchChannelDoc } from '../models/twitch_channel_model'
+import { Snowflake } from 'discord.js';
+import { HexColorString } from 'discord.js';
+import TwitchChannel, { TwitchChannelDoc } from '../models/twitch_channel_model';
 
 async function list(): Promise<TwitchChannelDoc[]> {
-  return TwitchChannel.find({})
+  return TwitchChannel.find({});
 }
 
 async function search(filter: { [key: string]: any }): Promise<TwitchChannelDoc[]> {
-  return TwitchChannel.find(filter)
+  return TwitchChannel.find(filter);
 }
 
 async function get(twitchChannel: string): Promise<TwitchChannelDoc | null> {
-  const r = new RegExp(twitchChannel, 'i')
-  return TwitchChannel.findOne({ display_name: { $regex: r } })
+  const r = new RegExp(twitchChannel, 'i');
+  return TwitchChannel.findOne({ display_name: { $regex: r } });
 }
 
 async function add(
@@ -27,15 +27,15 @@ async function add(
     twitch_id: user.id,
     channels: [discordData],
     hex: color,
-  }).save()
+  }).save();
 }
 
 async function remove(id: string): Promise<void> {
-  await TwitchChannel.findByIdAndDelete(id)
+  await TwitchChannel.findByIdAndDelete(id);
 }
 
 async function save(doc: TwitchChannelDoc): Promise<void> {
-  await doc.save()
+  await doc.save();
 }
 
 export default {
@@ -45,4 +45,4 @@ export default {
   remove,
   save,
   search,
-}
+};

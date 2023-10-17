@@ -1,8 +1,8 @@
-import { ApplicationCommandOptionType, ChannelType } from 'discord.js'
+import { ApplicationCommandOptionType, ChannelType } from 'discord.js';
 
 export const info: CmdInfo = {
   global: true,
-}
+};
 
 export const structure: CmdStructure = {
   name: 'say',
@@ -20,22 +20,22 @@ export const structure: CmdStructure = {
       description: 'Optional channel to post in.',
     },
   ],
-}
+};
 
 export const run: ChatCmdRun = async (interaction): Promise<void> => {
-  const message = interaction.options.getString('message', true)
-  const channel = interaction.options.getChannel('channel') ?? interaction.channel
+  const message = interaction.options.getString('message', true);
+  const channel = interaction.options.getChannel('channel') ?? interaction.channel;
   if (!channel) {
-    await interaction.reply('Unable to get channel.')
-    return
+    await interaction.reply('Unable to get channel.');
+    return;
   }
   if (channel.type === ChannelType.GuildText) {
-    await channel.send(message)
-    await interaction.reply({ content: 'Done', ephemeral: true })
+    await channel.send(message);
+    await interaction.reply({ content: 'Done', ephemeral: true });
   } else {
     await interaction.reply({
       content: 'Cannot ``/say`` in the specified channel.',
       ephemeral: true,
-    })
+    });
   }
-}
+};

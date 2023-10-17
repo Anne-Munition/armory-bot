@@ -1,14 +1,14 @@
-import Discord, { ApplicationCommandOptionType, ChannelType } from 'discord.js'
-import { TwitchChannelDoc } from '../../src/database/models/twitch_channel_model'
-import TwitchChannel from '../../src/database/services/twitch_channel_service'
-import log from '../../src/logger'
-import getChannelColor from '../../src/twitch/getChannelColor'
-import { getChannelColors, getUsers } from '../../src/twitch/twitch_api'
-import { displayName, makePossessive } from '../../src/utilities'
+import Discord, { ApplicationCommandOptionType, ChannelType } from 'discord.js';
+import { TwitchChannelDoc } from '../../src/database/models/twitch_channel_model';
+import TwitchChannel from '../../src/database/services/twitch_channel_service';
+import log from '../../src/logger';
+import getChannelColor from '../../src/twitch/getChannelColor';
+import { getChannelColors, getUsers } from '../../src/twitch/twitch_api';
+import { displayName, makePossessive } from '../../src/utilities';
 
 export const info: CmdInfo = {
   global: true,
-}
+};
 
 export const structure: CmdStructure = {
   name: 'twitch',
@@ -54,138 +54,138 @@ export const structure: CmdStructure = {
       ],
     },
   ],
-}
+};
 
 export const run: ChatCmdRun = async function (interaction): Promise<void> {
-  await interaction.deferReply({ ephemeral: true })
-  const sub = interaction.options.getSubcommand()
+  await interaction.deferReply({ ephemeral: true });
+  const sub = interaction.options.getSubcommand();
 
   if (sub === 'list') {
-    await list(interaction)
+    await list(interaction);
   } else if (sub === 'post') {
-    const action = interaction.options.getString('action', true)
+    const action = interaction.options.getString('action', true);
     if (action === 'add') {
-      await addChannel(interaction)
+      await addChannel(interaction);
     } else if (action === 'remove') {
-      await removeChannel(interaction)
+      await removeChannel(interaction);
     }
   }
-}
+};
 
 async function list(interaction: Discord.CommandInteraction): Promise<void> {
-  const guildId = interaction.guildId
-  if (!guildId) throw new Error('Unable to get guild id.')
+  const guildId = interaction.guildId;
+  if (!guildId) throw new Error('Unable to get guild id.');
 
-  let results
+  let results;
   try {
-    results = await TwitchChannel.search({ ['channels.guild_id']: guildId })
+    results = await TwitchChannel.search({ ['channels.guild_id']: guildId });
   } catch (err) {
-    log.error(err)
-    await interaction.editReply('Database error, please try again.')
-    return
+    log.error(err);
+    await interaction.editReply('Database error, please try again.');
+    return;
   }
-  log.debug(`twitch list results: ${results.length}`)
+  log.debug(`twitch list results: ${results.length}`);
   if (!results.length) {
-    await interaction.editReply('No Twitch channels are currently posting when they go live.')
-    return
+    await interaction.editReply('No Twitch channels are currently posting when they go live.');
+    return;
   }
 
-  let str = ''
+  let str = '';
   const thisGuildOnlyResults = results.filter((result) => {
-    const s = result.channels.filter((x) => x.guild_id === guildId)
-    return !(s === null)
-  })
+    const s = result.channels.filter((x) => x.guild_id === guildId);
+    return !(s === null);
+  });
   thisGuildOnlyResults.forEach((result) => {
-    const channels: Discord.GuildChannel[] = []
+    const channels: Discord.GuildChannel[] = [];
     result.channels
       .filter((x) => x.guild_id === guildId)
       .forEach((x) => {
-        const channel = interaction.guild?.channels.cache.get(x.channel_id)
-        if (channel && channel.type === ChannelType.GuildText) channels.push(channel)
-      })
-    channels.sort((a, b) => a.position - b.position).map((x) => x.toString())
+        const channel = interaction.guild?.channels.cache.get(x.channel_id);
+        if (channel && channel.type === ChannelType.GuildText) channels.push(channel);
+      });
+    channels.sort((a, b) => a.position - b.position).map((x) => x.toString());
     if (channels.length > 0) {
-      str += `**${makePossessive(result.display_name)}** Twitch streams post to:\n`
-      str += `${channels.join('\n')}\n\n`
+      str += `**${makePossessive(result.display_name)}** Twitch streams post to:\n`;
+      str += `${channels.join('\n')}\n\n`;
     }
-  })
-  const split = Discord.Util.splitMessage(str, { maxLength: 1800 })
+  });
+  const split = Discord.Util.splitMessage(str, { maxLength: 1800 });
   for (let i = 0; i < split.length; i++) {
-    if (i === 0) await interaction.editReply(split[i])
-    else await interaction.followUp({ content: split[i], ephemeral: true })
+    if (i === 0) await interaction.editReply(split[i]);
+    else await interaction.followUp({ content: split[i], ephemeral: true });
   }
 }
 
 async function getDocument(
   interaction: Discord.ChatInputCommandInteraction,
 ): Promise<TwitchChannelDoc | null | undefined> {
-  const channel = interaction.options.getString('twitch_channel', true)
+  const channel = interaction.options.getString('twitch_channel', true);
   try {
-    return TwitchChannel.get(channel)
+    return TwitchChannel.get(channel);
   } catch (err) {
-    log.error(err)
-    await interaction.editReply('Database error, please try again.')
+    log.error(err);
+    await interaction.editReply('Database error, please try again.');
   }
 }
 
 function getTarget(interaction: Discord.ChatInputCommandInteraction): {
-  targetChannelId: string
-  targetChannel: Discord.Channel
+  targetChannelId: string;
+  targetChannel: Discord.Channel;
 } {
   const targetChannelId =
-    interaction.options.getChannel('discord_channel')?.id || interaction.channelId
-  const targetChannel = interaction.client.channels.cache.get(targetChannelId)
-  if (!targetChannel) throw new Error('Unable to get target channel.')
-  return { targetChannelId, targetChannel }
+    interaction.options.getChannel('discord_channel')?.id || interaction.channelId;
+  const targetChannel = interaction.client.channels.cache.get(targetChannelId);
+  if (!targetChannel) throw new Error('Unable to get target channel.');
+  return { targetChannelId, targetChannel };
 }
 
 async function addChannel(interaction: Discord.ChatInputCommandInteraction): Promise<void> {
-  const guildId = interaction.guildId
-  if (!guildId) throw new Error('Unable to get guild id.')
+  const guildId = interaction.guildId;
+  if (!guildId) throw new Error('Unable to get guild id.');
 
-  const { targetChannelId, targetChannel } = getTarget(interaction)
+  const { targetChannelId, targetChannel } = getTarget(interaction);
 
-  const result = await getDocument(interaction)
+  const result = await getDocument(interaction);
   if (result) {
     const channels = result.channels.filter(
       (x) => x.guild_id === guildId && x.channel_id === targetChannelId,
-    )
+    );
     if (!channels.length) {
       result.channels.push({
         guild_id: guildId,
         channel_id: targetChannelId,
-      })
+      });
       try {
-        await TwitchChannel.save(result)
+        await TwitchChannel.save(result);
       } catch (err) {
-        log.error(err)
-        await interaction.editReply('Database error, please try again.')
-        return
+        log.error(err);
+        await interaction.editReply('Database error, please try again.');
+        return;
       }
       await interaction.editReply(
         `${targetChannel} will now be notified when **${result.display_name}** ` +
           `goes live on Twitch.`,
-      )
+      );
     } else {
       await interaction.editReply(
         `${targetChannel} already gets notified when ` +
           `**${result.display_name}** goes live on Twitch.`,
-      )
-      return
+      );
+      return;
     }
   } else {
-    const twitchChannel = interaction.options.getString('twitch_channel', true)
-    const [user] = await getUsers([twitchChannel])
+    const twitchChannel = interaction.options.getString('twitch_channel', true);
+    const [user] = await getUsers([twitchChannel]);
     if (!user) {
-      await interaction.editReply(`**${twitchChannel}** is not a known Twitch channel.`)
-      return
+      await interaction.editReply(`**${twitchChannel}** is not a known Twitch channel.`);
+      return;
     }
-    let color
+    let color;
     try {
-      const [channelColor] = await getChannelColors([user.id])
-      color = await getChannelColor(user, channelColor)
+      const [channelColor] = await getChannelColors([user.id]);
+      color = await getChannelColor(user, channelColor);
     } catch (err) {
-      log.error(err)
+      log.error(err);
     }
     try {
       await TwitchChannel.add(
@@ -195,69 +195,69 @@ async function addChannel(interaction: Discord.ChatInputCommandInteraction): Pro
           channel_id: targetChannelId,
         },
         color,
-      )
+      );
     } catch (err) {
-      log.error(err)
-      await interaction.editReply('Database error, please try again.')
-      return
+      log.error(err);
+      await interaction.editReply('Database error, please try again.');
+      return;
     }
     await interaction.editReply(
       `${targetChannel} will now be notified when **${user.display_name}** goes live on Twitch.\n\nWe have not yet synced with this Twitch channel.\nAn initial message may post within a few minutes if the channel is currently live.`,
-    )
+    );
   }
 }
 
 async function removeChannel(interaction: Discord.ChatInputCommandInteraction): Promise<void> {
-  const { targetChannelId, targetChannel } = getTarget(interaction)
+  const { targetChannelId, targetChannel } = getTarget(interaction);
 
-  const result = await getDocument(interaction)
+  const result = await getDocument(interaction);
   if (result) {
-    let index = -1
+    let index = -1;
     for (let i = 0; i < result.channels.length; i++) {
       if (result.channels[i].channel_id === targetChannelId) {
-        index = i
+        index = i;
       }
     }
     if (index === -1) {
       await interaction.editReply(
         `${targetChannel} is not notified when **${result.display_name}** goes live on Twitch.`,
-      )
-      return
+      );
+      return;
     }
-    result.channels.splice(index, 1)
+    result.channels.splice(index, 1);
     if (result.channels.length === 0) {
       try {
-        await TwitchChannel.remove(result.id)
+        await TwitchChannel.remove(result.id);
         await interaction.editReply(
           `${targetChannel} will no longer be notified when ` +
             `**${result.display_name}** goes live on Twitch.`,
-        )
+        );
       } catch (err) {
-        log.error(err)
-        await interaction.editReply('Database error, please try again.')
+        log.error(err);
+        await interaction.editReply('Database error, please try again.');
       }
     } else {
       try {
-        await TwitchChannel.save(result)
+        await TwitchChannel.save(result);
         await interaction.editReply(
           `${targetChannel} will no longer be notified when ` +
             `**${result.display_name}** goes live on Twitch.`,
-        )
+        );
       } catch (err) {
-        log.error(err)
-        await interaction.editReply('Database error, please try again.')
+        log.error(err);
+        await interaction.editReply('Database error, please try again.');
       }
     }
   } else {
-    const twitchChannel = interaction.options.getString('twitch_channel', true)
-    const [user] = await getUsers([twitchChannel])
+    const twitchChannel = interaction.options.getString('twitch_channel', true);
+    const [user] = await getUsers([twitchChannel]);
     if (!user) {
-      await interaction.editReply(`**${twitchChannel}** is not a known Twitch channel.`)
-      return
+      await interaction.editReply(`**${twitchChannel}** is not a known Twitch channel.`);
+      return;
     }
-    const name = displayName(user)
+    const name = displayName(user);
     await interaction.editReply(
       `No channels are set to be notified when **${name}** ` + `goes live on Twitch.`,
-    )
+    );
   }
 }

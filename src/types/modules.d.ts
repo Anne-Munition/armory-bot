@@ -1,1 +1,1 @@
-declare module 'temp-units-conv'
+declare module 'temp-units-conv';

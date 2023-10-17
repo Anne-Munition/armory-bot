@@ -1,5 +1,5 @@
-import { Snowflake } from 'discord.js'
-import { Document, Schema, model } from 'mongoose'
+import { Snowflake } from 'discord.js';
+import { Document, Schema, model } from 'mongoose';
 
 const schema = new Schema({
   channels: [
@@ -13,18 +13,18 @@ const schema = new Schema({
   login: String,
   twitch_id: String,
   hex: String,
-})
+});
 
 export interface TwitchChannelDoc extends Document {
   channels: {
-    guild_id: Snowflake
-    channel_id: Snowflake
-  }[]
-  display_name: string
-  image_url: string
-  login: string
-  twitch_id: string
-  hex: import('discord.js').HexColorString
+    guild_id: Snowflake;
+    channel_id: Snowflake;
+  }[];
+  display_name: string;
+  image_url: string;
+  login: string;
+  twitch_id: string;
+  hex: import('discord.js').HexColorString;
 }
 
-export default model<TwitchChannelDoc>('twitch_channels', schema)
+export default model<TwitchChannelDoc>('twitch_channels', schema);

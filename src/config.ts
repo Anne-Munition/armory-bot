@@ -1,6 +1,6 @@
-import { Snowflake } from 'discord.js'
+import { Snowflake } from 'discord.js';
 
-export const mongoUrl = process.env.MONGO_URL || 'mongodb://localhost:27017'
+export const mongoUrl = process.env.MONGO_URL || 'mongodb://localhost:27017';
 
 export const ids: Ids = {
   // The Armory
@@ -25,23 +25,23 @@ export const ids: Ids = {
     birthdayAnnouncementChannelId: '872690822942982175',
     auditChannelId: '1134948956510629960',
   },
-}
+};
 
 export function getId(guildId: Snowflake, property: IdNames): Snowflake | null {
   for (const set in ids) {
-    if (ids[set].guild === guildId) return ids[set]?.[property]
+    if (ids[set].guild === guildId) return ids[set]?.[property];
   }
-  return null
+  return null;
 }
 
 export function getGuildId(): Snowflake {
-  return process.env.NODE_ENV === 'production' ? ids.armory.guild : ids.dev.guild
+  return process.env.NODE_ENV === 'production' ? ids.armory.guild : ids.dev.guild;
 }
 
 interface Ids {
   [key: string]: {
-    [key in IdNames]: Snowflake
-  }
+    [key in IdNames]: Snowflake;
+  };
 }
 
 type IdNames =
@@ -52,4 +52,4 @@ type IdNames =
   | 'legacyReactionWebhookId'
   | 'birthdayRoleId'
   | 'birthdayAnnouncementChannelId'
-  | 'auditChannelId'
+  | 'auditChannelId';

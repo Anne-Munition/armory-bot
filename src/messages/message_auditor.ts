@@ -5,34 +5,34 @@ import Discord, {
   Message,
   PartialMessage,
   PermissionFlagsBits,
-} from 'discord.js'
-import humanizeDuration from 'humanize-duration'
-import { Duration } from 'luxon'
-import { getId } from '../config'
-import logger from '../logger'
+} from 'discord.js';
+import humanizeDuration from 'humanize-duration';
+import { Duration } from 'luxon';
+import { getId } from '../config';
+import logger from '../logger';
 
 async function messageDelete(msg: Message | PartialMessage) {
-  logger.debug('Message Deleted')
-  if (!msg) return
-  if (msg.partial) msg = await msg.channel.messages.fetch(msg.id)
-  if (!msg.guildId) return
-  const auditChannelId = getId(msg.guildId, 'auditChannelId')
-  if (!auditChannelId) return
-  if (msg.channel.id === auditChannelId) return
-  const auditChannel = await msg.client.channels.fetch(auditChannelId)
-  if (!auditChannel) return
-  if (!msg.client.user) return
-  if (!msg.content) return
-  if (!msg.guild) return
-  if (!msg.author) return
-  if (msg.channel.type !== ChannelType.GuildText) return
+  logger.debug('Message Deleted');
+  if (!msg) return;
+  if (msg.partial) msg = await msg.channel.messages.fetch(msg.id);
+  if (!msg.guildId) return;
+  const auditChannelId = getId(msg.guildId, 'auditChannelId');
+  if (!auditChannelId) return;
+  if (msg.channel.id === auditChannelId) return;
+  const auditChannel = await msg.client.channels.fetch(auditChannelId);
+  if (!auditChannel) return;
+  if (!msg.client.user) return;
+  if (!msg.content) return;
+  if (!msg.guild) return;
+  if (!msg.author) return;
+  if (msg.channel.type !== ChannelType.GuildText) return;
 
-  const channel = msg.channel as Discord.TextChannel
-  const deletedAt = Date.now()
-  const deletedAfterDuration = Duration.fromMillis(deletedAt - msg.createdTimestamp)
-  const clientGuildMember = await msg.guild.members.fetch(msg.client.user.id)
-  if (!clientGuildMember) return
-  if (!clientGuildMember.permissions.has([PermissionFlagsBits.ViewAuditLog])) return
+  const channel = msg.channel as Discord.TextChannel;
+  const deletedAt = Date.now();
+  const deletedAfterDuration = Duration.fromMillis(deletedAt - msg.createdTimestamp);
+  const clientGuildMember = await msg.guild.members.fetch(msg.client.user.id);
+  if (!clientGuildMember) return;
+  if (!clientGuildMember.permissions.has([PermissionFlagsBits.ViewAuditLog])) return;
   const entry = await msg.guild
     .fetchAuditLogs({ type: AuditLogEvent.MessageDelete, limit: 5 })
     .then((audit) =>
@@ -42,26 +42,26 @@ async function messageDelete(msg: Message | PartialMessage) {
           entry.target.id === msg.author?.id &&
           deletedAt - entry.createdTimestamp < 5000 &&
           entry.extra.count >= 1
-        )
+        );
       }),
-    )
+    );
 
-  let executor
-  let self
+  let executor;
+  let self;
   if (entry && entry.executor) {
-    executor = entry.executor
-    self = false
+    executor = entry.executor;
+    self = false;
   } else {
-    executor = msg.author
-    self = true
+    executor = msg.author;
+    self = true;
   }
 
-  if (self === true && (executor.bot || executor.id === msg.client.user.id)) return
+  if (self === true && (executor.bot || executor.id === msg.client.user.id)) return;
 
-  logger.debug(`Posting deletion audit messages in channel: ${auditChannel.toString()}`)
+  logger.debug(`Posting deletion audit messages in channel: ${auditChannel.toString()}`);
 
-  const authorName = msg.author.discriminator === '0' ? msg.author.username : msg.author.tag
-  const executorName = executor.discriminator === '0' ? executor.username : executor.tag
+  const authorName = msg.author.discriminator === '0' ? msg.author.username : msg.author.tag;
+  const executorName = executor.discriminator === '0' ? executor.username : executor.tag;
 
   const embed = new EmbedBuilder()
     .setAuthor({
@@ -75,18 +75,18 @@ async function messageDelete(msg: Message | PartialMessage) {
         deletedAfterDuration.toMillis(),
       )}`,
     })
-    .setTimestamp()
-  if (!self) embed.setColor('#d76db7')
-  if (msg.cleanContent) embed.setDescription(msg.cleanContent)
+    .setTimestamp();
+  if (!self) embed.setColor('#d76db7');
+  if (msg.cleanContent) embed.setDescription(msg.cleanContent);
 
-  const guild = msg.guild
-  if (!guild) return
-  if (!msg.client?.user) return
-  if (!auditChannel || auditChannel.type !== ChannelType.GuildText) return
-  const permissions = auditChannel.permissionsFor(msg.client?.user)
-  if (!permissions) return
-  if (!permissions.has([PermissionFlagsBits.SendMessages, PermissionFlagsBits.EmbedLinks])) return
-  auditChannel.send({ embeds: [embed] }).catch(logger.error)
+  const guild = msg.guild;
+  if (!guild) return;
+  if (!msg.client?.user) return;
+  if (!auditChannel || auditChannel.type !== ChannelType.GuildText) return;
+  const permissions = auditChannel.permissionsFor(msg.client?.user);
+  if (!permissions) return;
+  if (!permissions.has([PermissionFlagsBits.SendMessages, PermissionFlagsBits.EmbedLinks])) return;
+  auditChannel.send({ embeds: [embed] }).catch(logger.error);
 }
 
 function messageUpdate(prev: Message | PartialMessage, next: Message | PartialMessage) {
@@ -135,4 +135,4 @@ function messageUpdate(prev: Message | PartialMessage, next: Message | PartialMe
 export default {
   messageDelete,
   messageUpdate,
-}
+};

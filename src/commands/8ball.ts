@@ -1,9 +1,9 @@
-import { ApplicationCommandOptionType } from 'discord.js'
-import { getRandomInt } from '../utilities'
+import { ApplicationCommandOptionType } from 'discord.js';
+import { getRandomInt } from '../utilities';
 
 export const info: CmdInfo = {
   global: true,
-}
+};
 
 export const structure: CmdStructure = {
   name: '8ball',
@@ -16,7 +16,7 @@ export const structure: CmdStructure = {
       required: true,
     },
   ],
-}
+};
 
 const responses = [
   'It is certain.',
@@ -39,14 +39,14 @@ const responses = [
   'My sources say no.',
   'Outlook not so good.',
   'Very doubtful.',
-]
+];
 
 export const run: ChatCmdRun = async (interaction): Promise<void> => {
-  const question = interaction.options.getString('question', true)
+  const question = interaction.options.getString('question', true);
 
-  let answer = responses[getRandomInt(0, responses.length)]
-  if (question.toLowerCase().includes('bed')) answer = 'No bed... cheater'
-  if (interaction.user.id === process.env.OWNER_ID && question.endsWith('?')) answer = 'Of course!'
+  let answer = responses[getRandomInt(0, responses.length)];
+  if (question.toLowerCase().includes('bed')) answer = 'No bed... cheater';
+  if (interaction.user.id === process.env.OWNER_ID && question.endsWith('?')) answer = 'Of course!';
 
-  await interaction.reply(`**Q:** *${question}*\n**A:** ${answer}`)
-}
+  await interaction.reply(`**Q:** *${question}*\n**A:** ${answer}`);
+};

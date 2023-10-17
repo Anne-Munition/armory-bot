@@ -1,3 +1,3 @@
-import { Collection } from 'discord.js'
+import { Collection } from 'discord.js';
 
-export const commands: Commands = new Collection()
+export const commands: Commands = new Collection();

@@ -34,4 +34,4 @@ module.exports = {
     'import/newline-after-import': 'error',
     'sort-imports': ['error', { ignoreDeclarationSort: true }],
   },
-}
+};

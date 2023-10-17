@@ -1,14 +1,14 @@
-import path from 'path'
-import { assetsDir } from '../directories'
+import path from 'path';
+import { assetsDir } from '../directories';
 
 export const info: CmdInfo = {
   global: true,
-}
+};
 
 export const structure: CmdStructure = {
   name: 'shame',
   description: 'Post the shame nun gif.',
-}
+};
 
 export const run: ChatCmdRun = async (interaction): Promise<void> => {
   await interaction.reply({
@@ -18,5 +18,5 @@ export const run: ChatCmdRun = async (interaction): Promise<void> => {
         name: 'shame.gif',
       },
     ],
-  })
-}
+  });
+};

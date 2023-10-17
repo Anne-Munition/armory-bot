@@ -1,14 +1,14 @@
-import { ApplicationCommandOptionType, PermissionFlagsBits } from 'discord.js'
-import humanizeDuration from 'humanize-duration'
-import { Duration } from 'luxon'
-import { ids } from '../config'
-import Timeout from '../database/services/timeout_service'
-import * as timeouts from '../timeouts'
+import { ApplicationCommandOptionType, PermissionFlagsBits } from 'discord.js';
+import humanizeDuration from 'humanize-duration';
+import { Duration } from 'luxon';
+import { ids } from '../config';
+import Timeout from '../database/services/timeout_service';
+import * as timeouts from '../timeouts';
 
 export const info: CmdInfo = {
   global: false,
   guilds: [ids.armory.guild, ids.dev.guild],
-}
+};
 
 export const structure: CmdStructure = {
   name: 'timeout',
@@ -77,93 +77,93 @@ export const structure: CmdStructure = {
       ],
     },
   ],
-}
+};
 
 export const run: ChatCmdRun = async (interaction): Promise<void> => {
-  await interaction.deferReply()
-  const guildId = interaction.guild?.id
-  if (!guildId) throw new Error('Unable to get guild id.')
+  await interaction.deferReply();
+  const guildId = interaction.guild?.id;
+  if (!guildId) throw new Error('Unable to get guild id.');
 
-  const subCommand = interaction.options.getSubcommand(true) as 'list' | 'add' | 'remove'
+  const subCommand = interaction.options.getSubcommand(true) as 'list' | 'add' | 'remove';
 
   if (subCommand === 'list') {
-    const activeTimeouts = await Timeout.list()
+    const activeTimeouts = await Timeout.list();
     if (!activeTimeouts.length) {
-      await interaction.editReply('There are no active timeouts.')
-      return
+      await interaction.editReply('There are no active timeouts.');
+      return;
     }
     // Fetch all users to be available in cache
     for (let i = 0; i < activeTimeouts.length; i++) {
-      await interaction.client.users.fetch(activeTimeouts[i].user_id)
+      await interaction.client.users.fetch(activeTimeouts[i].user_id);
     }
     const response = activeTimeouts.map((timeoutDoc) => {
-      const user = interaction.client.users.cache.get(timeoutDoc.user_id)
-      return `${user} - Expires at: ${getExpiry(timeoutDoc.expires_at)}.`
-    })
-    await interaction.editReply(response.join('\n'))
-    return
+      const user = interaction.client.users.cache.get(timeoutDoc.user_id);
+      return `${user} - Expires at: ${getExpiry(timeoutDoc.expires_at)}.`;
+    });
+    await interaction.editReply(response.join('\n'));
+    return;
   } else {
     // Make sure the client can update roles in the guild
-    const clientUserId = interaction.client.user?.id
-    if (!clientUserId) throw new Error('Unable to get the client user id.')
-    const clientMember = await interaction.guild?.members.fetch(clientUserId)
-    if (!clientMember) throw new Error('Unable to get the client member.')
-    const botPerms = clientMember.permissions
+    const clientUserId = interaction.client.user?.id;
+    if (!clientUserId) throw new Error('Unable to get the client user id.');
+    const clientMember = await interaction.guild?.members.fetch(clientUserId);
+    if (!clientMember) throw new Error('Unable to get the client member.');
+    const botPerms = clientMember.permissions;
 
     if (!botPerms.has(PermissionFlagsBits.ManageRoles)) {
-      await interaction.editReply('Unable to edit roles in this guild.')
-      return
+      await interaction.editReply('Unable to edit roles in this guild.');
+      return;
     }
 
-    const target = interaction.options.getUser('user', true)
-    const member = await interaction.guild?.members.fetch(target.id)
+    const target = interaction.options.getUser('user', true);
+    const member = await interaction.guild?.members.fetch(target.id);
     if (!member) {
-      await interaction.editReply('Unable to locate target member.')
-      return
+      await interaction.editReply('Unable to locate target member.');
+      return;
     }
 
-    const existing = await Timeout.get(target.id)
-    const targetString = `**${member.user.tag}** (${member.user.id})`
+    const existing = await Timeout.get(target.id);
+    const targetString = `**${member.user.tag}** (${member.user.id})`;
 
     if (subCommand === 'add') {
-      const duration = interaction.options.getNumber('duration', true)
-      const unit = interaction.options.getString('unit', true) as 'minutes' | 'hours' | 'days'
-      const reason = interaction.options.getString('reason')
+      const duration = interaction.options.getNumber('duration', true);
+      const unit = interaction.options.getString('unit', true) as 'minutes' | 'hours' | 'days';
+      const reason = interaction.options.getString('reason');
 
       if (existing) {
         await interaction.editReply(
           `A timeout is already in place for ${member}.\nExpires at: ${getExpiry(
             existing.expires_at,
           )}.`,
-        )
-        return
+        );
+        return;
       }
 
-      const unitString = duration === 1 ? unit.slice(0, -1) : unit
-      let reply = `${member} has been timed out for **${duration}** ${unitString}.`
-      let auditReason = `Timed out by ${interaction.user.username} for ${duration} ${unitString}`
+      const unitString = duration === 1 ? unit.slice(0, -1) : unit;
+      let reply = `${member} has been timed out for **${duration}** ${unitString}.`;
+      let auditReason = `Timed out by ${interaction.user.username} for ${duration} ${unitString}`;
       if (reason) {
-        reply += `\nReason: ${reason}`
-        auditReason += ` for: ${reason}`
+        reply += `\nReason: ${reason}`;
+        auditReason += ` for: ${reason}`;
       }
-      const ms = Duration.fromObject({ [unit]: duration }).toMillis()
+      const ms = Duration.fromObject({ [unit]: duration }).toMillis();
 
-      await timeouts.add(member, guildId, interaction.channelId, ms, targetString, auditReason)
-      await interaction.editReply(reply)
+      await timeouts.add(member, guildId, interaction.channelId, ms, targetString, auditReason);
+      await interaction.editReply(reply);
     } else if (subCommand === 'remove') {
       if (!existing) {
-        await interaction.editReply(`${target} is not currently under a timeout.`)
-        return
+        await interaction.editReply(`${target} is not currently under a timeout.`);
+        return;
       }
 
-      await timeouts.remove(target.id, true)
-      await interaction.editReply(`Manually removed timeout on ${target}.`)
+      await timeouts.remove(target.id, true);
+      await interaction.editReply(`Manually removed timeout on ${target}.`);
     }
   }
-}
+};
 
 function getExpiry(date: Date): string {
-  const iso = new Date(date).toISOString()
-  const duration = Duration.fromMillis(new Date(date).valueOf() - new Date().valueOf())
-  return `\`\`${iso}\`\` - ${humanizeDuration(duration.toMillis())}`
+  const iso = new Date(date).toISOString();
+  const duration = Duration.fromMillis(new Date(date).valueOf() - new Date().valueOf());
+  return `\`\`${iso}\`\` - ${humanizeDuration(duration.toMillis())}`;
 }

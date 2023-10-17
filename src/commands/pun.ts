@@ -1,19 +1,19 @@
-import { getRandomInt } from '../utilities'
+import { getRandomInt } from '../utilities';
 
 export const info: CmdInfo = {
   global: true,
-}
+};
 
 export const structure: CmdStructure = {
   name: 'pun',
   description: 'Post a random pun.',
-}
+};
 
 export const run: ChatCmdRun = async (interaction): Promise<void> => {
-  const answer = puns[getRandomInt(0, puns.length)]
-  const becky2 = interaction.client.emojis.cache.find((x) => x.name === 'becky2')
-  await interaction.reply(`${answer} ${becky2 || ''}`)
-}
+  const answer = puns[getRandomInt(0, puns.length)];
+  const becky2 = interaction.client.emojis.cache.find((x) => x.name === 'becky2');
+  await interaction.reply(`${answer} ${becky2 || ''}`);
+};
 
 const puns = [
   'I saw an ad for burial plots, but that’s the last thing I need.',
@@ -218,4 +218,4 @@ const puns = [
   'If you ever feel cold just stand in a corner. They’re usually around 90 degrees.',
   'I just heard they won’t be making rulers any longer.',
   'By shear coincidence, all these sheep look the same.',
-]
+];

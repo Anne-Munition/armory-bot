@@ -1,4 +1,4 @@
-import { Document, Schema, model } from 'mongoose'
+import { Document, Schema, model } from 'mongoose';
 
 const schema = new Schema({
   discord_id: { type: String, required: true },
@@ -8,16 +8,16 @@ const schema = new Schema({
   active: { type: Boolean, default: true },
   created_at: { type: Date, default: () => new Date() },
   updated_at: { type: Date },
-})
+});
 
 export interface BirthdayDoc extends Document {
-  discord_id: string
-  birthdate: string
-  format: string
-  edits_remaining: number
-  active: boolean
-  created_at: string
-  updated_at: string
+  discord_id: string;
+  birthdate: string;
+  format: string;
+  edits_remaining: number;
+  active: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
-export default model<BirthdayDoc>('birthdays', schema)
+export default model<BirthdayDoc>('birthdays', schema);

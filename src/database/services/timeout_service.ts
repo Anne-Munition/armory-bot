@@ -1,13 +1,13 @@
-import { Snowflake } from 'discord.js'
-import { getId } from '../../config'
-import Timeout, { TimeoutsDoc } from '../models/timeout_model'
+import { Snowflake } from 'discord.js';
+import { getId } from '../../config';
+import Timeout, { TimeoutsDoc } from '../models/timeout_model';
 
 async function list(): Promise<TimeoutsDoc[]> {
-  return Timeout.find({})
+  return Timeout.find({});
 }
 
 async function get(userId: Snowflake): Promise<TimeoutsDoc | null> {
-  return Timeout.findOne({ user_id: userId })
+  return Timeout.findOne({ user_id: userId });
 }
 
 async function add(
@@ -24,11 +24,11 @@ async function add(
     expires_at: new Date(new Date().valueOf() + ms).toISOString(),
     username,
     roles: [getId(guildId, 'muteRole')],
-  }).save()
+  }).save();
 }
 
 async function remove(id: string): Promise<void> {
-  await Timeout.findByIdAndDelete(id)
+  await Timeout.findByIdAndDelete(id);
 }
 
 export default {
@@ -36,4 +36,4 @@ export default {
   get,
   add,
   remove,
-}
+};

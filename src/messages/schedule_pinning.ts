@@ -5,12 +5,9 @@ import { getId } from '../config';
 const reg = /https?:\/\/(([vf]x)?twitter).com/;
 export default async function (msg: Message): Promise<boolean> {
   if (msg.guildId && msg.channel.id === getId(msg.guildId, 'scheduleChannel')) {
+    const pinnedMessages = await msg.channel.messages.fetchPinned();
     if (contentHasScheduleTerms(msg.content)) {
-      const pinnedMessages = await msg.channel.messages.fetchPinned();
-      if (pinnedMessages.size)
-        pinnedMessages.forEach((x) => {
-          if (contentHasScheduleTerms(x)) x.unpin();
-        });
+      if (pinnedMessages.size) pinnedMessages.forEach((x) => x.unpin());
       await msg.pin();
       return true;
     } else if (reg.test(msg.content)) {
@@ -23,11 +20,7 @@ export default async function (msg: Message): Promise<boolean> {
         .get(trimmedUrl)
         .then(async ({ data }) => {
           if (contentHasScheduleTerms(data.text)) {
-            const pinnedMessages = await msg.channel.messages.fetchPinned();
-            if (pinnedMessages.size)
-              pinnedMessages.forEach((x) => {
-                x.unpin();
-              });
+            if (pinnedMessages.size) pinnedMessages.forEach((x) => x.unpin());
             await msg.pin();
             return true;
           }

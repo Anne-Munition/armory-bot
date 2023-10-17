@@ -26,7 +26,6 @@
     "emoji-regex": "^10.2.1",
     "erlpack": "^0.1.4",
     "getos": "^3.2.1",
-    "gm": "^1.25.0",
     "html-entities": "^2.4.0",
     "humanize-duration": "^3.30.0",
     "lodash": "^4.17.21",
@@ -35,7 +34,6 @@
     "mongoose": "^7.6.2",
     "node-vibrant": "^3.2.1-alpha.1",
     "os": "^0.1.2",
-    "performance-now": "^2.1.0",
     "pidusage": "^3.0.2",
     "rgb2hex": "^0.2.5",
     "temp-units-conv": "^1.0.2",
@@ -46,7 +44,6 @@
   "devDependencies": {
     "@types/cron": "^2.4.0",
     "@types/getos": "^3.0.2",
-    "@types/gm": "^1.25.2",
     "@types/humanize-duration": "^3.27.1",
     "@types/jest": "^29.5.5",
     "@types/lodash": "^4.14.199",

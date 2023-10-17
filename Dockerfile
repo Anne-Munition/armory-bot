@@ -1,28 +1,31 @@
-FROM node:18.16.1-alpine3.18 as base
+FROM node:lts-alpine3.18 as base
 WORKDIR /app
 
 FROM base as system_dependencies
 RUN apk add --no-cache python3 make g++ git
 
-FROM system_dependencies AS prod_dependencies
-COPY package.json yarn.lock ./
-RUN yarn --production=true
+FROM system_dependencies AS yarn
+COPY package.json yarn.lock .yarnrc.yml ./
+RUN corepack enable && \
+    corepack prepare yarn@stable --activate && \
+    yarn plugin import workspace-tools
 
-FROM prod_dependencies as dev_dependencies
-RUN yarn --production=false
+FROM yarn AS development_dependencies
+RUN yarn workspaces focus --all
 
-FROM dev_dependencies AS builder
+FROM development_dependencies AS production_dependencies
+RUN yarn workspaces focus --production
+
+FROM development_dependencies AS builder
 COPY . .
-RUN yarn prettier --loglevel silent && \
-    yarn lint --quiet && \
-    yarn test --silent && \
+RUN yarn prettier && \
+    yarn lint && \
+    yarn test && \
     yarn build
 
 FROM base
-ENV DOCKER=true \
-    NODE_ENV=production
-COPY package.json .
-COPY --from=prod_dependencies /app/node_modules ./node_modules
+ENV NODE_ENV=production
+COPY --from=production_dependencies /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY ./assets ./assets
 

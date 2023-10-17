@@ -1,7 +1,6 @@
 .idea
-node_modules
+.yarn
 dist
 logs
-coverage
+node_modules
 .env
-.yarn

@@ -1,8 +1,13 @@
-dist
-node_modules
-logs
-.git
 .github
 .idea
+.git
 .yarn
+.editorconfig
+.env
+LICENSE
+README.md
+
 backup
+dist
+logs
+node_modules

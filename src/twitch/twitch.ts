@@ -23,22 +23,28 @@ export function startTimers(): void {
   }
 
   // Check repeatedly on a schedule
-  setInterval(async () => {
-    try {
-      await checkLive()
-      log.debug('twitch - live stream check complete')
-    } catch (err: any) {
-      log.error(err.stack || err.message || err)
-    }
-  }, 1000 * 60 * 2)
-  setInterval(async () => {
-    try {
-      await updateUserData()
-      log.debug('twitch - user data update complete')
-    } catch (err: any) {
-      log.error(err.stack || err.message || err)
-    }
-  }, 1000 * 60 * 60 * 6)
+  setInterval(
+    async () => {
+      try {
+        await checkLive()
+        log.debug('twitch - live stream check complete')
+      } catch (err: any) {
+        log.error(err.stack || err.message || err)
+      }
+    },
+    1000 * 60 * 2,
+  )
+  setInterval(
+    async () => {
+      try {
+        await updateUserData()
+        log.debug('twitch - user data update complete')
+      } catch (err: any) {
+        log.error(err.stack || err.message || err)
+      }
+    },
+    1000 * 60 * 60 * 6,
+  )
 }
 
 async function checkLive(): Promise<void> {

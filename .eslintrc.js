@@ -19,6 +19,7 @@ module.exports = {
     'max-len': 0,
     'no-console': process.env.NODE_ENV !== 'production' ? 'warn' : 'error',
     '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: 'next' }],
+    '@typescript-eslint/no-explicit-any': 'warn',
     'import/order': [
       'error',
       {

@@ -17,7 +17,7 @@ export const ids: Ids = {
   // DBKynd
   dev: {
     guild: '140025699867164673',
-    scheduleChannel: '872986945788211231',
+    scheduleChannel: '1163709845795504168',
     spoilerChannel: '872987015677898813',
     muteRole: '835696708657872906',
     legacyReactionWebhookId: '887447915440779284',

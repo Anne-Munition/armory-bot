@@ -29,8 +29,8 @@ async function cleanup() {
 async function cleanDocs(service: typeof NotificationChannel) {
   const docs = await service.search({});
   for (let i = 0; i < docs.length; i++) {
-    const guild = await client.guilds.cache.get(docs[i].guild_id);
-    const channel = await client.channels.cache.get(docs[i].channel_id);
+    const guild = await client.guilds.fetch(docs[i].guild_id);
+    const channel = await client.channels.fetch(docs[i].channel_id);
     if (!guild || !channel) await service.remove(docs[i]._id);
   }
 }
@@ -53,8 +53,8 @@ async function cleanTwitchChannels() {
     const toRemove: number[] = [];
     for (let j = docs[i].channels.length - 1; j >= 0; j--) {
       const obj = docs[i].channels[j];
-      const guild = await client.guilds.cache.get(obj.guild_id);
-      const channel = await client.channels.cache.get(obj.channel_id);
+      const guild = await client.guilds.fetch(obj.guild_id);
+      const channel = await client.channels.fetch(obj.channel_id);
       if (!guild || !channel) {
         toRemove.push(j);
       }

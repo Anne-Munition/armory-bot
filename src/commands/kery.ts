@@ -13,10 +13,11 @@ export const structure: CmdStructure = {
 };
 
 export const run: ChatCmdRun = async (interaction): Promise<void> => {
+  const image = Math.random() < 0.5 ? 'kery.png' : 'kery2.png';
   await interaction.reply({
     files: [
       {
-        attachment: path.join(assetsDir, 'kery.png'),
+        attachment: path.join(assetsDir, image),
         name: 'kery.png',
       },
     ],

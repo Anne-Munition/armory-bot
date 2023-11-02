@@ -7,8 +7,7 @@ RUN apk add --no-cache python3 make g++ git
 FROM system_dependencies AS yarn
 COPY package.json yarn.lock .yarnrc.yml ./
 RUN corepack enable && \
-    corepack prepare yarn@stable --activate && \
-    yarn plugin import workspace-tools
+    corepack prepare yarn@stable --activate
 
 FROM yarn AS development_dependencies
 RUN yarn workspaces focus --all

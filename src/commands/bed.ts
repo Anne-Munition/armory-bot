@@ -38,6 +38,6 @@ export const run: ChatCmdRun = async (interaction): Promise<void> => {
       await owner.send(`Bed Winner! - ${user} - ${guild} - ${channel}`);
     }
   } else {
-    await interaction.reply('No');
+    await interaction.reply('Yes');
   }
 };

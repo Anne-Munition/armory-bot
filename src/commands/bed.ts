@@ -26,7 +26,7 @@ getDecimals();
 export const run: ChatCmdRun = async (interaction): Promise<void> => {
   const number = randoms.shift();
   if (randoms.length <= 5) getDecimals();
-  const odds = 1 / 1000;
+  const odds = 1 / 500;
   const isWinner = number && number <= odds;
   if (isWinner) {
     await interaction.reply('You know what... Yes!');
@@ -38,6 +38,6 @@ export const run: ChatCmdRun = async (interaction): Promise<void> => {
       await owner.send(`Bed Winner! - ${user} - ${guild} - ${channel}`);
     }
   } else {
-    await interaction.reply('Yes');
+    await interaction.reply('No');
   }
 };

@@ -1,6 +1,6 @@
 import { Snowflake } from 'discord.js';
 
-export const mongoUrl = process.env.MONGO_URL || 'mongodb://localhost:27017';
+export const mongoUrl = process.env.MONGO_URL || 'mongodb://localhost:27017/armory-bot';
 
 export const ids: Ids = {
   // The Armory

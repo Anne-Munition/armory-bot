@@ -6,7 +6,7 @@ export const info: CmdInfo = {
 
 export const structure: CmdStructure = {
   name: 'fact',
-  description: 'Post a Snapple fact.',
+  description: 'Post a random fact.',
 };
 
 export const run: ChatCmdRun = async (interaction): Promise<void> => {

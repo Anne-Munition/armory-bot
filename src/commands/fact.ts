@@ -1,5 +1,4 @@
 import axios from 'axios';
-import cheerio from 'cheerio';
 
 export const info: CmdInfo = {
   global: true,
@@ -12,11 +11,8 @@ export const structure: CmdStructure = {
 
 export const run: ChatCmdRun = async (interaction): Promise<void> => {
   await interaction.deferReply();
-  const { data: html } = await axios.get('https://snapple.com/real-facts');
-  const $ = cheerio.load(html);
-  const fact = $('#facts .bottlecap .fact').text().replace(/\n/g, '').trim();
-  const number = $('#facts .bottlecap .number').text().replace(/\n/g, '').trim();
-  if (!fact || !number) throw new Error('Unable to extract fact.');
-  const becky1 = await interaction.client.emojis.cache.find((x) => x.name === 'becky1');
-  await interaction.editReply(`**Fact ${number}** - ${fact} ${becky1 || ''}`);
+  const { data } = await axios.get('https://uselessfacts.jsph.pl/api/v2/facts/random');
+  const { text: fact } = data;
+  const becky1 = interaction.client.emojis.cache.find((x) => x.name === 'becky1');
+  await interaction.editReply(`${fact} ${becky1 || ''}`);
 };

@@ -1,6 +1,6 @@
 {
   "name": "armorybot",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "description": "Discord Bot for AnneMunition's Armory",
   "private": true,
   "author": "DBKynd <db@dbkynd.com>",
@@ -42,7 +42,6 @@
     "zlib-sync": "^0.1.8"
   },
   "devDependencies": {
-    "@types/cron": "^2.4.0",
     "@types/getos": "^3.0.2",
     "@types/humanize-duration": "^3.27.1",
     "@types/jest": "^29.5.5",

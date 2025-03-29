@@ -1,31 +1,22 @@
-FROM node:lts-alpine3.18 as base
+FROM node:22 AS base
 WORKDIR /app
+ENV PNPM_HOME="/root/.local/share/pnpm"
+ENV PATH="${PATH}:${PNPM_HOME}"
+RUN npm install -g pnpm@latest-10
 
-FROM base as system_dependencies
-RUN apk add --no-cache python3 make g++ git
-
-FROM system_dependencies AS yarn
-COPY package.json yarn.lock .yarnrc.yml ./
-RUN corepack enable && \
-    corepack prepare yarn@stable --activate
-
-FROM yarn AS development_dependencies
-RUN yarn workspaces focus --all
-
-FROM development_dependencies AS production_dependencies
-RUN yarn workspaces focus --production
-
-FROM development_dependencies AS builder
+FROM base AS installer
 COPY . .
-RUN yarn prettier && \
-    yarn lint && \
-    yarn test && \
-    yarn build
+RUN pnpm install --frozen-lockfile
+RUN pnpm prettier && \
+    pnpm lint && \
+    pnpm test && \
+    pnpm build
 
-FROM base
-ENV NODE_ENV=production
-COPY --from=production_dependencies /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
+FROM node:22-slim AS runner
+WORKDIR /app
+COPY --from=installer /app/dist ./dist
+COPY --from=installer /app/node_modules .node_modules
 COPY ./assets ./assets
-
-ENTRYPOINT ["node", "/app/dist/index.js"]
+ENV NODE_ENV=production
+EXPOSE 3000
+CMD ["node", "/app/dist/index.js"]

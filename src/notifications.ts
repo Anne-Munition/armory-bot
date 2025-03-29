@@ -3,6 +3,7 @@ import { NotificationChannelDoc } from './database/models/notification_channel_m
 import JoinedGuild from './database/services/joined_guild_service';
 import NotificationChannel from './database/services/notification_channel_service';
 import log from './logger';
+import { isEnabled as isAprilFools } from './commands/aprilfools';
 
 // DM the bot owner that the client has joined a guild
 async function guildCreate(guild: Discord.Guild): Promise<void> {
@@ -33,6 +34,30 @@ async function guildMemberAdd(member: Discord.GuildMember): Promise<void> {
   log.debug(`guildMemberAdd event: ${member.displayName}`);
   const channelDocs = await NotificationChannel.getByGuild(member.guild.id);
   if (!channelDocs) return;
+
+  // Set nickname to "Anne Munition"
+  if (isAprilFools() && member.manageable) {
+    let success = false;
+    while (!success) {
+      try {
+        await member.setNickname('Anne Munition');
+        success = true; // Exit the retry loop if successful
+      } catch (error: any) {
+        if (error.code === 429) {
+          // Handle rate limit
+          const retryAfter = error.retry_after || 1000; // Default to 1 second if not provided
+          log.warn(
+            `Rate limited while setting nickname for ${member.user.tag}. Retrying after ${retryAfter}ms...`,
+          );
+          await new Promise((resolve) => setTimeout(resolve, retryAfter));
+        } else {
+          log.error(`Failed to set nickname for ${member.user.tag}:`, error);
+          break; // Exit the retry loop on non-rate-limit errors
+        }
+      }
+    }
+  }
+
   log.debug(`posting guildMemberAdd in (${channelDocs.length}) channels`);
   const embed = new Discord.EmbedBuilder()
     .setColor('#1ed21e')

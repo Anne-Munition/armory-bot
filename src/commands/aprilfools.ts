@@ -1,5 +1,8 @@
 import { ids } from '../config';
-import { ApplicationCommandOptionType, PermissionFlagsBits, MessageFlags } from 'discord.js';
+import { ApplicationCommandOptionType, MessageFlags } from 'discord.js';
+import * as fs from 'fs';
+import * as path from 'path';
+import { logDir } from '../directories';
 
 const nicknameMap = new Map<string, string>(); // Map to store member IDs and their original nicknames
 let enabled = false;
@@ -33,38 +36,50 @@ export const run: ChatCmdRun = async (interaction): Promise<void> => {
   if (!guild) {
     await interaction.reply({
       content: 'This command can only be run in a guild.',
-      flags: MessageFlags.Ephemeral, // Use flags instead of ephemeral
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }
 
-  // Defer the interaction to avoid timeout
   await interaction.deferReply();
+  const botMember = await guild.members.fetch(interaction.client.user!.id);
 
   if (subCommand === 'enable') {
     enabled = true;
-    nicknameMap.clear(); // Clear the map before starting
+    nicknameMap.clear();
     await interaction.editReply('Starting the fun! Changing nicknames to "Anne Munition"...');
 
     const members = await guild.members.fetch();
+
+    // Step 1: Populate the nickname map and save it to a file
+    for (const member of members.values()) {
+      if (!member.manageable) continue;
+      nicknameMap.set(member.id, member.nickname || '');
+    }
+    if (botMember) {
+      nicknameMap.set(botMember.id, botMember.nickname || '');
+    }
+
+    // Save the nickname map to a JSON file
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-'); // Format timestamp for filename
+    const filePath = path.join(logDir, `nicknameMap-${timestamp}.json`);
+    const nicknameObject = Object.fromEntries(nicknameMap); // Convert Map to plain object
+    fs.writeFileSync(filePath, JSON.stringify(nicknameObject, null, 2), 'utf-8');
+
+    // Step 2: Change nicknames
     for (const member of members.values()) {
       if (!member.manageable) continue;
 
       let success = false;
       while (!success) {
         try {
-          // Store the original nickname
-          if (member.nickname !== 'Anne Munition') {
-            nicknameMap.set(member.id, member.nickname || '');
-          }
-
           // Set the new nickname
           await member.setNickname('Anne Munition');
           success = true; // Exit the retry loop if successful
         } catch (error: any) {
           if (error.code === 429) {
             // Handle rate limit
-            const retryAfter = error.retry_after || 1000; // Default to 1 second if not provided
+            const retryAfter = error.retry_after || 1000;
             console.warn(`Rate limited. Retrying after ${retryAfter}ms...`);
             await new Promise((resolve) => setTimeout(resolve, retryAfter));
           } else {
@@ -78,9 +93,7 @@ export const run: ChatCmdRun = async (interaction): Promise<void> => {
       await new Promise((resolve) => setTimeout(resolve, 250));
     }
 
-    const botMember = await guild.members.fetch(interaction.client.user!.id);
     if (botMember) {
-      nicknameMap.set(botMember.id, botMember.nickname || '');
       await botMember.setNickname('Anne Munition');
     }
 
@@ -105,7 +118,7 @@ export const run: ChatCmdRun = async (interaction): Promise<void> => {
         } catch (error: any) {
           if (error.code === 429) {
             // Handle rate limit
-            const retryAfter = error.retry_after || 1000; // Default to 1 second if not provided
+            const retryAfter = error.retry_after || 1000;
             console.warn(`Rate limited. Retrying after ${retryAfter}ms...`);
             await new Promise((resolve) => setTimeout(resolve, retryAfter));
           } else {
@@ -119,7 +132,6 @@ export const run: ChatCmdRun = async (interaction): Promise<void> => {
       await new Promise((resolve) => setTimeout(resolve, 250));
     }
 
-    const botMember = await guild.members.fetch(interaction.client.user!.id);
     if (botMember) {
       const originalNickname = nicknameMap.get(botMember.id);
       if (originalNickname !== undefined) {

@@ -142,7 +142,7 @@ export async function getRandomDecimals(count: number): Promise<number[]> {
     },
     id: id,
   };
-  return axios.post(url, body).then(({ data }: { data: SignedDecimalFraction }) => {
+  return axios.post<SignedDecimalFraction>(url, body).then(({ data }) => {
     if (data.id !== id) throw new Error('Random.org ID mismatch');
     return data.result.random.data;
   });

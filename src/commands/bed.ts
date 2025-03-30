@@ -1,4 +1,5 @@
 import { ids } from '../config.js';
+import logger from '../logger.js';
 import { getRandomDecimals, ignore } from '../utilities.js';
 
 export const info: CmdInfo = {
@@ -16,6 +17,7 @@ const randoms: number[] = [];
 function getDecimals() {
   getRandomDecimals(20)
     .then((numbers) => {
+      logger.debug(`Got random decimals for bed command: ${numbers}`);
       randoms.push(...numbers);
     })
     .catch(ignore);
@@ -24,10 +26,14 @@ function getDecimals() {
 getDecimals();
 
 export const run: ChatCmdRun = async (interaction): Promise<void> => {
-  const number = randoms.shift();
+  const number = randoms.shift() || Math.random();
   if (randoms.length <= 5) getDecimals();
+  logger.info(
+    `Bed command used by ${interaction.user.tag} (${interaction.user.id}) - Random Number: ${number}, must be less than or equal to 0.002 (1/500) for a win.`,
+  );
+
   const odds = 1 / 500;
-  const isWinner = number && number <= odds;
+  const isWinner = number <= odds;
   if (isWinner) {
     await interaction.reply('You know what... Yes!');
     if (process.env.OWNER_ID !== undefined) {

@@ -1,8 +1,8 @@
-import { ids } from '../config';
-import { ApplicationCommandOptionType, MessageFlags } from 'discord.js';
 import * as fs from 'fs';
 import * as path from 'path';
-import { logDir } from '../directories';
+import { ApplicationCommandOptionType, MessageFlags } from 'discord.js';
+import { ids } from '../config.js';
+import { logDir } from '../directories.js';
 
 const nicknameMap = new Map<string, string>(); // Map to store member IDs and their original nicknames
 let enabled = false;

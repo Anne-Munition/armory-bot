@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
-import { commands } from './collections';
-import { cmdsDir } from './directories';
-import log from './logger';
+import { commands } from './collections.js';
+import { cmdsDir } from './directories.js';
+import log from './logger.js';
 
 const ext = process.env.NODE_ENV === 'production' ? 'js' : 'ts';
 

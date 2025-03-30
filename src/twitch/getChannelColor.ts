@@ -1,7 +1,7 @@
 import { HexColorString } from 'discord.js';
 import rgb2hex from 'rgb2hex';
-import log from '../logger';
-import { palette } from '../utilities';
+import log from '../logger.js';
+import { palette } from '../utilities.js';
 
 export default async function (
   user: HelixUser,

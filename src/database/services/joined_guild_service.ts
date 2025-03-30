@@ -1,5 +1,5 @@
 import { Snowflake } from 'discord.js';
-import JoinedGuild, { JoinedGuildDoc } from '../models/joined_guild_model';
+import JoinedGuild, { JoinedGuildDoc } from '../models/joined_guild_model.js';
 
 async function add(guildId: Snowflake, ownerTag: string): Promise<void> {
   await JoinedGuild.findOneAndUpdate(

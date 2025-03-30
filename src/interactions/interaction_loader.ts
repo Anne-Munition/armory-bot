@@ -1,5 +1,5 @@
 import { Client } from 'discord.js';
-import { commands } from '../collections';
+import { commands } from '../collections.js';
 
 export default async function (client: Client): Promise<void> {
   const globalCmds = commands.filter((x) => x.cmd.info.global);

@@ -1,5 +1,5 @@
 import path from 'path';
-import { assetsDir } from '../directories';
+import { assetsDir } from '../directories.js';
 
 export const info: CmdInfo = {
   global: true,

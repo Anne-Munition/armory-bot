@@ -1,4 +1,4 @@
-import Birthday, { BirthdayDoc } from '../models/birthday_model';
+import Birthday, { BirthdayDoc } from '../models/birthday_model.js';
 
 async function find(id: string): Promise<BirthdayDoc | null> {
   return Birthday.findOne({ discord_id: id });

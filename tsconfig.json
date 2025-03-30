@@ -1,18 +1,23 @@
 /* https://www.staging-typescript.org/tsconfig */
 
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    "target": "ES6",
-    "module": "ESNext",
     "outDir": "./dist",
-    "removeComments": true,
-    "strict": true,
-    "moduleResolution": "node",
+    "declaration": true,
+    "declarationMap": true,
     "esModuleInterop": true,
+    "incremental": false,
+    "isolatedModules": true,
+    "lib": ["es2022", "DOM", "DOM.Iterable"],
+    "module": "NodeNext",
+    "moduleDetection": "force",
+    "moduleResolution": "NodeNext",
+    "noUncheckedIndexedAccess": true,
+    "resolveJsonModule": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "allowJs": true,
-    "lib": ["ES6"]
+    "strict": true,
+    "target": "ES2022"
   },
   "include": ["src/**/*"]
 }

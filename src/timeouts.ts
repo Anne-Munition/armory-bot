@@ -1,8 +1,9 @@
-import Discord, { ChannelType, Snowflake, TextChannel } from 'discord.js';
-import { getId } from './config';
-import Timeout from './database/services/timeout_service';
-import client from './discord';
-import log from './logger';
+import * as Discord from 'discord.js';
+import { ChannelType, Snowflake, TextChannel } from 'discord.js';
+import { getId } from './config.js';
+import Timeout from './database/services/timeout_service.js';
+import client from './discord.js';
+import log from './logger.js';
 
 // Get the timeout docs from the database and start timers to remove the timeout
 export async function init(): Promise<void> {

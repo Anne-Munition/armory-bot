@@ -1,6 +1,6 @@
 import { Snowflake } from 'discord.js';
-import { getId } from '../../config';
-import Timeout, { TimeoutsDoc } from '../models/timeout_model';
+import { getId } from '../../config.js';
+import Timeout, { TimeoutsDoc } from '../models/timeout_model.js';
 
 async function list(): Promise<TimeoutsDoc[]> {
   return Timeout.find({});

@@ -1,13 +1,13 @@
 import os from 'os';
 import util from 'util';
-import Discord from 'discord.js';
+import * as Discord from 'discord.js';
 import { ChannelType } from 'discord.js';
 import getos from 'getos';
 import { Duration } from 'luxon';
 import pidusage from 'pidusage';
-import { ids } from '../config';
-import counts from '../counts';
-import { capitalize, formatDuration, ownerOnlyCommand } from '../utilities';
+import { ids } from '../config.js';
+import counts from '../counts.js';
+import { capitalize, formatDuration, ownerOnlyCommand } from '../utilities.js';
 
 export const info: CmdInfo = {
   global: false,
@@ -89,7 +89,7 @@ export const run: ChatCmdRun = async (interaction): Promise<void> => {
     str += ` - ${capitalize(thisOs)}`;
   }
   str += "'\n";
-  str += `Core: '${cpuData[0].model}' (${cpuData.length}x)\n`;
+  str += `Core: '${cpuData[0]?.model}' (${cpuData.length}x)\n`;
   str += `Uptime: ${formatDuration(osUp)}\n`;
   str += `RAM: ${usedRam}MB/${totalMem}MB (${((usedRam / totalMem) * 100).toFixed(2)}%)\n`;
   str += `CPU: ${load[0]}%\n`;

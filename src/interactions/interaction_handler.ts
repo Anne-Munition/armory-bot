@@ -1,7 +1,7 @@
 import { Interaction } from 'discord.js';
-import { commands } from '../collections';
-import counts from '../counts';
-import log from '../logger';
+import { commands } from '../collections.js';
+import counts from '../counts.js';
+import log from '../logger.js';
 
 export default async function (interaction: Interaction): Promise<void> {
   log.debug(`received interaction: ${interaction.id}`);

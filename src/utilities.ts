@@ -2,8 +2,8 @@ import axios from 'axios';
 import { ChannelType, CommandInteraction, Message, Snowflake } from 'discord.js';
 import { DateTime, Duration } from 'luxon';
 import Vibrant from 'node-vibrant';
-import client from './discord';
-import log from './logger';
+import client from './discord.js';
+import log from './logger.js';
 
 export function capitalize(word: string): string {
   return word.replace(/\b\w/g, (l) => l.toUpperCase());

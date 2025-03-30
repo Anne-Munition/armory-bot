@@ -1,7 +1,7 @@
 import { ApplicationCommandOptionType } from 'discord.js';
-import { ids } from '../config';
-import * as twitch from '../twitch/twitch_api';
-import { capitalize, displayName } from '../utilities';
+import { ids } from '../config.js';
+import * as twitch from '../twitch/twitch_api.js';
+import { capitalize, displayName } from '../utilities.js';
 
 export const info: CmdInfo = {
   global: false,

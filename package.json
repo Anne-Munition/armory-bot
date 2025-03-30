@@ -16,7 +16,8 @@
     "start": "cross-env NODE_ENV=production node -r dotenv/config ./dist",
     "prettier": "prettier --write \"**/*.{js,ts,md,*rc,json}\" --ignore-path .gitignore",
     "lint": "eslint --ext .js,.ts --ignore-pattern .gitignore .",
-    "test": "jest"
+    "test": "jest",
+    "docker:build": "docker build -t dbkynd/armory-bot:latest ."
   },
   "dependencies": {
     "axios": "^1.8.4",
@@ -43,6 +44,7 @@
     "zlib-sync": "^0.1.9"
   },
   "devDependencies": {
+    "@babel/preset-typescript": "^7.27.0",
     "@eslint/js": "^9.23.0",
     "@types/getos": "^3.0.4",
     "@types/humanize-duration": "^3.27.4",

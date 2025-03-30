@@ -1,4 +1,4 @@
-import { run } from '../temp';
+import { run } from '../temp.js';
 
 let opts: { [key: string]: any };
 

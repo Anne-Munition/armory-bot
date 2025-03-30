@@ -1,11 +1,12 @@
-import { Message } from 'discord.js';
+import { Message, TextChannel } from 'discord.js';
 import emojiRegex from 'emoji-regex';
-import { getId } from '../config';
+import { getId } from '../config.js';
 
 const reg = /^(.|\n)+\|\|(.|\n)*\|\|(.|\n)*$/;
 
 export default async function (msg: Message): Promise<void> {
   if (msg.guildId && msg.channel.id !== getId(msg.guildId, 'spoilerChannel')) return;
+  const channel = msg.channel as TextChannel;
 
   const attachments = msg.attachments;
 
@@ -30,7 +31,7 @@ export default async function (msg: Message): Promise<void> {
 
   if (attachments.size && !msg.content) {
     await del(msg);
-    await msg.channel.send({
+    await channel.send({
       content: `${msg.author} Please add a topic comment to your attachments. Thanks!`,
       allowedMentions: { users: [msg.author.id] },
     });
@@ -42,7 +43,7 @@ export default async function (msg: Message): Promise<void> {
     (!attachments.size && !reg.test(msg.content))
   ) {
     await del(msg);
-    await msg.channel.send({
+    await channel.send({
       content: `${msg.author} Please use the format: \`\`topic ||spoiler||\`\`. Thanks!`,
       allowedMentions: { users: [msg.author.id] },
     });

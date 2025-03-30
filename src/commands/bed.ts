@@ -1,5 +1,5 @@
-import { ids } from '../config';
-import { getRandomDecimals, ignore } from '../utilities';
+import { ids } from '../config.js';
+import { getRandomDecimals, ignore } from '../utilities.js';
 
 export const info: CmdInfo = {
   global: false,
@@ -30,12 +30,14 @@ export const run: ChatCmdRun = async (interaction): Promise<void> => {
   const isWinner = number && number <= odds;
   if (isWinner) {
     await interaction.reply('You know what... Yes!');
-    const owner = await interaction.client.users.fetch(process.env.OWNER_ID);
-    if (owner) {
-      const user = interaction.user.toString();
-      const guild = interaction.guild?.name;
-      const channel = interaction.channel?.toString();
-      await owner.send(`Bed Winner! - ${user} - ${guild} - ${channel}`);
+    if (process.env.OWNER_ID !== undefined) {
+      const owner = await interaction.client.users.fetch(process.env.OWNER_ID);
+      if (owner) {
+        const user = interaction.user.toString();
+        const guild = interaction.guild?.name;
+        const channel = interaction.channel?.toString();
+        await owner.send(`Bed Winner! - ${user} - ${guild} - ${channel}`);
+      }
     }
   } else {
     await interaction.reply('No');

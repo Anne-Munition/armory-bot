@@ -1,5 +1,5 @@
 import MockDate from 'mockdate';
-import { getTodayDate } from '../birthdays';
+import { getTodayDate } from '../birthdays.js';
 
 describe('birthdays module', () => {
   describe('getTodayDate method', () => {

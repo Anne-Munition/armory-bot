@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Message } from 'discord.js';
-import { getId } from '../config';
+import { getId } from '../config.js';
 
 const reg = /https?:\/\/(([vf]x)?twitter).com/;
 export default async function (msg: Message): Promise<boolean> {

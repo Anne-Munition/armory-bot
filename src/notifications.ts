@@ -1,8 +1,9 @@
-import Discord, { ChannelType, PermissionFlagsBits } from 'discord.js';
-import { NotificationChannelDoc } from './database/models/notification_channel_model';
-import JoinedGuild from './database/services/joined_guild_service';
-import NotificationChannel from './database/services/notification_channel_service';
-import log from './logger';
+import * as Discord from 'discord.js';
+import { ChannelType, PermissionFlagsBits } from 'discord.js';
+import { NotificationChannelDoc } from './database/models/notification_channel_model.js';
+import JoinedGuild from './database/services/joined_guild_service.js';
+import NotificationChannel from './database/services/notification_channel_service.js';
+import log from './logger.js';
 
 // DM the bot owner that the client has joined a guild
 async function guildCreate(guild: Discord.Guild): Promise<void> {

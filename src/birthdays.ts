@@ -1,10 +1,11 @@
 import { CronJob } from 'cron';
-import Discord, { ChannelType } from 'discord.js';
+import * as Discord from 'discord.js';
+import { ChannelType } from 'discord.js';
 import { DateTime } from 'luxon';
-import * as config from './config';
-import Birthday from './database/services/birthday_service';
-import client from './discord';
-import logger from './logger';
+import * as config from './config.js';
+import Birthday from './database/services/birthday_service.js';
+import client from './discord.js';
+import logger from './logger.js';
 
 const cronTime = process.env.NODE_ENV === 'production' ? '0 8 * * *' : '*/1 * * * *';
 
@@ -45,7 +46,9 @@ async function run() {
 
   const members: Discord.GuildMember[] = [];
   for (let i = 0; i < birthdayDocs.length; i++) {
-    const m = await guild.members.fetch(birthdayDocs[i].discord_id);
+    const discordId = birthdayDocs[i]?.discord_id;
+    if (!discordId) continue;
+    const m = await guild.members.fetch(discordId);
     if (m) {
       if (m.roles.cache.has(birthdayRole.id)) return;
       // Assign birthday roles

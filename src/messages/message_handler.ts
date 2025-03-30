@@ -1,9 +1,9 @@
 import { Message } from 'discord.js';
-import { getId } from '../config';
-import counts from '../counts';
-import log from '../logger';
-import schedulePinning from './schedule_pinning';
-import spoilerTags from './spoiler_tags';
+import { getId } from '../config.js';
+import counts from '../counts.js';
+import log from '../logger.js';
+import schedulePinning from './schedule_pinning.js';
+import spoilerTags from './spoiler_tags.js';
 
 export default async function (msg: Message): Promise<void> {
   counts.increment('messagesSeen');

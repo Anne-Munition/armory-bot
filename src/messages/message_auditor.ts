@@ -1,4 +1,5 @@
-import Discord, {
+import * as Discord from 'discord.js';
+import {
   AuditLogEvent,
   ChannelType,
   EmbedBuilder,
@@ -8,8 +9,8 @@ import Discord, {
 } from 'discord.js';
 import humanizeDuration from 'humanize-duration';
 import { Duration } from 'luxon';
-import { getId } from '../config';
-import logger from '../logger';
+import { getId } from '../config.js';
+import logger from '../logger.js';
 
 async function messageDelete(msg: Message | PartialMessage) {
   logger.debug('Message Deleted');

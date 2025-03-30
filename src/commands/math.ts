@@ -1,6 +1,6 @@
 import { ApplicationCommandOptionType } from 'discord.js';
 import * as math from 'mathjs';
-import logger from '../logger';
+import logger from '../logger.js';
 
 export const info: CmdInfo = {
   global: true,

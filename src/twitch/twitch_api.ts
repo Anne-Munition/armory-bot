@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { ignore, ownerError } from '../utilities';
-import * as token from './twitch_token';
+import { ignore, ownerError } from '../utilities.js';
+import * as token from './twitch_token.js';
 
 function helixHeaders(): { [key: string]: string } {
   const keys = token.getToken();

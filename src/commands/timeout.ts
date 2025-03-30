@@ -1,9 +1,9 @@
 import { ApplicationCommandOptionType, PermissionFlagsBits } from 'discord.js';
 import humanizeDuration from 'humanize-duration';
 import { Duration } from 'luxon';
-import { ids } from '../config';
-import Timeout from '../database/services/timeout_service';
-import * as timeouts from '../timeouts';
+import { ids } from '../config.js';
+import Timeout from '../database/services/timeout_service.js';
+import * as timeouts from '../timeouts.js';
 
 export const info: CmdInfo = {
   global: false,
@@ -94,7 +94,9 @@ export const run: ChatCmdRun = async (interaction): Promise<void> => {
     }
     // Fetch all users to be available in cache
     for (let i = 0; i < activeTimeouts.length; i++) {
-      await interaction.client.users.fetch(activeTimeouts[i].user_id);
+      const item = activeTimeouts[i];
+      if (!item) continue;
+      await interaction.client.users.fetch(item.user_id);
     }
     const response = activeTimeouts.map((timeoutDoc) => {
       const user = interaction.client.users.cache.get(timeoutDoc.user_id);

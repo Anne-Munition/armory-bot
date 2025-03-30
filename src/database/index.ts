@@ -1,7 +1,7 @@
 import mongoose, { ConnectOptions } from 'mongoose';
-import { mongoUrl } from '../config';
-import log from '../logger';
-import { ownerError } from '../utilities';
+import { mongoUrl } from '../config.js';
+import log from '../logger.js';
+import { ownerError } from '../utilities.js';
 
 mongoose.Promise = global.Promise;
 

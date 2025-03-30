@@ -1,12 +1,12 @@
-import birthdays from './birthdays';
-import commandLoader from './command_loader';
-import * as database from './database';
-import databaseCleanup from './database/cleanup';
-import * as discord from './discord';
-import * as timeouts from './timeouts';
-import * as twitch from './twitch/twitch';
-import * as token from './twitch/twitch_token';
-import { ownerSend } from './utilities';
+import birthdays from './birthdays.js';
+import commandLoader from './command_loader.js';
+import databaseCleanup from './database/cleanup.js';
+import * as database from './database/index.js';
+import * as discord from './discord.js';
+import * as timeouts from './timeouts.js';
+import * as twitch from './twitch/twitch.js';
+import * as token from './twitch/twitch_token.js';
+import { ownerSend } from './utilities.js';
 
 export async function start(): Promise<void> {
   await token.fetchToken();

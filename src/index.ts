@@ -1,6 +1,6 @@
-import * as app from './app';
-import log from './logger';
-import { ownerError } from './utilities';
+import * as app from './app.js';
+import log from './logger.js';
+import { ownerError } from './utilities.js';
 
 log.info('Starting the application...');
 

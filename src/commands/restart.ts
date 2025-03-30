@@ -1,6 +1,6 @@
-import * as app from '../app';
-import { ids } from '../config';
-import { ownerOnlyCommand } from '../utilities';
+import * as app from '../app.js';
+import { ids } from '../config.js';
+import { ownerOnlyCommand } from '../utilities.js';
 
 export const info: CmdInfo = {
   global: false,

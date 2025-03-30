@@ -1,6 +1,6 @@
 import { Snowflake } from 'discord.js';
 import { HexColorString } from 'discord.js';
-import TwitchChannel, { TwitchChannelDoc } from '../models/twitch_channel_model';
+import TwitchChannel, { TwitchChannelDoc } from '../models/twitch_channel_model.js';
 
 async function list(): Promise<TwitchChannelDoc[]> {
   return TwitchChannel.find({});

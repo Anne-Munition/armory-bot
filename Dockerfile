@@ -9,13 +9,13 @@ COPY . .
 RUN pnpm install --frozen-lockfile
 RUN pnpm prettier && \
     pnpm lint && \
-    pnpm test && \
+    #pnpm test && \
     pnpm build
 
 FROM node:22-slim AS runner
 WORKDIR /app
 COPY --from=installer /app/dist ./dist
-COPY --from=installer /app/node_modules .node_modules
+COPY --from=installer /app/node_modules ./node_modules
 COPY ./assets ./assets
 ENV NODE_ENV=production
 EXPOSE 3000

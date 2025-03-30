@@ -1,6 +1,6 @@
 import { ApplicationCommandOptionType } from 'discord.js';
-import { getFollows, getUsers } from '../twitch/twitch_api';
-import { displayName, formatTimeDiff } from '../utilities';
+import { getFollows, getUsers } from '../twitch/twitch_api.js';
+import { displayName, formatTimeDiff } from '../utilities.js';
 
 export const info: CmdInfo = {
   global: true,

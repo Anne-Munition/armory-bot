@@ -1,5 +1,7 @@
 import { Snowflake } from 'discord.js';
-import NotificationChannel, { NotificationChannelDoc } from '../models/notification_channel_model';
+import NotificationChannel, {
+  NotificationChannelDoc,
+} from '../models/notification_channel_model.js';
 
 async function search(filter: { [key: string]: any }): Promise<NotificationChannelDoc[]> {
   return NotificationChannel.find(filter);

@@ -1,4 +1,4 @@
-import { getRandomInt } from '../utilities';
+import { getRandomInt } from '../utilities.js';
 
 export const info: CmdInfo = {
   global: true,

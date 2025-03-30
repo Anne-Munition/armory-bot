@@ -1,10 +1,10 @@
 import { Client, GatewayIntentBits, Partials } from 'discord.js';
-import interactionHandler from './interactions/interaction_handler';
-import interactionLoader from './interactions/interaction_loader';
-import log from './logger';
-import auditor from './messages/message_auditor';
-import messageHandler from './messages/message_handler';
-import notify from './notifications';
+import interactionHandler from './interactions/interaction_handler.js';
+import interactionLoader from './interactions/interaction_loader.js';
+import log from './logger.js';
+import auditor from './messages/message_auditor.js';
+import messageHandler from './messages/message_handler.js';
+import notify from './notifications.js';
 
 const client = new Client({
   intents: [

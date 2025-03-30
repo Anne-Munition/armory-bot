@@ -1,6 +1,6 @@
 import path from 'path';
 import { createLogger, format, transports } from 'winston';
-import { logDir } from './directories';
+import { logDir } from './directories.js';
 
 const { combine, timestamp, colorize, printf } = format;
 
@@ -22,16 +22,11 @@ const logger = createLogger({
       level: 'error',
       format: combine(timestamp(), myFormat),
     }),
-  ],
-});
-
-if (process.env.NODE_ENV !== 'production') {
-  logger.add(
     new transports.Console({
       level: 'debug',
       format: combine(timestamp(), colorize(), myFormat),
     }),
-  );
-}
+  ],
+});
 
 export default logger;

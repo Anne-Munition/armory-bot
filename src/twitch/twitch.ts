@@ -1,11 +1,11 @@
 import { ChannelType, EmbedBuilder, GuildChannel, PermissionFlagsBits } from 'discord.js';
-import counts from '../counts';
-import { TwitchChannelDoc } from '../database/models/twitch_channel_model';
-import TwitchChannel from '../database/services/twitch_channel_service';
-import client from '../discord';
-import log from '../logger';
-import getChannelColor from './getChannelColor';
-import { getChannelColors, getStreams, getUsers } from './twitch_api';
+import counts from '../counts.js';
+import { TwitchChannelDoc } from '../database/models/twitch_channel_model.js';
+import TwitchChannel from '../database/services/twitch_channel_service.js';
+import client from '../discord.js';
+import log from '../logger.js';
+import getChannelColor from './getChannelColor.js';
+import { getChannelColors, getStreams, getUsers } from './twitch_api.js';
 
 let firstCheck = true;
 let lastState: { [key: string]: HelixStream } = {};
@@ -63,6 +63,7 @@ async function checkLive(): Promise<void> {
       for (let i = 0; i < doc.channels.length; i++) {
         if (!client || !client.user) continue;
         const discordChannel = doc.channels[i];
+        if (!discordChannel) continue;
         const guild = client.guilds.cache.get(discordChannel.guild_id);
         if (!guild) continue;
         const channel = guild.channels.cache.get(discordChannel.channel_id);
@@ -130,7 +131,7 @@ async function checkLive(): Promise<void> {
     streams.forEach((stream) => {
       if (lastState[stream.user_id]) {
         // Stream was live on last api check, see if the game has changed
-        const lastGame = lastState[stream.user_id].game_id;
+        const lastGame = lastState[stream.user_id]?.game_id;
         if (lastGame !== stream.game_id) {
           gameChanged.push(stream);
         }
@@ -238,11 +239,15 @@ async function updateUserData(): Promise<void> {
   // Loop through all the mongo results
   for (let i = 0; i < docs.length; i++) {
     const doc = docs[i];
+    if (!doc) continue;
     // Get the matching twitch results
     const userIndex = users.findIndex((x) => x.id === doc.twitch_id);
     if (userIndex === -1) return;
     const user = users[userIndex];
-    const color = await getChannelColor(user, colors[userIndex]);
+    if (!user) continue;
+    const c = colors[userIndex];
+    if (!c) continue;
+    const color = await getChannelColor(user, c);
 
     // Save record if data is different from twitch
     // display_name or profile_image_url or login

@@ -1,7 +1,7 @@
 import { ApplicationCommandOptionType } from 'discord.js';
 import { DateTime } from 'luxon';
-import { ids } from '../config';
-import Birthday from '../database/services/birthday_service';
+import { ids } from '../config.js';
+import Birthday from '../database/services/birthday_service.js';
 
 const formatMap = {
   'en-us': 'MM/dd',

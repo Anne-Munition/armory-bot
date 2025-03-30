@@ -16,7 +16,7 @@ export default [
   ...tseslint.configs.recommended,
   {
     languageOptions: {
-      ecmaVersion: 'ESNext',
+      ecmaVersion: 'latest',
       sourceType: 'module',
       globals: {
         ...globals.node,

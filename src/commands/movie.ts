@@ -1,7 +1,8 @@
 import axios from 'axios';
-import Discord, { ApplicationCommandOptionType } from 'discord.js';
-import log from '../logger';
-import { palette } from '../utilities';
+import * as Discord from 'discord.js';
+import { ApplicationCommandOptionType } from 'discord.js';
+import log from '../logger.js';
+import { palette } from '../utilities.js';
 
 export const info: CmdInfo = {
   global: true,
@@ -55,7 +56,7 @@ export const run: ChatCmdRun = async (interaction): Promise<void> => {
   const sorted = searchResults.results.sort((a, b) => b.popularity - a.popularity);
 
   const movie: Movie = await axios
-    .get(`https://api.themoviedb.org/3/movie/${sorted[0].id}`, {
+    .get(`https://api.themoviedb.org/3/movie/${sorted[0]?.id}`, {
       params: { api_key: process.env.MOVIE_DB_KEY },
     })
     .then(({ data }) => data);

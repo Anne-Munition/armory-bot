@@ -29,7 +29,9 @@ export const ids: Ids = {
 
 export function getId(guildId: Snowflake, property: IdNames): Snowflake | null {
   for (const set in ids) {
-    if (ids[set].guild === guildId) return ids[set]?.[property];
+    if (ids[set as keyof typeof ids].guild === guildId) {
+      return ids[set as keyof typeof ids]?.[property];
+    }
   }
   return null;
 }
@@ -39,7 +41,10 @@ export function getGuildId(): Snowflake {
 }
 
 interface Ids {
-  [key: string]: {
+  armory: {
+    [key in IdNames]: Snowflake;
+  };
+  dev: {
     [key in IdNames]: Snowflake;
   };
 }

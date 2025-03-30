@@ -1,6 +1,6 @@
 import path from 'path';
-import { ids } from '../config';
-import { assetsDir } from '../directories';
+import { ids } from '../config.js';
+import { assetsDir } from '../directories.js';
 
 export const info: CmdInfo = {
   global: false,

@@ -1,8 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { ApplicationCommandOptionType, MessageFlags } from 'discord.js';
+import { ApplicationCommandOptionType, Guild, MessageFlags } from 'discord.js';
 import { ids } from '../config.js';
 import { logDir } from '../directories.js';
+import logger from '../logger.js';
 
 const nicknameMap = new Map<string, string>(); // Map to store member IDs and their original nicknames
 let enabled = false;
@@ -26,11 +27,37 @@ export const structure: CmdStructure = {
       type: ApplicationCommandOptionType.Subcommand,
       description: 'Aww... no fun.',
     },
+    {
+      name: 'map',
+      type: ApplicationCommandOptionType.Subcommand,
+      description: 'Only map and save nicknames.',
+    },
   ],
 };
 
+async function mapNicknames(guild: Guild): Promise<void> {
+  nicknameMap.clear();
+  const members = await guild.members.fetch();
+
+  for (const member of members.values()) {
+    if (!member.manageable) continue;
+    nicknameMap.set(member.id, member.nickname || '');
+  }
+
+  const botMember = await guild.members.fetch(guild.client.user!.id);
+  if (botMember) {
+    nicknameMap.set(botMember.id, botMember.nickname || '');
+  }
+
+  // Save the nickname map to a JSON file
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-'); // Format timestamp for filename
+  const filePath = path.join(logDir, `nicknameMap-${timestamp}.json`);
+  const nicknameObject = Object.fromEntries(nicknameMap); // Convert Map to plain object
+  fs.writeFileSync(filePath, JSON.stringify(nicknameObject, null, 2), 'utf-8');
+}
+
 export const run: ChatCmdRun = async (interaction): Promise<void> => {
-  const subCommand = interaction.options.getSubcommand(true) as 'enable' | 'disable';
+  const subCommand = interaction.options.getSubcommand(true) as 'enable' | 'disable' | 'map';
   const guild = interaction.guild;
 
   if (!guild) {
@@ -42,54 +69,42 @@ export const run: ChatCmdRun = async (interaction): Promise<void> => {
   }
 
   await interaction.deferReply();
+
+  if (subCommand === 'map') {
+    await mapNicknames(guild);
+    await interaction.editReply('Nicknames have been mapped and saved!');
+    return;
+  }
+
   const botMember = await guild.members.fetch(interaction.client.user!.id);
 
   if (subCommand === 'enable') {
     enabled = true;
-    nicknameMap.clear();
     await interaction.editReply('Starting the fun! Changing nicknames to "Anne Munition"...');
 
+    await mapNicknames(guild); // Reuse the mapping logic
+
     const members = await guild.members.fetch();
-
-    // Step 1: Populate the nickname map and save it to a file
-    for (const member of members.values()) {
-      if (!member.manageable) continue;
-      nicknameMap.set(member.id, member.nickname || '');
-    }
-    if (botMember) {
-      nicknameMap.set(botMember.id, botMember.nickname || '');
-    }
-
-    // Save the nickname map to a JSON file
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-'); // Format timestamp for filename
-    const filePath = path.join(logDir, `nicknameMap-${timestamp}.json`);
-    const nicknameObject = Object.fromEntries(nicknameMap); // Convert Map to plain object
-    fs.writeFileSync(filePath, JSON.stringify(nicknameObject, null, 2), 'utf-8');
-
-    // Step 2: Change nicknames
     for (const member of members.values()) {
       if (!member.manageable) continue;
 
       let success = false;
       while (!success) {
         try {
-          // Set the new nickname
           await member.setNickname('Anne Munition');
-          success = true; // Exit the retry loop if successful
+          success = true;
         } catch (error: any) {
           if (error.code === 429) {
-            // Handle rate limit
             const retryAfter = error.retry_after || 1000;
-            console.warn(`Rate limited. Retrying after ${retryAfter}ms...`);
+            logger.warn(`Rate limited. Retrying after ${retryAfter}ms...`);
             await new Promise((resolve) => setTimeout(resolve, retryAfter));
           } else {
-            console.error(`Failed to set nickname for ${member.user.tag}:`, error);
-            break; // Exit the retry loop on non-rate-limit errors
+            logger.error(`Failed to set nickname for ${member.user.tag}:`, error);
+            break;
           }
         }
       }
 
-      // Custom rate limiter: Wait 250 ms between requests
       await new Promise((resolve) => setTimeout(resolve, 250));
     }
 
@@ -112,23 +127,20 @@ export const run: ChatCmdRun = async (interaction): Promise<void> => {
       let success = false;
       while (!success) {
         try {
-          // Revert to the original nickname
           await member.setNickname(originalNickname);
-          success = true; // Exit the retry loop if successful
+          success = true;
         } catch (error: any) {
           if (error.code === 429) {
-            // Handle rate limit
             const retryAfter = error.retry_after || 1000;
-            console.warn(`Rate limited. Retrying after ${retryAfter}ms...`);
+            logger.warn(`Rate limited. Retrying after ${retryAfter}ms...`);
             await new Promise((resolve) => setTimeout(resolve, retryAfter));
           } else {
-            console.error(`Failed to revert nickname for ${member.user.tag}:`, error);
-            break; // Exit the retry loop on non-rate-limit errors
+            logger.error(`Failed to revert nickname for ${member.user.tag}:`, error);
+            break;
           }
         }
       }
 
-      // Custom rate limiter: Wait 250 ms between requests
       await new Promise((resolve) => setTimeout(resolve, 250));
     }
 
@@ -139,7 +151,7 @@ export const run: ChatCmdRun = async (interaction): Promise<void> => {
       }
     }
 
-    nicknameMap.clear(); // Clear the map after reverting
+    nicknameMap.clear();
     await interaction.followUp('All nicknames have been reverted!');
   }
 };

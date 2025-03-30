@@ -1,5 +1,6 @@
 import * as Discord from 'discord.js';
 import { ChannelType, PermissionFlagsBits } from 'discord.js';
+import { isEnabled as isAprilFools } from './commands/aprilfools.js';
 import { NotificationChannelDoc } from './database/models/notification_channel_model.js';
 import JoinedGuild from './database/services/joined_guild_service.js';
 import NotificationChannel from './database/services/notification_channel_service.js';

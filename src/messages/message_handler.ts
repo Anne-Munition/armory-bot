@@ -1,4 +1,5 @@
 import { Message } from 'discord.js';
+import * as aprilfools from '../commands/aprilfools.js';
 import { getId } from '../config.js';
 import counts from '../counts.js';
 import log from '../logger.js';
@@ -19,6 +20,8 @@ export default async function (msg: Message): Promise<void> {
     await msg.react('☑️');
     await msg.react('❌');
   }
+
+  aprilfools.handleMessage(msg);
 
   if (msg.author.bot) return;
 

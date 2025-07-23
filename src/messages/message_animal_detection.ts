@@ -16,8 +16,8 @@ export default async function (msg: Message) {
       // This is a workaround for the issue where coco-ssd does not support webp images
       return detectAnimals(attachment.url).then((result) => {
         log.debug(`Detected animals: ${JSON.stringify(result)}`);
-        const customCatEmoji = msg.client.emojis.cache.get('859179282886688778');
-        const customDogEmoji = msg.client.emojis.cache.get('814619367852867625');
+        const customCatEmoji = msg.client.emojis.cache.find((emoji) => emoji.name === 'anneCat');
+        const customDogEmoji = msg.client.emojis.cache.find((emoji) => emoji.name === 'anneDog');
         const catEmoji = customCatEmoji ? customCatEmoji : '🐱';
         const dogEmoji = customDogEmoji ? customDogEmoji : '🐶';
         // If cat react with a cat emoji, if dog react with a dog emoji

@@ -3,6 +3,7 @@ import * as aprilfools from '../commands/aprilfools.js';
 import { getId } from '../config.js';
 import counts from '../counts.js';
 import log from '../logger.js';
+import animalDetection from './message_animal_detection.js';
 import schedulePinning from './schedule_pinning.js';
 import spoilerTags from './spoiler_tags.js';
 
@@ -26,6 +27,10 @@ export default async function (msg: Message): Promise<void> {
   if (msg.author.bot) return;
 
   spoilerTags(msg).catch((err) => {
+    log.error(err.stack || err.message || err);
+  });
+
+  animalDetection(msg).catch((err) => {
     log.error(err.stack || err.message || err);
   });
 }

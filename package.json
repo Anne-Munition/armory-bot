@@ -20,6 +20,8 @@
     "docker:build": "docker build -t dbkynd/armory-bot:latest ."
   },
   "dependencies": {
+    "@tensorflow-models/coco-ssd": "^2.2.3",
+    "@tensorflow/tfjs-node": "^4.22.0",
     "axios": "^1.8.4",
     "bufferutil": "^4.0.9",
     "cheerio": "^1.0.0",

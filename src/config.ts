@@ -13,6 +13,7 @@ export const ids: Ids = {
     birthdayRoleId: '1001341919277879376',
     birthdayAnnouncementChannelId: '84764735832068096',
     auditChannelId: '460167577021186059',
+    animalDetectionChannelId: '542066255507619860',
   },
   // DBKynd
   dev: {
@@ -24,6 +25,7 @@ export const ids: Ids = {
     birthdayRoleId: '1001279262352998411',
     birthdayAnnouncementChannelId: '872690822942982175',
     auditChannelId: '1134948956510629960',
+    animalDetectionChannelId: '1397639974928646165',
   },
 };
 
@@ -57,4 +59,5 @@ type IdNames =
   | 'legacyReactionWebhookId'
   | 'birthdayRoleId'
   | 'birthdayAnnouncementChannelId'
-  | 'auditChannelId';
+  | 'auditChannelId'
+  | 'animalDetectionChannelId';

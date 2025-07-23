@@ -1,0 +1,6 @@
+onlyBuiltDependencies:
+  - bufferutil
+  - erlpack
+  - esbuild
+  - utf-8-validate
+  - zlib-sync

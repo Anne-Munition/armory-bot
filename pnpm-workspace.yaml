@@ -1,5 +1,7 @@
 onlyBuiltDependencies:
+  - '@tensorflow/tfjs-node'
   - bufferutil
+  - core-js
   - erlpack
   - esbuild
   - utf-8-validate

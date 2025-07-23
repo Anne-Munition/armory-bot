@@ -40,6 +40,7 @@
     "os": "^0.1.2",
     "pidusage": "^3.0.2",
     "rgb2hex": "^0.2.5",
+    "sharp": "^0.34.3",
     "temp-units-conv": "^1.0.2",
     "utf-8-validate": "^6.0.5",
     "winston": "^3.17.0",

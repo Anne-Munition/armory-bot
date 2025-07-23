@@ -4,5 +4,6 @@ onlyBuiltDependencies:
   - core-js
   - erlpack
   - esbuild
+  - sharp
   - utf-8-validate
   - zlib-sync

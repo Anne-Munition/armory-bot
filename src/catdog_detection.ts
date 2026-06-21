@@ -8,6 +8,8 @@ import logger from './logger.js';
 process.env.TF_CPP_MIN_LOG_LEVEL = '2';
 
 const MAX_SIZE = 480;
+const MAX_DETECTIONS = 50;
+const MIN_SCORE = 0.4;
 
 function resizeImage(tensor: tf.Tensor3D): tf.Tensor3D {
   const [h, w] = tensor.shape;
@@ -65,7 +67,7 @@ export default async function detectAnimals(
   if (!imageTensor) throw new Error('Failed to download or decode image');
   imageTensor = resizeImage(imageTensor);
 
-  const predictions = await model.detect(imageTensor);
+  const predictions = await model.detect(imageTensor, MAX_DETECTIONS, MIN_SCORE);
   imageTensor.dispose(); // free memory
 
   let hasCat = false;
@@ -88,9 +90,7 @@ export default async function detectAnimals(
     }
   }
 
-  logger.info(
-    `Top 5 detection confidences: ${topConfidences.length ? topConfidences.join(', ') : 'none'}`,
-  );
+  logger.info(`Top 5 detection confidences: ${topConfidences.join(', ')}`);
   if (animalConfidences.length) {
     logger.info(`Animal detection confidences: ${animalConfidences.join(', ')}`);
   }

@@ -2,6 +2,19 @@ import * as app from './app.js';
 import log from './logger.js';
 import { ownerError } from './utilities.js';
 
+// tfjs-node currently triggers deprecated util APIs on newer Node runtimes.
+// Ignore only those known warnings so other warnings still surface.
+process.on('warning', (warning) => {
+  const code = (warning as Error & { code?: string }).code;
+  const isTfjsWarning =
+    warning.name === 'DeprecationWarning' &&
+    (code === 'DEP0044' || code === 'DEP0051') &&
+    (warning.stack?.includes('@tensorflow/tfjs-node') || false);
+  if (isTfjsWarning) return;
+
+  log.warn(`${warning.name}${code ? ` [${code}]` : ''}: ${warning.message}`);
+});
+
 log.info('Starting the application...');
 
 app

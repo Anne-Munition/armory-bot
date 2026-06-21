@@ -84,7 +84,7 @@ export async function connect(): Promise<void> {
     const timer = setTimeout(() => {
       reject(new Error('Took longer than 60 seconds to connect to Discord.'));
     }, 1000 * 60);
-    client.once('ready', async () => {
+    client.once('clientReady', async () => {
       clearTimeout(timer);
       log.info(`Connected to Discord as '${client?.user?.tag}'`);
 

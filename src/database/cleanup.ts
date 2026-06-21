@@ -33,7 +33,7 @@ async function cleanDocs(service: typeof NotificationChannel) {
     if (!item) continue;
     const guild = await client.guilds.fetch(item.guild_id);
     const channel = await client.channels.fetch(item.channel_id);
-    if (!guild || !channel) await service.remove(item._id);
+    if (!guild || !channel) await service.remove(item._id.toString());
   }
 }
 
@@ -53,7 +53,7 @@ async function cleanTwitchChannels() {
     if (!item) continue;
     const twitchChannelExists = users.find((x) => x.id === item.twitch_id);
     if (!twitchChannelExists) {
-      await TwitchChannel.remove(item._id);
+      await TwitchChannel.remove(item._id.toString());
       continue;
     }
     const toRemove: number[] = [];
@@ -70,7 +70,7 @@ async function cleanTwitchChannels() {
       item.channels.splice(x, 1);
     });
     if (!item.channels.length) {
-      await TwitchChannel.remove(item._id);
+      await TwitchChannel.remove(item._id.toString());
       continue;
     }
     if (toRemove.length) await TwitchChannel.save(item);

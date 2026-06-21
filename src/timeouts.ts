@@ -39,7 +39,7 @@ export async function remove(userId: Snowflake, manual = false): Promise<void> {
   log.debug(`removing timeout on: ${userId}`);
   const timeoutDoc = await Timeout.get(userId);
   if (!timeoutDoc) return;
-  await Timeout.remove(timeoutDoc.id);
+  await Timeout.remove(timeoutDoc._id.toString());
 
   const guild = client.guilds.cache.get(timeoutDoc.guild_id);
   if (!guild) return;

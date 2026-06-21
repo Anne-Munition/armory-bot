@@ -2,6 +2,7 @@ import * as tf from '@tensorflow/tfjs-node';
 import * as cocoSsd from '@tensorflow-models/coco-ssd';
 import axios from 'axios';
 import sharp from 'sharp';
+import logger from './logger.js';
 
 // Suppress TensorFlow logs
 process.env.TF_CPP_MIN_LOG_LEVEL = '2';
@@ -25,7 +26,12 @@ async function downloadImage(url: string): Promise<tf.Tensor3D | null> {
     validateStatus: (status) => status >= 200 && status < 300,
   });
 
-  const contentType = response.headers['content-type'];
+  const contentTypeHeader = response.headers['content-type'];
+  const contentType = Array.isArray(contentTypeHeader)
+    ? contentTypeHeader[0]
+    : typeof contentTypeHeader === 'string'
+      ? contentTypeHeader
+      : undefined;
   if (!contentType?.startsWith('image/')) {
     return null;
   }
@@ -36,7 +42,7 @@ async function downloadImage(url: string): Promise<tf.Tensor3D | null> {
     // Convert to PNG using sharp for unsupported formats
     imageBuffer = await sharp(response.data).toFormat('png').toBuffer();
   } catch (err) {
-    console.error('Sharp failed to process image:', err);
+    logger.error(`Sharp failed to process image: ${err}`);
     return null;
   }
 
@@ -47,7 +53,7 @@ async function downloadImage(url: string): Promise<tf.Tensor3D | null> {
     }
     return imageTensor;
   } catch (err) {
-    console.error('TensorFlow failed to decode image:', err);
+    logger.error(`TensorFlow failed to decode image: ${err}`);
     return null;
   }
 }
@@ -64,10 +70,21 @@ export default async function detectAnimals(
 
   let hasCat = false;
   let hasDog = false;
+  const animalConfidences: string[] = [];
 
   for (const prediction of predictions) {
-    if (prediction.class === 'cat') hasCat = true;
-    if (prediction.class === 'dog') hasDog = true;
+    if (prediction.class === 'cat') {
+      hasCat = true;
+      animalConfidences.push(`cat=${(prediction.score * 100).toFixed(2)}%`);
+    }
+    if (prediction.class === 'dog') {
+      hasDog = true;
+      animalConfidences.push(`dog=${(prediction.score * 100).toFixed(2)}%`);
+    }
+  }
+
+  if (animalConfidences.length) {
+    logger.info(`Animal detection confidences: ${animalConfidences.join(', ')}`);
   }
 
   return { hasCat, hasDog };

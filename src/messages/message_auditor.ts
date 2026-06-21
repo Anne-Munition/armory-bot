@@ -39,10 +39,10 @@ async function messageDelete(msg: Message | PartialMessage) {
     .then((audit) =>
       audit.entries.find((entry) => {
         return (
-          entry.extra.channel.id === msg.channel.id &&
-          entry.target.id === msg.author?.id &&
+          entry.extra?.channel?.id === msg.channel.id &&
+          entry.target?.id === msg.author?.id &&
           deletedAt - entry.createdTimestamp < 5000 &&
-          entry.extra.count >= 1
+          (entry.extra?.count ?? 0) >= 1
         );
       }),
     );

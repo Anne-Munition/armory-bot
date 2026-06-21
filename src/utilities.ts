@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { ChannelType, CommandInteraction, Message, Snowflake } from 'discord.js';
 import { DateTime, Duration } from 'luxon';
-import Vibrant from 'node-vibrant';
+import { Vibrant } from 'node-vibrant/node';
 import client from './discord.js';
 import log from './logger.js';
 

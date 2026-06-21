@@ -17,6 +17,7 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
+    "rootDir": "src",
     "target": "ES2022"
   },
   "include": ["src/**/*"]

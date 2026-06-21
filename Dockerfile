@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.7
-FROM node:24 AS base
+FROM node:22 AS base
 WORKDIR /app
 ENV PNPM_HOME="/pnpm"
 ENV PATH="${PNPM_HOME}:${PATH}"
@@ -22,7 +22,7 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
     pnpm install --frozen-lockfile --prod
 
-FROM node:24-slim AS runner
+FROM node:22-slim AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=prod-deps /app/node_modules ./node_modules

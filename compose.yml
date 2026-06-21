@@ -1,0 +1,19 @@
+services:
+  app:
+    image: ghcr.io/anne-munition/armory-bot:latest
+    container_name: armory_bot
+    restart: unless-stopped
+    volumes:
+      - ${LOG_PATH}:/app/logs:rw
+    environment:
+      - BOT_TOKEN=${BOT_TOKEN}
+      - MONGO_URL=${MONGO_URL}
+      - MOVIE_DB_KEY=${MOVIE_DB_KEY}
+      - OWNER_ID=${OWNER_ID}
+      - RANDOM_ORG_KEY=${RANDOM_ORG_KEY}
+      - STREAMELEMENTS_JWT=${STREAMELEMENTS_JWT}
+      - TOKEN_API_KEY=${TOKEN_API_KEY}
+      - TOKEN_URL=${TOKEN_URL}
+      - TWITCH_ID=${TWITCH_ID}
+      - TWITTER_BEARER_TOKEN=${TWITTER_BEARER_TOKEN}
+      - TZ=America/Los_Angeles

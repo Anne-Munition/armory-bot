@@ -72,6 +72,11 @@ export default async function detectAnimals(
   let hasDog = false;
   const animalConfidences: string[] = [];
 
+  const topConfidences = [...predictions]
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 5)
+    .map((prediction) => `${prediction.class}=${(prediction.score * 100).toFixed(2)}%`);
+
   for (const prediction of predictions) {
     if (prediction.class === 'cat') {
       hasCat = true;
@@ -83,6 +88,9 @@ export default async function detectAnimals(
     }
   }
 
+  logger.info(
+    `Top 5 detection confidences: ${topConfidences.length ? topConfidences.join(', ') : 'none'}`,
+  );
   if (animalConfidences.length) {
     logger.info(`Animal detection confidences: ${animalConfidences.join(', ')}`);
   }

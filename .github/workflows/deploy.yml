@@ -1,12 +1,11 @@
-name: Deploy to Digital Ocean
+name: Deploy to Digital Ocean (disabled)
 
 on:
-  push:
-    branches: [ main ]
+  workflow_dispatch:
 
 env:
-  REGISTRY: "registry.digitalocean.com/dbkynd"
-  IMAGE_NAME: "armory-bot"
+  REGISTRY: 'registry.digitalocean.com/dbkynd'
+  IMAGE_NAME: 'armory-bot'
 
 jobs:
   build_push_pull_deploy:

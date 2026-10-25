@@ -13,20 +13,26 @@ export const structure: CmdStructure = {
 };
 
 const randoms: number[] = [];
+let fetching = false;
 
 function getDecimals() {
+  if (fetching) return;
+  fetching = true;
   getRandomDecimals(20)
     .then((numbers) => {
       logger.debug(`Got random decimals for bed command: ${numbers}`);
       randoms.push(...numbers);
     })
-    .catch(ignore);
+    .catch(ignore)
+    .finally(() => {
+      fetching = false;
+    });
 }
 
 getDecimals();
 
 export const run: ChatCmdRun = async (interaction): Promise<void> => {
-  const number = randoms.shift() || Math.random();
+  const number = randoms.shift() ?? Math.random();
   if (randoms.length <= 5) getDecimals();
   logger.info(
     `Bed command used by ${interaction.user.tag} (${interaction.user.id}) - Random Number: ${number}, must be less than or equal to 0.002 (1/500) for a win.`,

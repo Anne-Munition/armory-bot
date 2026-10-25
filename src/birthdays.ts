@@ -41,16 +41,20 @@ async function run() {
 
   // Search database for people with birthdays today
   const today = getTodayDate();
-  const birthdayDocs = await Birthday.get(today);
-  logger.debug(`Birthday docs: ${today} - ${birthdayDocs.length}`);
+  const dates = [today];
+  // Celebrate Feb 29 birthdays on Feb 28 in non-leap years
+  if (today === '02/28' && !DateTime.now().toUTC().isInLeapYear) dates.push('02/29');
+  const birthdayDocs = await Birthday.get(dates);
+  logger.debug(`Birthday docs: ${dates.join(', ')} - ${birthdayDocs.length}`);
 
   const members: Discord.GuildMember[] = [];
   for (let i = 0; i < birthdayDocs.length; i++) {
     const discordId = birthdayDocs[i]?.discord_id;
     if (!discordId) continue;
-    const m = await guild.members.fetch(discordId);
+    // Members who left the guild make fetch throw, skip them instead of aborting the run
+    const m = await guild.members.fetch(discordId).catch(() => null);
     if (m) {
-      if (m.roles.cache.has(birthdayRole.id)) return;
+      if (m.roles.cache.has(birthdayRole.id)) continue;
       // Assign birthday roles
       m.roles.add(birthdayRole).catch(() => {
         // Do Nothing

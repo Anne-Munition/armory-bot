@@ -23,13 +23,13 @@ async function deactivate(id: string): Promise<void> {
   await Birthday.updateOne({ discord_id: id }, { active: false, updated_at: new Date() });
 }
 
-async function get(date: string): Promise<BirthdayDoc[]> {
-  return Birthday.find({ birthdate: date, active: true });
+async function get(dates: string[]): Promise<BirthdayDoc[]> {
+  return Birthday.find({ birthdate: { $in: dates }, active: true });
 }
 
 async function update(id: string, date: string, format: string): Promise<void> {
   await Birthday.updateOne(
-    { discordId: id },
+    { discord_id: id },
     {
       birthdate: date,
       format: format,

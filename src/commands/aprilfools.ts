@@ -12,6 +12,7 @@ import {
 import { ids } from '../config.js';
 import { logDir } from '../directories.js';
 import logger from '../logger.js';
+import { ownerOnlyCommand } from '../utilities.js';
 
 const jsonFile = path.join(logDir, 'nicknames.json');
 const nicknameMap = new Map<string, string>();
@@ -118,8 +119,9 @@ async function setEveryoneRolePermissions(
   await everyoneRole.setPermissions(updatedPermissions);
 }
 
-async function restoreNicknames(guild: Guild): Promise<void> {
+async function restoreNicknames(guild: Guild): Promise<number> {
   const members = await guild.members.fetch();
+  let restored = 0;
 
   for (const member of members.values()) {
     if (!member.manageable) continue;
@@ -127,22 +129,27 @@ async function restoreNicknames(guild: Guild): Promise<void> {
     const originalNickname = nicknameMap.get(member.id);
     if (originalNickname === undefined) continue;
 
-    await setNicknameWithRateLimit(member, originalNickname);
+    // Keep failed members in the map so revert can be run again
+    if (await setNicknameWithRateLimit(member, originalNickname)) {
+      nicknameMap.delete(member.id);
+      restored++;
+    }
   }
 
-  nicknameMap.clear();
+  await saveJson();
+  return restored;
 }
 
 // Fetch rate limit headers once to calculate a consistent delay
 let delay: number | undefined;
-let retries = 0;
 const maxRetries = 5;
 
-async function setNicknameWithRateLimit(member: GuildMember, nickname: string): Promise<void> {
+async function setNicknameWithRateLimit(member: GuildMember, nickname: string): Promise<boolean> {
   const endpoint = `https://discord.com/api/v10/guilds/${member.guild.id}/members/${member.id}`;
   const token = member.client.token;
 
   let success = false;
+  let retries = 0;
 
   while (!success && retries < maxRetries) {
     try {
@@ -189,9 +196,13 @@ async function setNicknameWithRateLimit(member: GuildMember, nickname: string): 
       }
     }
   }
+
+  return success;
 }
 
 export const run: ChatCmdRun = async (interaction): Promise<void> => {
+  if (await ownerOnlyCommand(interaction)) return;
+
   const subCommand = interaction.options.getSubcommand(true) as
     | 'map'
     | 'enable'
@@ -222,9 +233,13 @@ export const run: ChatCmdRun = async (interaction): Promise<void> => {
     await interaction.reply('April Fool’s event disabled.');
   } else if (subCommand === 'revert') {
     await interaction.deferReply();
-    await interaction.editReply(`Reverting \`${nicknameMap.size}\` nicknames...`);
-    await restoreNicknames(guild); // Restore original nicknames
-    await interaction.editReply(`\`${nicknameMap.size}\` nicknames have been restored.`);
+    const total = nicknameMap.size;
+    await interaction.editReply(`Reverting \`${total}\` nicknames...`);
+    const restored = await restoreNicknames(guild); // Restore original nicknames
+    let reply = `\`${restored}/${total}\` nicknames have been restored.`;
+    if (nicknameMap.size)
+      reply += ` Run revert again to retry the remaining \`${nicknameMap.size}\`.`;
+    await interaction.editReply(reply);
   }
 };
 

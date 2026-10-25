@@ -17,6 +17,8 @@ const client = new Client({
     GatewayIntentBits.MessageContent,
   ],
   partials: [Partials.Channel],
+  // Only ping users by default so echoed user input can't trigger @everyone / role pings
+  allowedMentions: { parse: ['users'] },
 });
 
 /***** GENERAL EVENTS *****/

@@ -26,16 +26,6 @@ interface HelixSubscription {
   user_login: string;
 }
 
-interface HelixFollow {
-  from_id: string;
-  from_login: string;
-  from_name: string;
-  to_id: string;
-  to_login: string;
-  to_name: string;
-  followed_at: string;
-}
-
 interface HelixStream {
   id: string;
   user_id: string;

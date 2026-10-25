@@ -13,6 +13,8 @@ export const info: CmdInfo = {
 export const structure: CmdStructure = {
   name: 'timeout',
   description: 'Give a user the muted role for a duration of time.',
+  defaultMemberPermissions: PermissionFlagsBits.ModerateMembers,
+  dmPermission: false,
   options: [
     {
       name: 'list',
@@ -35,6 +37,7 @@ export const structure: CmdStructure = {
           type: ApplicationCommandOptionType.Number,
           description: 'Duration user will keep the muted role.',
           required: true,
+          minValue: 1,
         },
         {
           name: 'unit',
@@ -71,7 +74,7 @@ export const structure: CmdStructure = {
         {
           name: 'user',
           type: ApplicationCommandOptionType.User,
-          description: 'Who to give the muted role to.',
+          description: 'Who to remove the muted role from.',
           required: true,
         },
       ],
@@ -80,6 +83,15 @@ export const structure: CmdStructure = {
 };
 
 export const run: ChatCmdRun = async (interaction): Promise<void> => {
+  // Enforce in code too, guild admins can override the default command permissions
+  if (!interaction.memberPermissions?.has(PermissionFlagsBits.ModerateMembers)) {
+    await interaction.reply({
+      content: 'You need the Timeout Members permission to use this command.',
+      ephemeral: true,
+    });
+    return;
+  }
+
   await interaction.deferReply();
   const guildId = interaction.guild?.id;
   if (!guildId) throw new Error('Unable to get guild id.');
@@ -102,7 +114,18 @@ export const run: ChatCmdRun = async (interaction): Promise<void> => {
       const user = interaction.client.users.cache.get(timeoutDoc.user_id);
       return `${user} - Expires at: ${getExpiry(timeoutDoc.expires_at)}.`;
     });
-    await interaction.editReply(response.join('\n'));
+    // Stay under Discord's 2000 character message limit
+    const lines: string[] = [];
+    let length = 0;
+    for (const line of response) {
+      if (length + line.length + 1 > 1900) {
+        lines.push(`...and ${response.length - lines.length} more.`);
+        break;
+      }
+      lines.push(line);
+      length += line.length + 1;
+    }
+    await interaction.editReply(lines.join('\n'));
     return;
   } else {
     // Make sure the client can update roles in the guild
@@ -121,6 +144,15 @@ export const run: ChatCmdRun = async (interaction): Promise<void> => {
     const member = await interaction.guild?.members.fetch(target.id);
     if (!member) {
       await interaction.editReply('Unable to locate target member.');
+      return;
+    }
+
+    // Prevent timing out members with an equal or higher role than the caller
+    const caller = await interaction.guild?.members.fetch(interaction.user.id);
+    if (!caller) throw new Error('Unable to get the caller member.');
+    const isGuildOwner = interaction.guild?.ownerId === caller.id;
+    if (!isGuildOwner && member.roles.highest.comparePositionTo(caller.roles.highest) >= 0) {
+      await interaction.editReply(`You cannot manage timeouts for ${member}.`);
       return;
     }
 

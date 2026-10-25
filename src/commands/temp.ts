@@ -52,7 +52,8 @@ export const run: ChatCmdRun = async (interaction): Promise<void> => {
   const from = interaction.options.getString('from', true);
   const to = interaction.options.getString('to', true);
 
-  const converted = tuc[`${from}2${to}`](degrees);
+  // temp-units-conv has no same-unit conversions (c2c, f2f, k2k)
+  const converted = from === to ? degrees : tuc[`${from}2${to}`](degrees);
   const trimmed = Math.floor(converted * 10) / 10;
 
   await interaction.reply(

@@ -64,16 +64,15 @@ export const run: ChatCmdRun = async (interaction): Promise<void> => {
       .map((x) => x.padStart(2, '0'))
       .join('/');
 
-    const enteredDate = DateTime.fromFormat(birthdate, formatMap[locale]);
+    // Parse against a leap year, otherwise 02/29 is invalid in non-leap years
+    const enteredDate = DateTime.fromFormat(`${birthdate}/2000`, `${formatMap[locale]}/yyyy`);
     if (!enteredDate.isValid) {
       await interaction.editReply('Invalid date.');
       return;
     }
 
     if (doc) {
-      const docDate = DateTime.fromFormat(doc.birthdate, 'MM/dd');
-
-      if (docDate.valueOf() === enteredDate.valueOf()) {
+      if (doc.birthdate === enteredDate.toFormat('MM/dd')) {
         if (doc.active) {
           await interaction.editReply(`Your birthday is already announced: \`\`${doc.format}\`\``);
           return;

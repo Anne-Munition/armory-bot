@@ -22,33 +22,41 @@ export async function add(
   username: string,
   reason: string,
 ): Promise<void> {
-  await addRole(member, getId(guildId, 'muteRole'), reason);
+  // Save first so a failed save can't leave the role on with nothing to remove it
   await Timeout.add(member.id, guildId, channelId, ms, username);
+  try {
+    await addRole(member, getId(guildId, 'muteRole'), reason);
+  } catch (err) {
+    const doc = await Timeout.get(member.id, guildId);
+    if (doc) await Timeout.remove(doc._id.toString());
+    throw err;
+  }
 }
 
 // Check for expired timeouts
 async function checkTimeouts(): Promise<void> {
   const timeouts = await Timeout.list();
   timeouts.forEach((timeout) => {
-    if (Date.now() >= new Date(timeout.expires_at).valueOf()) remove(timeout.user_id);
+    if (Date.now() >= new Date(timeout.expires_at).valueOf()) {
+      remove(timeout.user_id, timeout.guild_id).catch((err) =>
+        log.error(`Unable to remove timeout on ${timeout.user_id}: ${err?.message}`),
+      );
+    }
   });
 }
 
 // Remove the timeout either manually or from the timer
-export async function remove(userId: Snowflake, manual = false): Promise<void> {
-  log.debug(`removing timeout on: ${userId}`);
-  const timeoutDoc = await Timeout.get(userId);
+export async function remove(userId: Snowflake, guildId: Snowflake, manual = false): Promise<void> {
+  log.debug(`removing timeout on: ${userId} in ${guildId}`);
+  const timeoutDoc = await Timeout.get(userId, guildId);
   if (!timeoutDoc) return;
   await Timeout.remove(timeoutDoc._id.toString());
 
   const guild = client.guilds.cache.get(timeoutDoc.guild_id);
   if (!guild) return;
 
-  const channel = guild.channels.cache.get(timeoutDoc.channel_id);
-  if (!channel || channel.type !== ChannelType.GuildText) return;
-  const textChannel = channel as TextChannel;
-
-  const member = await guild.members.fetch(timeoutDoc.user_id);
+  // fetch throws rather than returning null when the user is no longer a member
+  const member = await guild.members.fetch(timeoutDoc.user_id).catch(() => null);
   let response: string;
   if (member) {
     response = `The timeout has expired for ${member}.`;
@@ -58,7 +66,11 @@ export async function remove(userId: Snowflake, manual = false): Promise<void> {
     response = `The timeout has expired for ${timeoutDoc.username}.\nThough they seem to no longer be a member of this guild.`;
   }
 
-  if (!manual) await textChannel.send(response);
+  if (manual) return;
+  // Only skip the announcement if the channel is gone, the role is already removed above
+  const channel = guild.channels.cache.get(timeoutDoc.channel_id);
+  if (!channel || channel.type !== ChannelType.GuildText) return;
+  await (channel as TextChannel).send(response);
 }
 
 export async function addRole(

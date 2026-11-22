@@ -1,3 +1,4 @@
+import { MessageFlags } from 'discord.js';
 import * as app from '../app.js';
 import { ids } from '../config.js';
 import { ownerOnlyCommand } from '../utilities.js';
@@ -15,7 +16,7 @@ export const structure: CmdStructure = {
 export const run: ChatCmdRun = async (interaction): Promise<void> => {
   if (await ownerOnlyCommand(interaction)) return;
 
-  await interaction.reply({ content: ':ok_hand:', ephemeral: true });
+  await interaction.reply({ content: ':ok_hand:', flags: MessageFlags.Ephemeral });
   app.stop().finally(() => {
     process.exit(0);
   });

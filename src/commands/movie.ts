@@ -1,6 +1,6 @@
 import axios from 'axios';
 import * as Discord from 'discord.js';
-import { ApplicationCommandOptionType } from 'discord.js';
+import { ApplicationCommandOptionType, codeBlock } from 'discord.js';
 import log from '../logger.js';
 import { palette } from '../utilities.js';
 
@@ -75,13 +75,16 @@ Description: "${movie.overview}"
 `;
   if (!movie.poster_path) str += '\n\nIMAGE NOT AVAILABLE';
 
-  const codeBlock = Discord.Formatters.codeBlock('apache', str);
-  const embed = new Discord.EmbedBuilder().setDescription(codeBlock);
+  const embed = new Discord.EmbedBuilder().setDescription(codeBlock('apache', str));
 
   if (movie.poster_path) {
     const image = `https://image.tmdb.org/t/p/original${movie.poster_path}`;
     embed.setImage(image);
-    const color = await palette(image);
+    // The poster color is cosmetic, don't fail the command over it
+    const color = await palette(image).catch((err) => {
+      log.warn(`Unable to get the movie poster color: ${err?.message}`);
+      return null;
+    });
     if (color) embed.setColor(color);
   }
   if (movie.imdb_id) {

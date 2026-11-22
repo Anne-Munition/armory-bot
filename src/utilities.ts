@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ChannelType, CommandInteraction, Message, Snowflake } from 'discord.js';
+import { ChannelType, CommandInteraction, Message, MessageFlags, Snowflake } from 'discord.js';
 import { DateTime, Duration } from 'luxon';
 import { Vibrant } from 'node-vibrant/node';
 import client from './discord.js';
@@ -153,7 +153,7 @@ export async function ownerOnlyCommand(interaction: CommandInteraction): Promise
   if (interaction.user.id !== process.env.OWNER_ID) {
     await interaction.reply({
       content: 'Only the bot owner has permissions to use this command.',
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return true;
   }

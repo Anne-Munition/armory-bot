@@ -14,6 +14,8 @@ export const structure: CmdStructure = {
       type: ApplicationCommandOptionType.String,
       description: 'Your question for the 8ball.',
       required: true,
+      // Keep the reply under Discord's 2000 character message limit
+      maxLength: 1900,
     },
   ],
 };

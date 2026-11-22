@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType } from 'discord.js';
+import { ApplicationCommandOptionType, MessageFlags } from 'discord.js';
 import { DateTime } from 'luxon';
 import { ids } from '../config.js';
 import Birthday from '../database/services/birthday_service.js';
@@ -25,7 +25,7 @@ export const structure: CmdStructure = {
         {
           name: 'format',
           type: ApplicationCommandOptionType.String,
-          description: 'Month',
+          description: 'The date format you will enter your birthdate in.',
           required: true,
           choices: [
             { name: formatMap['en-us'].toLowerCase(), value: 'en-us' },
@@ -49,7 +49,7 @@ export const structure: CmdStructure = {
 };
 
 export const run: ChatCmdRun = async (interaction): Promise<void> => {
-  await interaction.deferReply({ ephemeral: true });
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral });
   const subCommand = interaction.options.getSubcommand();
   const doc = await Birthday.find(interaction.user.id);
   if (subCommand === 'add') {

@@ -1,5 +1,5 @@
 import { Worker } from 'worker_threads';
-import { ApplicationCommandOptionType } from 'discord.js';
+import { ApplicationCommandOptionType, MessageFlags } from 'discord.js';
 import logger from '../logger.js';
 import { ignore } from '../utilities.js';
 
@@ -135,7 +135,7 @@ export const run: ChatCmdRun = async (interaction): Promise<void> => {
   if (active >= MAX_ACTIVE) {
     await interaction.reply({
       content: 'Too many calculations running, try again in a moment.',
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -149,7 +149,7 @@ export const run: ChatCmdRun = async (interaction): Promise<void> => {
   } catch (err) {
     await interaction.reply({
       content: err instanceof Error ? err.message : 'Mathjs Error',
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   } finally {
     active--;

@@ -1,7 +1,7 @@
 import os from 'os';
 import util from 'util';
 import * as Discord from 'discord.js';
-import { ChannelType } from 'discord.js';
+import { ChannelType, codeBlock, MessageFlags } from 'discord.js';
 import getos from 'getos';
 import { Duration } from 'luxon';
 import pidusage from 'pidusage';
@@ -30,7 +30,8 @@ export const run: ChatCmdRun = async (interaction): Promise<void> => {
   const nodeUp = Duration.fromMillis(process.uptime() * 1000);
   const totalMem = Math.floor(os.totalmem() / 1024 / 1024);
   const freeMem = Math.floor(os.freemem() / 1024 / 1024);
-  const load = os.loadavg().map((x) => (x * 100).toFixed(3));
+  // Load average is per-system, divide by core count to get a percentage
+  const load = os.loadavg().map((x) => ((x / os.cpus().length) * 100).toFixed(2));
   const osUp = Duration.fromMillis(os.uptime() * 1000);
   const cpuData = os.cpus();
   const usedRam = Math.floor(totalMem - freeMem);
@@ -103,6 +104,5 @@ export const run: ChatCmdRun = async (interaction): Promise<void> => {
   str += `Commands: ${commandsCount} (${cmdPm}/day)\n`;
   str += `Twitch: ${twitchCount} (${twitchPm}/day)\n`;
 
-  const codeBlock = Discord.Formatters.codeBlock('qml', str);
-  await interaction.reply({ content: codeBlock, ephemeral: true });
+  await interaction.reply({ content: codeBlock('qml', str), flags: MessageFlags.Ephemeral });
 };

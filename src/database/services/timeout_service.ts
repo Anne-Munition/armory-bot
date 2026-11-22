@@ -2,12 +2,13 @@ import { Snowflake } from 'discord.js';
 import { getId } from '../../config.js';
 import Timeout, { TimeoutsDoc } from '../models/timeout_model.js';
 
-async function list(): Promise<TimeoutsDoc[]> {
-  return Timeout.find({});
+// Omit guildId to list the timeouts across all guilds
+async function list(guildId?: Snowflake): Promise<TimeoutsDoc[]> {
+  return Timeout.find(guildId ? { guild_id: guildId } : {});
 }
 
-async function get(userId: Snowflake): Promise<TimeoutsDoc | null> {
-  return Timeout.findOne({ user_id: userId });
+async function get(userId: Snowflake, guildId: Snowflake): Promise<TimeoutsDoc | null> {
+  return Timeout.findOne({ user_id: userId, guild_id: guildId });
 }
 
 async function add(

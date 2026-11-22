@@ -1,3 +1,5 @@
+import { MessageFlags } from 'discord.js';
+
 export const info: CmdInfo = {
   global: true,
 };
@@ -11,6 +13,6 @@ export const run: ChatCmdRun = async (interaction): Promise<void> => {
   const url = `https://discord.com/oauth2/authorize?&client_id=${interaction.client.application?.id}&scope=bot%20applications.commands`;
   await interaction.reply({
     content: `Follow this link to add **${interaction.client.user?.username}** to your Discord server:\n<${url}>`,
-    ephemeral: true,
+    flags: MessageFlags.Ephemeral,
   });
 };

@@ -20,7 +20,6 @@ async function loadAllCommands(): Promise<void> {
 
 async function loadCommand(name: string): Promise<void> {
   const cmdPath = path.join(cmdsDir, `${name}.${ext}`);
-  if (commands.has(name)) removeSlashCommand(name);
   log.debug(`loading command: '${name}'`);
   let cmd: Cmd;
   try {
@@ -47,12 +46,6 @@ async function loadCommand(name: string): Promise<void> {
   }
 
   commands.set(name, { cmd });
-}
-
-function removeSlashCommand(name: string) {
-  log.debug(`flushing command: '${name}'`);
-  delete require.cache[require.resolve(path.join(cmdsDir, `${name}.${ext}`))];
-  commands.delete(name);
 }
 
 export default {

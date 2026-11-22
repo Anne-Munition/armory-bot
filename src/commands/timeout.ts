@@ -1,9 +1,12 @@
-import { ApplicationCommandOptionType, PermissionFlagsBits } from 'discord.js';
+import { ApplicationCommandOptionType, MessageFlags, PermissionFlagsBits } from 'discord.js';
 import humanizeDuration from 'humanize-duration';
 import { Duration } from 'luxon';
 import { ids } from '../config.js';
 import Timeout from '../database/services/timeout_service.js';
 import * as timeouts from '../timeouts.js';
+import { ignore } from '../utilities.js';
+
+const MAX_DURATION_MS = Duration.fromObject({ years: 5 }).toMillis();
 
 export const info: CmdInfo = {
   global: false,
@@ -87,7 +90,7 @@ export const run: ChatCmdRun = async (interaction): Promise<void> => {
   if (!interaction.memberPermissions?.has(PermissionFlagsBits.ModerateMembers)) {
     await interaction.reply({
       content: 'You need the Timeout Members permission to use this command.',
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -99,7 +102,7 @@ export const run: ChatCmdRun = async (interaction): Promise<void> => {
   const subCommand = interaction.options.getSubcommand(true) as 'list' | 'add' | 'remove';
 
   if (subCommand === 'list') {
-    const activeTimeouts = await Timeout.list();
+    const activeTimeouts = await Timeout.list(guildId);
     if (!activeTimeouts.length) {
       await interaction.editReply('There are no active timeouts.');
       return;
@@ -108,11 +111,12 @@ export const run: ChatCmdRun = async (interaction): Promise<void> => {
     for (let i = 0; i < activeTimeouts.length; i++) {
       const item = activeTimeouts[i];
       if (!item) continue;
-      await interaction.client.users.fetch(item.user_id);
+      // Deleted accounts can't be fetched, they'll show as their stored username instead
+      await interaction.client.users.fetch(item.user_id).catch(ignore);
     }
     const response = activeTimeouts.map((timeoutDoc) => {
       const user = interaction.client.users.cache.get(timeoutDoc.user_id);
-      return `${user} - Expires at: ${getExpiry(timeoutDoc.expires_at)}.`;
+      return `${user ?? timeoutDoc.username} - Expires at: ${getExpiry(timeoutDoc.expires_at)}.`;
     });
     // Stay under Discord's 2000 character message limit
     const lines: string[] = [];
@@ -141,25 +145,29 @@ export const run: ChatCmdRun = async (interaction): Promise<void> => {
     }
 
     const target = interaction.options.getUser('user', true);
-    const member = await interaction.guild?.members.fetch(target.id);
-    if (!member) {
+    // fetch throws rather than returning null when the user is not a member
+    const member = await interaction.guild?.members.fetch(target.id).catch(() => null);
+    const existing = await Timeout.get(target.id, guildId);
+
+    // Allow clearing a timeout for a user that has since left the guild
+    if (!member && !(subCommand === 'remove' && existing)) {
       await interaction.editReply('Unable to locate target member.');
       return;
     }
 
-    // Prevent timing out members with an equal or higher role than the caller
-    const caller = await interaction.guild?.members.fetch(interaction.user.id);
-    if (!caller) throw new Error('Unable to get the caller member.');
-    const isGuildOwner = interaction.guild?.ownerId === caller.id;
-    if (!isGuildOwner && member.roles.highest.comparePositionTo(caller.roles.highest) >= 0) {
-      await interaction.editReply(`You cannot manage timeouts for ${member}.`);
-      return;
+    if (member) {
+      // Prevent timing out members with an equal or higher role than the caller
+      const caller = await interaction.guild?.members.fetch(interaction.user.id);
+      if (!caller) throw new Error('Unable to get the caller member.');
+      const isGuildOwner = interaction.guild?.ownerId === caller.id;
+      if (!isGuildOwner && member.roles.highest.comparePositionTo(caller.roles.highest) >= 0) {
+        await interaction.editReply(`You cannot manage timeouts for ${member}.`);
+        return;
+      }
     }
 
-    const existing = await Timeout.get(target.id);
-    const targetString = `**${member.user.tag}** (${member.user.id})`;
-
-    if (subCommand === 'add') {
+    if (subCommand === 'add' && member) {
+      const targetString = `**${member.user.tag}** (${member.user.id})`;
       const duration = interaction.options.getNumber('duration', true);
       const unit = interaction.options.getString('unit', true) as 'minutes' | 'hours' | 'days';
       const reason = interaction.options.getString('reason');
@@ -181,6 +189,10 @@ export const run: ChatCmdRun = async (interaction): Promise<void> => {
         auditReason += ` for: ${reason}`;
       }
       const ms = Duration.fromObject({ [unit]: duration }).toMillis();
+      if (!Number.isFinite(ms) || ms > MAX_DURATION_MS) {
+        await interaction.editReply('Timeouts cannot be longer than 5 years.');
+        return;
+      }
 
       await timeouts.add(member, guildId, interaction.channelId, ms, targetString, auditReason);
       await interaction.editReply(reply);
@@ -190,7 +202,7 @@ export const run: ChatCmdRun = async (interaction): Promise<void> => {
         return;
       }
 
-      await timeouts.remove(target.id, true);
+      await timeouts.remove(target.id, guildId, true);
       await interaction.editReply(`Manually removed timeout on ${target}.`);
     }
   }

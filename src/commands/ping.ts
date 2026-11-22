@@ -1,5 +1,3 @@
-import * as Discord from 'discord.js';
-
 export const info: CmdInfo = {
   global: true,
 };
@@ -10,10 +8,9 @@ export const structure: CmdStructure = {
 };
 
 export const run: ChatCmdRun = async (interaction): Promise<void> => {
-  const msg = (await interaction.reply({
-    content: 'Ping...',
-    fetchReply: true,
-  })) as Discord.Message;
+  const response = await interaction.reply({ content: 'Ping...', withResponse: true });
+  const msg = response.resource?.message;
+  if (!msg) throw new Error('Unable to get the ping reply message.');
 
   const diff = msg.createdTimestamp - interaction.createdTimestamp;
   await interaction.editReply(

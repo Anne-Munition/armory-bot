@@ -187,7 +187,9 @@ async function setNicknameWithRateLimit(member: GuildMember, nickname: string): 
         break;
       }
       if (error.response?.status === 429) {
-        const retryAfter = error.response.data?.retry_after || 1000;
+        // Discord sends retry_after in seconds
+        const retryAfterSec = Number(error.response.data?.retry_after);
+        const retryAfter = Number.isFinite(retryAfterSec) ? retryAfterSec * 1000 : 1000;
         logger.warn(`Rate limited. Retrying after ${retryAfter}ms...`);
         await new Promise((resolve) => setTimeout(resolve, retryAfter));
       } else {
@@ -239,7 +241,11 @@ export const run: ChatCmdRun = async (interaction): Promise<void> => {
     let reply = `\`${restored}/${total}\` nicknames have been restored.`;
     if (nicknameMap.size)
       reply += ` Run revert again to retry the remaining \`${nicknameMap.size}\`.`;
-    await interaction.editReply(reply);
+    // The interaction token expires after 15 minutes, which a large revert can exceed
+    await interaction.editReply(reply).catch(async () => {
+      if (interaction.channel?.isSendable()) await interaction.channel.send(reply);
+      else await interaction.user.send(reply);
+    });
   }
 };
 

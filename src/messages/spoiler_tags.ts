@@ -19,7 +19,8 @@ export default async function (msg: Message): Promise<void> {
   )
     return;
 
-  const hasUntagged = attachments.filter((x) => !x.spoiler);
+  // discord.js 14.26.5+ only checks the IsSpoiler attachment flag; keep the legacy filename check as a fallback
+  const hasUntagged = attachments.filter((x) => !x.spoiler && !x.name.startsWith('SPOILER_'));
   if (hasUntagged.size) {
     await del(msg);
     await msg.reply({

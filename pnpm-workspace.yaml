@@ -1,9 +1,10 @@
-onlyBuiltDependencies:
-  - '@tensorflow/tfjs-node'
-  - bufferutil
-  - core-js
-  - erlpack
-  - esbuild
-  - sharp
-  - utf-8-validate
-  - zlib-sync
+allowBuilds:
+  '@parcel/watcher': false
+  '@tensorflow/tfjs-node': true
+  bufferutil: true
+  core-js: true
+  erlpack: true
+  esbuild: true
+  sharp: true
+  utf-8-validate: true
+  zlib-sync: true

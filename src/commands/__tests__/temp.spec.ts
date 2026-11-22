@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { run } from '../temp.js';
 
 let opts: { [key: string]: any };

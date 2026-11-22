@@ -18,7 +18,8 @@
     "skipLibCheck": true,
     "strict": true,
     "rootDir": "src",
-    "target": "ES2022"
+    "target": "ES2022",
+    "types": ["node", "jest"]
   },
   "include": ["src/**/*"]
 }

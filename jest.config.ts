@@ -6,14 +6,18 @@
 import type { Config } from 'jest';
 
 const config: Config = {
-  preset: 'ts-jest', // Use ts-jest preset for TypeScript support
-  testEnvironment: 'node', // Use Node.js environment for testing
+  preset: 'ts-jest/presets/default-esm', // ESM-aware ts-jest preset (requires --experimental-vm-modules)
+  testEnvironment: 'node',
   transform: {
-    '^.+\\.tsx?$': ['ts-jest', { useESM: true }], // Move ts-jest config here
+    '^.+\\.tsx?$': ['ts-jest', { useESM: true }],
   },
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'], // Recognize these file extensions
-  testPathIgnorePatterns: ['/node_modules/', '/backup/'], // Ignore these paths
-  extensionsToTreatAsEsm: ['.ts'], // Treat .ts files as ES modules
+  moduleNameMapper: {
+    '^(\\.{1,2}/.*)\\.js$': '$1', // Resolve NodeNext-style `./foo.js` imports to their `.ts` sources
+  },
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  testPathIgnorePatterns: ['/node_modules/', '/backup/', '/dist/'],
+  extensionsToTreatAsEsm: ['.ts'],
+  setupFiles: ['<rootDir>/src/node_compat.ts'], // Node 23+ util shims needed by tfjs-node
 };
 
 export default config;

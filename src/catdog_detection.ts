@@ -7,20 +7,29 @@ import logger from './logger.js';
 // Suppress TensorFlow logs
 process.env.TF_CPP_MIN_LOG_LEVEL = '2';
 
-const MAX_SIZE = 480;
-const MAX_DETECTIONS = 50;
-const MIN_SCORE = 0.4;
+// The model internally resizes to 300x300, so there is no benefit to feeding it anything much larger
+const MAX_SIZE = 640;
+const MAX_DETECTIONS = 20;
+// Low floor so we can log near-misses; real decisions use ANIMAL_THRESHOLDS below
+const LOG_MIN_SCORE = 0.25;
 
-function resizeImage(tensor: tf.Tensor3D): tf.Tensor3D {
-  const [h, w] = tensor.shape;
-  const scale = Math.min(MAX_SIZE / w, MAX_SIZE / h, 1);
-  const newW = Math.floor(w * scale);
-  const newH = Math.floor(h * scale);
-  // Resize and cast to int32
-  return tf.image.resizeBilinear(tensor, [newH, newW]).cast('int32');
-}
+// COCO animal classes and the minimum confidence required to count as a hit.
+// Cats and dogs are common and well represented in the training data, so they can be a bit lower.
+export const ANIMAL_THRESHOLDS: Record<string, number> = {
+  cat: 0.5,
+  dog: 0.5,
+  bird: 0.65,
+  horse: 0.65,
+  sheep: 0.65,
+  cow: 0.65,
+  elephant: 0.65,
+  bear: 0.65,
+  zebra: 0.65,
+  giraffe: 0.65,
+};
 
-const model = await cocoSsd.load();
+// mobilenet_v2 is noticeably more accurate than the default lite_mobilenet_v2
+const model = await cocoSsd.load({ base: 'mobilenet_v2' });
 
 async function downloadImage(url: string): Promise<tf.Tensor3D | null> {
   const response = await axios.get(url, {
@@ -38,62 +47,60 @@ async function downloadImage(url: string): Promise<tf.Tensor3D | null> {
     return null;
   }
 
-  let imageBuffer: Buffer;
-
   try {
-    // Convert to PNG using sharp for unsupported formats
-    imageBuffer = await sharp(response.data).toFormat('png').toBuffer();
-  } catch (err) {
-    logger.error(`Sharp failed to process image: ${err}`);
-    return null;
-  }
+    const { data, info } = await sharp(response.data)
+      .rotate() // apply EXIF orientation so phone photos aren't sideways
+      .flatten({ background: '#ffffff' }) // composite transparency instead of leaving garbage RGB
+      .resize(MAX_SIZE, MAX_SIZE, { fit: 'inside', withoutEnlargement: true })
+      .toColourspace('srgb')
+      .removeAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
 
-  try {
-    let imageTensor = tf.node.decodeImage(imageBuffer) as tf.Tensor3D;
-    if (imageTensor.shape[2] === 4) {
-      imageTensor = tf.slice(imageTensor, [0, 0, 0], [-1, -1, 3]);
+    if (info.channels !== 3) {
+      logger.error(`Unexpected channel count after processing: ${info.channels}`);
+      return null;
     }
-    return imageTensor;
+
+    return tf.tensor3d(new Uint8Array(data), [info.height, info.width, 3], 'int32');
   } catch (err) {
-    logger.error(`TensorFlow failed to decode image: ${err}`);
+    logger.error(`Failed to process image: ${err}`);
     return null;
   }
 }
 
-export default async function detectAnimals(
-  imageUrl: string,
-): Promise<{ hasCat: boolean; hasDog: boolean }> {
-  let imageTensor = await downloadImage(imageUrl);
+/**
+ * Detects animals in an image.
+ * Returns a map of animal class -> highest confidence, only for animals above their threshold.
+ */
+export default async function detectAnimals(imageUrl: string): Promise<Map<string, number>> {
+  const imageTensor = await downloadImage(imageUrl);
   if (!imageTensor) throw new Error('Failed to download or decode image');
-  imageTensor = resizeImage(imageTensor);
 
-  const predictions = await model.detect(imageTensor, MAX_DETECTIONS, MIN_SCORE);
-  imageTensor.dispose(); // free memory
-
-  let hasCat = false;
-  let hasDog = false;
-  const animalConfidences: string[] = [];
+  let predictions: cocoSsd.DetectedObject[];
+  try {
+    predictions = await model.detect(imageTensor, MAX_DETECTIONS, LOG_MIN_SCORE);
+  } finally {
+    imageTensor.dispose();
+  }
 
   const topConfidences = [...predictions]
     .sort((a, b) => b.score - a.score)
     .slice(0, 5)
-    .map((prediction) => `${prediction.class}=${(prediction.score * 100).toFixed(2)}%`);
+    .map((p) => `${p.class}=${(p.score * 100).toFixed(2)}%`);
+  logger.info(`Top detection confidences: ${topConfidences.join(', ') || 'none'}`);
 
-  for (const prediction of predictions) {
-    if (prediction.class === 'cat') {
-      hasCat = true;
-      animalConfidences.push(`cat=${(prediction.score * 100).toFixed(2)}%`);
-    }
-    if (prediction.class === 'dog') {
-      hasDog = true;
-      animalConfidences.push(`dog=${(prediction.score * 100).toFixed(2)}%`);
-    }
+  const found = new Map<string, number>();
+  for (const { class: cls, score } of predictions) {
+    const threshold = ANIMAL_THRESHOLDS[cls];
+    if (threshold === undefined || score < threshold) continue;
+    if (score > (found.get(cls) ?? 0)) found.set(cls, score);
   }
 
-  logger.info(`Top 5 detection confidences: ${topConfidences.join(', ')}`);
-  if (animalConfidences.length) {
-    logger.info(`Animal detection confidences: ${animalConfidences.join(', ')}`);
+  if (found.size) {
+    const summary = [...found].map(([cls, s]) => `${cls}=${(s * 100).toFixed(2)}%`).join(', ');
+    logger.info(`Animals detected: ${summary}`);
   }
 
-  return { hasCat, hasDog };
+  return found;
 }
